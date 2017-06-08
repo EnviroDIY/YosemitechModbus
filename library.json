@@ -1,0 +1,85 @@
+{
+    "name": "EnviroDIY_ModularSensors",
+    "description":  "A library that allows acces to multiple sensors through a unified interface.  This allows the user to simply access many sensors to log the data or send the data to data repositories like the EnviroDIY data portal.",
+    "keywords": "sensors, logger, low power, sleeping, EnviroDIY",
+    "platforms": "atmelavr",
+    "frameworks": "arduino",
+    "authors":
+    [
+        {
+            "name": "Sara Damiano",
+            "email": "sdamiano@stroudcenter.org",
+            "url": "https://envirodiy.org/",
+            "maintainer": true
+        },
+        {
+            "name": "Shannon Hicks",
+            "email": "shicks@stroudcenter.org",
+            "url": "https://envirodiy.org/"
+        }
+    ],
+    "version": "0.3.0-beta",
+    "repository":
+    {
+        "type": "git",
+        "url": "https://github.com/EnviroDIY/ModularSensors.git"
+    },
+    "export":
+    {
+        "exclude":
+        [
+            "doc/*",
+            "sensor_tests/*"
+        ]
+    },
+    "dependencies":
+    [
+        {
+            "name": "Wire"
+        },
+        {
+            "name": "Sodaq_DS3231",
+            "version": "https://github.com/EnviroDIY/Sodaq_DS3231.git"
+        },
+        {
+            "name": "EnableInterrupt",
+            "version": "https://github.com/EnviroDIY/EnableInterrupt.git"
+        },
+        {
+            "name": "SdFat"
+        },
+        {
+            "name": "SoftwareSerial_ExtInts",
+            "version": "https://github.com/EnviroDIY/SoftwaterSerial_ExternalInts.git"
+        },
+        {
+            "name": "ADS1X15"
+        },
+        {
+            "name": "Adafruit Unified Sensor"
+        },
+        {
+            "name": "DHT sensor library"
+        },
+        {
+            "name": "Adafruit AM2315"
+        },
+        {
+            "name": "Adafruit BME280 Library"
+        },
+        {
+            "name": "DallasTemperature"
+        },
+        {
+            "name": "OneWire"
+        },
+        {
+            "name": "Arduino-SDI-12_ExtInts",
+            "version": "https://github.com/EnviroDIY/Arduino-SDI-12.git#ExtInts"
+        },
+        {
+            "name": "TinyGSM",
+            "version": "https://github.com/EnviroDIY/TinyGSM.git"
+        }
+    ]
+}
