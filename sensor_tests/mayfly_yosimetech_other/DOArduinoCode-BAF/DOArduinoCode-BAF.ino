@@ -45,8 +45,6 @@ void setup()
   delay(8);
   Serial1.write(startmeasure, 8);///////////////////////////
   //this is the Mayfly's default Xbee port (UART-1)
-} //Beth note: closing the procedure here doesn't seem correct 
-
   //delay(12); 
   //digitalWrite(12, LOW);
   delay(1000);
@@ -54,35 +52,63 @@ void setup()
 
   if (Serial1.available() > 0) 
   {
-  // read the incoming byte:
-  incomingByte = Serial1.readBytes(buffer, 13); 
+    // read the incoming byte:
+    incomingByte = Serial1.readBytes(buffer, 13); 
   }
-  Serial.println("Temp(C)
+  
+  Serial.println("Temp(C) DO(%)");
+}
 
-void loop() {
-if (State8 == LOW) {
-State8 = HIGH; } else {
-State8 = LOW; }
-DO(%)");
+
+void loop() 
+{
+  if (State8 == LOW) 
+  {
+    State8 = HIGH; 
+  } 
+  else {
+    State8 = LOW; 
+  }
+  
+//DO(%)"); //this is out of place and incomplete?
+
 digitalWrite(8, State8);
 State9 = !State8;
 digitalWrite(9, State9);
-// send data only when you receive data: //digitalWrite(12, HIGH);
+
+// send data only when you receive data: 
+//digitalWrite(12, HIGH);
 //delay(8);
-if (Serial.available() > 0) {
-incomingByte = Serial.readBytes(command,17); // if ((incomingByte == 8)||(incomingByte == 17))
-//{
-Serial1.write(command, incomingByte); //Serial.println("K B");
-// }
-} else
-Serial1.write(getTempandDO, 8); //delay(32);
-//digitalWrite(12, LOW); delay(1000);
-if (Serial1.available() > 0) {
-// read the incoming byte:
-incomingByte = Serial1.readBytes(buffer, 13); //default to 1 second
-// say what you got:
-if (incomingByte == 13) {
-Temperature = Rev_float(buffer, 3); DOvalue = Rev_float(buffer, 7) * 100; Serial.print(Temperature, 2); Serial.print(" "); Serial.println(DOvalue, 2);
-}
-//Serial.print(buffer[0], HEX); }
+
+if (Serial.available() > 0) 
+{
+  incomingByte = Serial.readBytes(command,17); 
+  // if ((incomingByte == 8)||(incomingByte == 17))
+  //{
+  Serial1.write(command, incomingByte); 
+  //Serial.println("K B");
+  // }
+} 
+else
+  Serial1.write(getTempandDO, 8); 
+  
+  //delay(32);
+  //digitalWrite(12, LOW); 
+  delay(1000);
+
+  if (Serial1.available() > 0) 
+  {
+    // read the incoming byte:
+    incomingByte = Serial1.readBytes(buffer, 13); //default to 1 second
+  // say what you got:
+    if (incomingByte == 13) 
+    {
+      Temperature = Rev_float(buffer, 3); 
+      DOvalue = Rev_float(buffer, 7) * 100; 
+      Serial.print(Temperature, 2); 
+      Serial.print(" "); 
+      Serial.println(DOvalue, 2);
+    }
+  //Serial.print(buffer[0], HEX); 
+  }
 }
