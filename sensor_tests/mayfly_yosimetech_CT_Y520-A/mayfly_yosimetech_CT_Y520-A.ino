@@ -11,9 +11,10 @@ int incomingByte = 0; // for incoming serial data. Anthony Note: where to store 
 // Anthony Note: "unsigned char" datatype is equivalent to "byte". https://oscarliang.com/arduino-difference-byte-uint8-t-unsigned-cha/
 unsigned char buffer[13];   // Anthony Note: Allocate some space for the Bytes, as 13-element array of bytes
 unsigned char command[16];  // Anthony Note: Allocate some space for the Bytes, as 16-element array of bytes
-float Temperature, DOvalue;
+float Temperature, Conductivity;
 unsigned char startmeasure[9] = {0x01, 0x10, 0x1C, 0x00, 0x00, 0x00, 0x00, 0xD8, 0x92};
 unsigned char getTempandCond[8] = {0x01, 0x03, 0x26, 0x00, 0x00, 0x04, 0x4F, 0x41};
+//unsigned char getTempandCond[8] = {0x01, 0x03, 0x26, 0x00, 0x00, 0x05, 0x8E, 0x81};
 int i = 0;      // Anthony note: Index into array; where to store the Bytes
 int inbyte;     // Anthony note: Where to store the Bytes read
 String inputString = "";
@@ -106,10 +107,10 @@ void loop()
     if (incomingByte == 13)
     {
       Temperature = Rev_float(buffer, 3);
-      DOvalue = Rev_float(buffer, 7) ;
-      Serial.print(Temperature, 2);
+      Conductivity = Rev_float(buffer, 7) ;
+      Serial.print(Temperature, 6);
       Serial.print(" ");
-      Serial.println(DOvalue, 2);
+      Serial.println(Conductivity, 6);
     }
   //Serial.print(buffer[0], HEX);
   }
