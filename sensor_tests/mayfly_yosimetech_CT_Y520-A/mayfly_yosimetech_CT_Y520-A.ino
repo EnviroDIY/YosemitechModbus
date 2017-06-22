@@ -1,7 +1,7 @@
 /************
-Modified by Anthony & Beth
-From sketch from YosemiTech for DO probe
-To work with Y520 CT conductivity
+  Modified by Anthony & Beth
+  From sketch from YosemiTech for DO probe
+  To work with Y520 CT conductivity
 ************/
 
 // Anthony note: Declare variables
@@ -12,9 +12,12 @@ int incomingByte = 0; // for incoming serial data. Anthony Note: where to store 
 unsigned char buffer[13];   // Anthony Note: Allocate some space for the Bytes, as 13-element array of bytes
 unsigned char command[16];  // Anthony Note: Allocate some space for the Bytes, as 16-element array of bytes
 float Temperature, Conductivity;
-unsigned char startmeasure[9] = {0x01, 0x10, 0x1C, 0x00, 0x00, 0x00, 0x00, 0xD8, 0x92};
-unsigned char getTempandCond[8] = {0x01, 0x03, 0x26, 0x00, 0x00, 0x04, 0x4F, 0x41};
+//float Temperature, Conductivity, SN; //Beth note: trying to print serial number in header
+unsigned char startmeasure[9] = {0x01, 0x10, 0x1C, 0x00, 0x00, 0x00, 0x00, 0xd8, 0x92};
+unsigned char getTempandCond[8] = {0x01, 0x03, 0x26, 0x00, 0x00, 0x04, 0x4F, 0x41}; //This is from the DO sketch, and Cond always = 0 but T works
+//unsigned char getTempandCond[8] = {0x01, 0x03, 0x26, 0x00, 0x00, 0x05, 0x8E, 0x81}; //This is from the Conductivity instruction manual, ovf "overflow as floats" error occurs
 //unsigned char getTempandCond[8] = {0x01, 0x03, 0x26, 0x00, 0x00, 0x05, 0x8E, 0x81};
+//unsigned char getSN[8] = {0x01, 0x03, 0x09, 0x00, 0x00, 0x07, 0x07, 0x94};
 int i = 0;      // Anthony note: Index into array; where to store the Bytes
 int inbyte;     // Anthony note: Where to store the Bytes read
 String inputString = "";
@@ -26,7 +29,7 @@ union SeFrame {
 
 SeFrame Sefram;
 float Rev_float( unsigned char indata[], int stindex) {
-  Sefram.Byte[0] = indata[stindex];//Serial.read( );
+  Sefram.Byte[0] = indata[stindex]; //Serial.read( );
   Sefram.Byte[1] = indata[stindex + 1]; //Serial.read( );
   Sefram.Byte[2] = indata[stindex + 2]; //Serial.read( );
   Sefram.Byte[3] = indata[stindex + 3]; //Serial.read( );
@@ -51,7 +54,7 @@ void setup()
   Serial1.write(startmeasure, 9);///////////////////////////
   //delay(12);
   //digitalWrite(12, LOW);
-  delay(1000);
+  delay(10000); //Beth note: user manual says to wait 10 seconds before conductivity, then to use as average
 
 
   if (Serial1.available() > 0)
@@ -61,6 +64,9 @@ void setup()
   }
 
   Serial.println("Temp(C) Cond(mS/cm)");
+  //Serial.print("Sesnor SN "); Serial.println(SN); //Beth note: trying to print serial number in header
+
+
 }
 
 
@@ -85,7 +91,7 @@ void loop()
 
   if (Serial.available() > 0)
   {
-    incomingByte = Serial.readBytes(command,17);
+    incomingByte = Serial.readBytes(command, 17);
     // if ((incomingByte == 8)||(incomingByte == 17))
     //{
     Serial1.write(command, incomingByte);
@@ -97,21 +103,21 @@ void loop()
 
   //delay(32);
   //digitalWrite(12, LOW);
-  delay(1000);
+  delay(3000); //Beth note: user manual says to wait 3 secs between readings
 
   if (Serial1.available() > 0)
   {
     // read the incoming byte:
     incomingByte = Serial1.readBytes(buffer, 13); //default to 1 second
-  // say what you got:
+    // say what you got:
     if (incomingByte == 13)
     {
-      Temperature = Rev_float(buffer, 3);
-      Conductivity = Rev_float(buffer, 7) ;
+      Temperature = Rev_float(buffer, 3); //Beth: does this mean Rev_float location at byte 3?
+      Conductivity = Rev_float(buffer, 7); // Beth note: is this the error in reading conductivity?
       Serial.print(Temperature, 6);
       Serial.print(" ");
-      Serial.println(Conductivity, 6);
+      Serial.println(Conductivity, 9);
     }
-  //Serial.print(buffer[0], HEX);
+    //Serial.print(buffer[0], HEX);
   }
 }
