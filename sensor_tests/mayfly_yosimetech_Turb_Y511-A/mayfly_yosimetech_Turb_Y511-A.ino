@@ -50,18 +50,16 @@ void setup()
   Serial1.write(startmeasure, 8);///////////////////////////
   //delay(12);
   //digitalWrite(12, LOW);
-  delay(1000);
 
+  delay(2000);  // recommended >2 second delay (see p 15 of manual) after Start Meaurement before Get values
 
   if (Serial1.available() > 0)
   {
     // read the incoming byte:
     incomingByte = Serial1.readBytes(buffer, 13);
   }
-
-  Serial.println("Temp(C) Cond(mS/cm)");
+  Serial.println("Temp(C)   TUR(NTU)");
 }
-
 
 void loop()
 {
@@ -73,6 +71,7 @@ void loop()
   else {
     State8 = LOW;
   }
+
 
   digitalWrite(8, State8);  // Anthony Note: Turn on LED2 green if State8 is high
   State9 = !State8;         // Anthony Note: Assign State9 to be NOT State8 (the opposite of State8)
@@ -96,7 +95,7 @@ void loop()
 
   //delay(32);
   //digitalWrite(12, LOW);
-  delay(1000);
+  delay(2000);  // recommended >2 second delay (see p 15 of manual) after Start Meaurement before Get values
 
   if (Serial1.available() > 0)
   {
