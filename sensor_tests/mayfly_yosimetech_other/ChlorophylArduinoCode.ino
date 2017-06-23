@@ -1,3 +1,5 @@
+#include <Arduino.h>
+
 int State8 = LOW;
 int State9 = LOW;
 int incomingByte = 0;   // for incoming serial data

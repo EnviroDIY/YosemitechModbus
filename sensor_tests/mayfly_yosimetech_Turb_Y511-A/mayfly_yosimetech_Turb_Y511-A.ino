@@ -2,6 +2,7 @@
 Modified by Anthony & Beth
 From sketch from YosemiTech for Y511 Turbidity with wiper
 ************/
+#include <Arduino.h>
 
 // Anthony note: Declare variables
 int State8 = LOW;
@@ -25,11 +26,11 @@ union SeFrame {
 SeFrame Sefram;
 float Rev_float( unsigned char indata[], int stindex)
 {
-  Sefram.Byte[0] = indata[stindex];//Serial.read( );
-  Sefram.Byte[1] = indata[stindex + 1]; //Serial.read( );
-  Sefram.Byte[2] = indata[stindex + 2]; //Serial.read( );
-  Sefram.Byte[3] = indata[stindex + 3]; //Serial.read( );
-  return Sefram.Float;
+    Sefram.Byte[0] = indata[stindex];//Serial.read( );
+    Sefram.Byte[1] = indata[stindex + 1]; //Serial.read( );
+    Sefram.Byte[2] = indata[stindex + 2]; //Serial.read( );
+    Sefram.Byte[3] = indata[stindex + 3]; //Serial.read( );
+    return Sefram.Float;
 }
 
 float Rev_float(unsigned char indata[], int stindex);
@@ -37,79 +38,77 @@ float Rev_float(unsigned char indata[], int stindex);
 
 void setup()
 {
-  pinMode(8, OUTPUT);   // Anthony Note: LED2 green
-  pinMode(9, OUTPUT);   // Anthony Note: LED1 red
-  pinMode(22, OUTPUT);  // Anthony Note: switched power
-  digitalWrite(22, HIGH);
-  pinMode(12, OUTPUT);  // Anthony Note: ??
-  digitalWrite(12, LOW); // Anthony Note: ??
-  Serial.begin(9600);  // Anthony Note: this is the Mayfly's default USB port (UART-0)
-  Serial1.begin(9600); //this is the Mayfly's default Xbee port (UART-1)
-  //digitalWrite(12, HIGH);
-  delay(8);
-  Serial1.write(startmeasure, 8);///////////////////////////
-  //delay(12);
-  //digitalWrite(12, LOW);
+    pinMode(8, OUTPUT);   // Anthony Note: LED2 green
+    pinMode(9, OUTPUT);   // Anthony Note: LED1 red
+    pinMode(22, OUTPUT);  // Anthony Note: switched power
+    digitalWrite(22, HIGH);
+    pinMode(12, OUTPUT);  // Anthony Note: ??
+    digitalWrite(12, LOW); // Anthony Note: ??
+    Serial.begin(9600);  // Anthony Note: this is the Mayfly's default USB port (UART-0)
+    Serial1.begin(9600); //this is the Mayfly's default Xbee port (UART-1)
+    //digitalWrite(12, HIGH);
+    delay(8);
+    Serial1.write(startmeasure, 8);///////////////////////////
+    //delay(12);
+    //digitalWrite(12, LOW);
+    delay(2000);  // recommended >2 second delay (see p 15 of manual) after Start Meaurement before Get values
 
-  delay(2000);  // recommended >2 second delay (see p 15 of manual) after Start Meaurement before Get values
-
-  if (Serial1.available() > 0)
-  {
-    // read the incoming byte:
-    incomingByte = Serial1.readBytes(buffer, 13);
-  }
-  Serial.println("Temp(C)   TUR(NTU)");
+    if (Serial1.available() > 0)
+    {
+        // read the incoming byte:
+        incomingByte = Serial1.readBytes(buffer, 13);
+    }
+    Serial.println("Temp(C)   TUR(NTU)");
 }
+
 
 void loop()
 {
-  // Anthony Note: Switch State8
-  if (State8 == LOW)
-  {
-    State8 = HIGH;
-  }
-  else {
-    State8 = LOW;
-  }
-
-
-  digitalWrite(8, State8);  // Anthony Note: Turn on LED2 green if State8 is high
-  State9 = !State8;         // Anthony Note: Assign State9 to be NOT State8 (the opposite of State8)
-  digitalWrite(9, State9);  // Anthony Note: Turn on LED1 red if State9 is high
-
-  // send data only when you receive data:
-  //digitalWrite(12, HIGH);
-  //delay(8);
-
-  if (Serial.available() > 0)
-  {
-    incomingByte = Serial.readBytes(command,17);
-    // if ((incomingByte == 8)||(incomingByte == 17))
-    //{
-    Serial1.write(command, incomingByte);
-    //Serial.println("K B");
-    // }
-  }
-  else
-    Serial1.write(getTempandVarX, 8);
-
-  //delay(32);
-  //digitalWrite(12, LOW);
-  delay(2000);  // recommended >2 second delay (see p 15 of manual) after Start Meaurement before Get values
-
-  if (Serial1.available() > 0)
-  {
-    // read the incoming byte:
-    incomingByte = Serial1.readBytes(buffer, 13); //default to 1 second
-  // say what you got:
-    if (incomingByte == 13)
+    // Anthony Note: Switch State8
+    if (State8 == LOW)
     {
-      Temperature = Rev_float(buffer, 3);
-      VarXvalue = Rev_float(buffer, 7);
-      Serial.print(Temperature, 2);
-      Serial.print("   ");
-      Serial.println(VarXvalue, 2);
+        State8 = HIGH;
     }
-  //Serial.print(buffer[0], HEX);
-  }
+    else {
+        State8 = LOW;
+    }
+
+    digitalWrite(8, State8);  // Anthony Note: Turn on LED2 green if State8 is high
+    State9 = !State8;         // Anthony Note: Assign State9 to be NOT State8 (the opposite of State8)
+    digitalWrite(9, State9);  // Anthony Note: Turn on LED1 red if State9 is high
+
+    // send data only when you receive data:
+    //digitalWrite(12, HIGH);
+    //delay(8);
+
+    if (Serial.available() > 0)
+    {
+        incomingByte = Serial.readBytes(command, 17);
+        // if ((incomingByte == 8)||(incomingByte == 17))
+        //{
+        Serial1.write(command, incomingByte);
+        //Serial.println("K     B");
+        // }
+    }
+    else Serial1.write(getTempandVarX, 8);
+
+    //delay(32);
+    //digitalWrite(12, LOW);
+    delay(2000);  // recommended >2 second delay (see p 15 of manual) after Start Meaurement before Get values
+
+    if (Serial1.available() > 0)
+    {
+        // read the incoming byte:
+        incomingByte = Serial1.readBytes(buffer, 13); //default to 1 second
+        // say what you got:
+        if (incomingByte == 13)
+        {
+            Temperature = Rev_float(buffer, 3);
+            VarXvalue = Rev_float(buffer, 7);
+            Serial.print(Temperature, 2);
+            Serial.print("   ");
+            Serial.println(VarXvalue, 2);
+        }
+        //Serial.print(buffer[0], HEX);
+    }
 }
