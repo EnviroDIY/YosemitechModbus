@@ -3,6 +3,7 @@
   From sketch from YosemiTech for DO probe
   To work with Y520 CT conductivity
 ************/
+#include <Arduino.h>
 
 // Anthony note: Declare variables
 int State8 = LOW;
@@ -23,17 +24,18 @@ int inbyte;     // Anthony note: Where to store the Bytes read
 String inputString = "";
 
 union SeFrame {
-  float Float;
-  unsigned char Byte[4];
+    float Float;
+    unsigned char Byte[4];
 };
 
 SeFrame Sefram;
-float Rev_float( unsigned char indata[], int stindex) {
-  Sefram.Byte[0] = indata[stindex]; //Serial.read( );
-  Sefram.Byte[1] = indata[stindex + 1]; //Serial.read( );
-  Sefram.Byte[2] = indata[stindex + 2]; //Serial.read( );
-  Sefram.Byte[3] = indata[stindex + 3]; //Serial.read( );
-  return Sefram.Float;
+float Rev_float( unsigned char indata[], int stindex)
+{
+    Sefram.Byte[0] = indata[stindex];//Serial.read( );
+    Sefram.Byte[1] = indata[stindex + 1]; //Serial.read( );
+    Sefram.Byte[2] = indata[stindex + 2]; //Serial.read( );
+    Sefram.Byte[3] = indata[stindex + 3]; //Serial.read( );
+    return Sefram.Float;
 }
 
 float Rev_float(unsigned char indata[], int stindex);
@@ -41,83 +43,79 @@ float Rev_float(unsigned char indata[], int stindex);
 
 void setup()
 {
-  pinMode(8, OUTPUT);   // Anthony Note: LED2 green
-  pinMode(9, OUTPUT);   // Anthony Note: LED1 red
-  pinMode(22, OUTPUT);  // Anthony Note: switched power
-  digitalWrite(22, HIGH);
-  pinMode(12, OUTPUT);  // Anthony Note: ??
-  digitalWrite(12, LOW); // Anthony Note: ??
-  Serial.begin(9600);  // Anthony Note: this is the Mayfly's default USB port (UART-0)
-  Serial1.begin(9600); //this is the Mayfly's default Xbee port (UART-1)
-  //digitalWrite(12, HIGH);
-  delay(8);
-  Serial1.write(startmeasure, 9);///////////////////////////
-  //delay(12);
-  //digitalWrite(12, LOW);
-  delay(10000); //Beth note: user manual says to wait 10 seconds before conductivity, then to use as average
+    pinMode(8, OUTPUT);   // Anthony Note: LED2 green
+    pinMode(9, OUTPUT);   // Anthony Note: LED1 red
+    pinMode(22, OUTPUT);  // Anthony Note: switched power
+    digitalWrite(22, HIGH);
+    pinMode(12, OUTPUT);  // Anthony Note: ??
+    digitalWrite(12, LOW); // Anthony Note: ??
+    Serial.begin(9600);  // Anthony Note: this is the Mayfly's default USB port (UART-0)
+    Serial1.begin(9600); //this is the Mayfly's default Xbee port (UART-1)
+    //digitalWrite(12, HIGH);
+    delay(8);
+    Serial1.write(startmeasure, 9);///////////////////////////
+    //delay(12);
+    //digitalWrite(12, LOW);
+    delay(10000); //Beth note: user manual says to wait 10 seconds before conductivity, then to use as average
 
+    if (Serial1.available() > 0)
+    {
+        // read the incoming byte:
+        incomingByte = Serial1.readBytes(buffer, 13);
+    }
 
-  if (Serial1.available() > 0)
-  {
-    // read the incoming byte:
-    incomingByte = Serial1.readBytes(buffer, 13);
-  }
-
-  Serial.println("Temp(C) Cond(mS/cm)");
-  //Serial.print("Sesnor SN "); Serial.println(SN); //Beth note: trying to print serial number in header
-
-
+    Serial.println("Temp(C) Cond(mS/cm)");
+    //Serial.print("Sesnor SN "); Serial.println(SN); //Beth note: trying to print serial number in header
 }
 
 
 void loop()
 {
-  // Anthony Note: Switch State8
-  if (State8 == LOW)
-  {
-    State8 = HIGH;
-  }
-  else {
-    State8 = LOW;
-  }
-
-  digitalWrite(8, State8);  // Anthony Note: Turn on LED2 green if State8 is high
-  State9 = !State8;         // Anthony Note: Assign State9 to be NOT State8 (the opposite of State8)
-  digitalWrite(9, State9);  // Anthony Note: Turn on LED1 red if State9 is high
-
-  // send data only when you receive data:
-  //digitalWrite(12, HIGH);
-  //delay(8);
-
-  if (Serial.available() > 0)
-  {
-    incomingByte = Serial.readBytes(command, 17);
-    // if ((incomingByte == 8)||(incomingByte == 17))
-    //{
-    Serial1.write(command, incomingByte);
-    //Serial.println("K B");
-    // }
-  }
-  else
-    Serial1.write(getTempandCond, 8);
-
-  //delay(32);
-  //digitalWrite(12, LOW);
-  delay(3000); //Beth note: user manual says to wait 3 secs between readings
-
-  if (Serial1.available() > 0)
-  {
-    // read the incoming byte:
-    incomingByte = Serial1.readBytes(buffer, 13); //default to 1 second
-    // say what you got:
-    if (incomingByte == 13)
+    // Anthony Note: Switch State8
+    if (State8 == LOW)
     {
-      Temperature = Rev_float(buffer, 3); //Beth: does this mean Rev_float location at byte 3?
-      Conductivity = Rev_float(buffer, 7); // Beth note: is this the error in reading conductivity?
-      Serial.print(Temperature, 6);
-      Serial.print(" ");
-      Serial.println(Conductivity, 9);
+        State8 = HIGH;
     }
-    //Serial.print(buffer[0], HEX);
-  }
+    else {
+        State8 = LOW;
+    }
+
+    digitalWrite(8, State8);  // Anthony Note: Turn on LED2 green if State8 is high
+    State9 = !State8;         // Anthony Note: Assign State9 to be NOT State8 (the opposite of State8)
+    digitalWrite(9, State9);  // Anthony Note: Turn on LED1 red if State9 is high
+
+    // send data only when you receive data:
+    //digitalWrite(12, HIGH);
+    //delay(8);
+
+    if (Serial.available() > 0)
+    {
+        incomingByte = Serial.readBytes(command, 17);
+        // if ((incomingByte == 8)||(incomingByte == 17))
+        //{
+        Serial1.write(command, incomingByte);
+        //Serial.println("K     B");
+        // }
+    }
+    else Serial1.write(getTempandCond, 8);
+
+    //delay(32);
+    //digitalWrite(12, LOW);
+    delay(3000); //Beth note: user manual says to wait 3 secs between readings
+
+    if (Serial1.available() > 0)
+    {
+        // read the incoming byte:
+        incomingByte = Serial1.readBytes(buffer, 13); //default to 1 second
+        // say what you got:
+        if (incomingByte == 13)
+        {
+            Temperature = Rev_float(buffer, 3); //Beth: does this mean Rev_float location at byte 3?
+            Conductivity = Rev_float(buffer, 7); // Beth note: is this the error in reading conductivity?
+            Serial.print(Temperature, 6);
+            Serial.print(" ");
+            Serial.println(Conductivity, 9);
+        }
+        //Serial.print(buffer[0], HEX);
+    }
 }
