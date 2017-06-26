@@ -84,7 +84,7 @@ void loop()
   // Anthony note: seems to allow for commands from computer serial monitor to interupt normal loop
   if (Serial.available() > 0)
   {
-    incomingByte = Serial.readBytes(command, 17); see  see https://www.arduino.cc/en/Serial/ReadBytes
+    incomingByte = Serial.readBytes(command, 17); // see https://www.arduino.cc/en/Serial/ReadBytes
     Serial1.write(command, incomingByte);
   }
   else
