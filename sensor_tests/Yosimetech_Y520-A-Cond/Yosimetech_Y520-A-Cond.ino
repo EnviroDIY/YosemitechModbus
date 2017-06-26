@@ -10,8 +10,8 @@ int State8 = LOW;
 int State9 = LOW;
 int incomingByte = 0; // for incoming serial data. Anthony Note: where to store the bytes read
 // Anthony Note: "unsigned char" datatype is equivalent to "byte". https://oscarliang.com/arduino-difference-byte-uint8-t-unsigned-cha/
-unsigned char buffer[15];   // Anthony Note: Allocate some space for the Bytes, as 15-element array of bytes (15 for Cond, 13 for all other sensors)
-unsigned char command[16];  // Anthony Note: Allocate some space for the Bytes, as 16-element array of bytes
+unsigned char buffer[14];   // Anthony Note: Allocate some space for the Bytes, as 15-element array of bytes (15 for Cond, 13 for all other sensors)
+unsigned char command[16];  // Anthony Note: Allocate some space for the Bytes, as 17-element array of bytes
 float Temperature, Conductivity;
 //float Temperature, Conductivity, SN; //Beth note: trying to print serial number in header
 unsigned char startmeasure[9] = {0x01, 0x10, 0x1C, 0x00, 0x00, 0x00, 0x00, 0xd8, 0x92};
@@ -28,7 +28,8 @@ union SeFrame {
   unsigned char Byte[4];
 };
 
-SeFrame Sefram;
+SeFrame Sefram;  // Anthony note: this seems to be creating an object of class "SeFrame", but not sure where that class is defined.
+// Declare function to convert 4-byte response to a floating point number
 float Rev_float( unsigned char indata[], int stindex)
 {
   Sefram.Byte[0] = indata[stindex];//Serial.read( );
@@ -37,8 +38,6 @@ float Rev_float( unsigned char indata[], int stindex)
   Sefram.Byte[3] = indata[stindex + 3]; //Serial.read( );
   return Sefram.Float;
 }
-
-float Rev_float(unsigned char indata[], int stindex);
 
 
 void setup()
@@ -52,7 +51,7 @@ void setup()
   Serial1.begin(9600); //this is the Mayfly's default Xbee port (UART-1)
 
   delay(8);
-  Serial1.write(startmeasure, 9);///////////////////////////
+  Serial1.write(startmeasure, 9); // byte array of length = 9, see https://www.arduino.cc/en/Serial/Write
 
   delay(10000); //Beth note: user manual says to wait 10 seconds before conductivity, then to use as average
 
@@ -61,7 +60,7 @@ void setup()
     // read the incoming byte:
     incomingByte = Serial1.readBytes(buffer, 15); // 15 byte response frame for Cond, according to  the manual
   }
-
+  //Serial.println(buffer[0], HEX);
   Serial.println("Temp(C) Cond(mS/cm)");
   //Serial.print("Sesnor SN "); Serial.println(SN); //Beth note: trying to print serial number in header
 }
@@ -82,30 +81,38 @@ void loop()
   digitalWrite(9, State9);  // Anthony Note: Turn on LED1 red if State9 is high
 
   // send data only when you receive data:
-
+  // Anthony note: seems to allow for commands from computer serial monitor to interupt normal loop
   if (Serial.available() > 0)
   {
-    incomingByte = Serial.readBytes(command, 17);
+    incomingByte = Serial.readBytes(command, 17); see  see https://www.arduino.cc/en/Serial/ReadBytes
     Serial1.write(command, incomingByte);
   }
   else
-    Serial1.write(getTempandCond, 8);
+    Serial1.write(getTempandCond, 8); // byte array of length = 8, see https://www.arduino.cc/en/Serial/Write
 
   delay(3000); //Beth note: user manual says to wait 3 secs between readings
 
   if (Serial1.available() > 0)
   {
-    // read the incoming byte:
+    // read the incoming byte: see https://www.arduino.cc/en/Serial/ReadBytes
     incomingByte = Serial1.readBytes(buffer, 15); // 15 byte response frame for Cond, according to  the manual
     // say what you got:
     if (incomingByte == 15)
     {
       Temperature = Rev_float(buffer, 3);  // Anthony note: read response frame buffer starting at byte 3
       Conductivity = Rev_float(buffer, 7); // Anthony note: read response frame buffer starting at byte 7
-      Serial.print(Temperature, 6);
+      Serial.print(Temperature, 4);
       Serial.print(", ");
-      Serial.println(Conductivity, 9);
+      Serial.println(Conductivity, 4);
+
+      // Print response frame buffer as hexidecimal bytes
+      for(int i = 0; i <= 14; i++)
+      {
+        Serial.print(buffer[i], HEX);
+        Serial.print(", ");
+      }
+      Serial.println("done");
+
     }
-    //Serial.print(buffer[0], HEX);
-    }
+  }
 }

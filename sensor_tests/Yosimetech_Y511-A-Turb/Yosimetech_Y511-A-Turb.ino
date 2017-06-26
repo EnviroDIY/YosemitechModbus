@@ -29,7 +29,7 @@ union SeFrame {
   unsigned char Byte[4];
 };
 
-SeFrame Sefram;
+SeFrame Sefram;  // Anthony note: this seems to be creating an object of class "SeFrame", but not sure where that class is defined.
 float Rev_float( unsigned char indata[], int stindex)
 {
   Sefram.Byte[0] = indata[stindex];//Serial.read( );
@@ -53,7 +53,7 @@ void setup()
   Serial1.begin(9600); //this is the Mayfly's default Xbee port (UART-1)
 
   delay(8);
-  Serial1.write(startmeasure, 8);///////////////////////////
+  Serial1.write(startmeasure, 8); // byte array of length = 8, see https://www.arduino.cc/en/Serial/Write
 
   delay(2000);  // recommended >2 second delay (see p 15 of manual) after Start Meaurement before Get values
 
@@ -83,29 +83,38 @@ void loop()
   digitalWrite(9, State9);  // Anthony Note: Turn on LED1 red if State9 is high
 
   // send data only when you receive data:
-
+  // Anthony note: seems to allow for commands from computer serial monitor to interupt normal loop
   if (Serial.available() > 0)
   {
-    incomingByte = Serial.readBytes(command,17);
+    incomingByte = Serial.readBytes(command, 17); see  see https://www.arduino.cc/en/Serial/ReadBytes
     Serial1.write(command, incomingByte);
   }
   else
-    Serial1.write(getTempandVarX, 8);
+    Serial1.write(getTempandVarX, 8); // byte array of length = 8, see https://www.arduino.cc/en/Serial/Write
 
   delay(1000);
 
   if (Serial1.available() > 0)
   {
-    // read the incoming byte:
+    // read the incoming byte: see https://www.arduino.cc/en/Serial/ReadBytes
     incomingByte = Serial1.readBytes(buffer, 13); //default to 1 second
     // say what you got:
     if (incomingByte == 13)
     {
       Temperature = Rev_float(buffer, 3);  // Anthony note: read response frame buffer starting at byte 3
       VarXvalue = Rev_float(buffer, 7);    // Anthony note: read response frame buffer starting at byte 7
-      Serial.print(Temperature, 6);
+      Serial.print(Temperature, 4);
       Serial.print(", ");
-      Serial.println(VarXvalue, 6);
+      Serial.println(VarXvalue, 4);
+
+      // Print response frame buffer as hexidecimal bytes
+      for(int i = 0; i <= 14; i++)
+      {
+        Serial.print(buffer[i], HEX);
+        Serial.print(", ");
+      }
+      Serial.println("done");
+
     }
   }
 }
