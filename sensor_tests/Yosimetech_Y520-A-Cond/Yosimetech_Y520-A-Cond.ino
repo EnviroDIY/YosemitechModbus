@@ -1,17 +1,25 @@
-/************
+/*****************************************************************************
 Modified by Anthony & Beth
 From sketch from YosemiTech for
-Y520 CT conductivity
-************/
+Y520 CT conductivity sensor
+*****************************************************************************/
+
+// ---------------------------------------------------------------------------
+// Include the base required libraries
+// ---------------------------------------------------------------------------
 #include <Arduino.h>
 
+// ---------------------------------------------------------------------------
+// Set up the sensor specific information
+//   ie, pin locations, addresses, calibrations and related settings
+// ---------------------------------------------------------------------------
 // Anthony note: Declare variables
 int State8 = LOW;
 int State9 = LOW;
 int incomingByte = 0; // for incoming serial data. Anthony Note: where to store the bytes read
 // Anthony Note: "unsigned char" datatype is equivalent to "byte". https://oscarliang.com/arduino-difference-byte-uint8-t-unsigned-cha/
-unsigned char buffer[14];   // Anthony Note: Allocate some space for the Bytes, as 15-element array of bytes (15 for Cond, 13 for all other sensors)
-unsigned char command[16];  // Anthony Note: Allocate some space for the Bytes, as 17-element array of bytes
+unsigned char buffer[14];   // Anthony Note: Allocate some space for the bytes, as 15-element array of bytes (15 for Cond, 13 for all other sensors)
+unsigned char command[16];  // Anthony Note: Allocate some space for the bytes, as 17-element array of bytes
 float Temperature, Conductivity;
 //float Temperature, Conductivity, SN; //Beth note: trying to print serial number in header
 unsigned char startmeasure[9] = {0x01, 0x10, 0x1C, 0x00, 0x00, 0x00, 0x00, 0xd8, 0x92};
@@ -19,10 +27,13 @@ unsigned char startmeasure[9] = {0x01, 0x10, 0x1C, 0x00, 0x00, 0x00, 0x00, 0xd8,
 //unsigned char getTempandCond[8] = {0x01, 0x03, 0x26, 0x00, 0x00, 0x04, 0x4F, 0x41}; //From the Cond sketch, and Cond always = 0 but T works
 unsigned char getTempandCond[8] = {0x01, 0x03, 0x26, 0x00, 0x00, 0x05, 0x8E, 0x81}; //From Cond Modbus manual, ovf "overflow as floats" error occurs
 //unsigned char getSN[8] = {0x01, 0x03, 0x09, 0x00, 0x00, 0x07, 0x07, 0x94};
-int i = 0;      // Anthony note: Index into array; where to store the Bytes
-int inbyte;     // Anthony note: Where to store the Bytes read
+int i = 0;      // Anthony note: Index into array; where to store the bytes
+int inbyte;     // Anthony note: Where to store the bytes read
 String inputString = "";
 
+// ---------------------------------------------------------------------------
+// Working Functions
+// ---------------------------------------------------------------------------
 union SeFrame {
   float Float;
   unsigned char Byte[4];
@@ -39,7 +50,9 @@ float Rev_float( unsigned char indata[], int stindex)
   return Sefram.Float;
 }
 
-
+// ---------------------------------------------------------------------------
+// Main setup function
+// ---------------------------------------------------------------------------
 void setup()
 {
   pinMode(8, OUTPUT);   // Anthony Note: LED2 green
@@ -53,21 +66,19 @@ void setup()
   delay(8);
   Serial1.write(startmeasure, 9); // byte array of length = 9, see https://www.arduino.cc/en/Serial/Write
 
-  delay(10000); //Beth note: user manual says to wait 10 seconds before conductivity, then to use as average
-
-  if (Serial1.available() > 0)
-  {
-    // read the incoming byte:
-    incomingByte = Serial1.readBytes(buffer, 15); // 15 byte response frame for Cond, according to  the manual
-  }
-  //Serial.println(buffer[0], HEX);
-  Serial.println("Temp(C) Cond(mS/cm)");
+  //Beth note: user manual says to wait 10 seconds before conductivity, then to use as average
+  delay(7000); // 7 sec delay here, plus 3 second delay below
   //Serial.print("Sesnor SN "); Serial.println(SN); //Beth note: trying to print serial number in header
-}
+  Serial.println("Temp(C) Cond(mS/cm)");
 
+  }
+
+// ---------------------------------------------------------------------------
+// Main loop function
+// ---------------------------------------------------------------------------
 void loop()
 {
-  // Anthony Note: Switch State8
+  // Anthony Note: Switch State8 high or low, to alternate light colors every loop
   if (State8 == LOW)
   {
     State8 = HIGH;
@@ -84,8 +95,9 @@ void loop()
   // Anthony note: seems to allow for commands from computer serial monitor to interupt normal loop
   if (Serial.available() > 0)
   {
-    incomingByte = Serial.readBytes(command, 17); // see https://www.arduino.cc/en/Serial/ReadBytes
-    Serial1.write(command, incomingByte);
+    Serial.println("Recieving command from computer serial");
+    //incomingByte = Serial.readBytes(command, 17); // see https://www.arduino.cc/en/Serial/ReadBytes
+    //Serial1.write(command, incomingByte);
   }
   else
     Serial1.write(getTempandCond, 8); // byte array of length = 8, see https://www.arduino.cc/en/Serial/Write

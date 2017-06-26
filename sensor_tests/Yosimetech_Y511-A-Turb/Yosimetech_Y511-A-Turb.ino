@@ -1,10 +1,18 @@
-/************
+/*****************************************************************************
 Modified by Anthony & Beth
 From sketch from YosemiTech for
 Y511 Turbidity with wiper
-************/
+*****************************************************************************/
+
+// ---------------------------------------------------------------------------
+// Include the base required libraries
+// ---------------------------------------------------------------------------
 #include <Arduino.h>
 
+// ---------------------------------------------------------------------------
+// Set up the sensor specific information
+//   ie, pin locations, addresses, calibrations and related settings
+// ---------------------------------------------------------------------------
 // Anthony note: Declare variables
 int State8 = LOW;
 int State9 = LOW;
@@ -24,12 +32,16 @@ int i = 0;      // Anthony note: Index into array; where to store the Bytes
 int inbyte;     // Anthony note: Where to store the Bytes read
 String inputString = "";
 
+// ---------------------------------------------------------------------------
+// Working Functions
+// ---------------------------------------------------------------------------
 union SeFrame {
   float Float;
   unsigned char Byte[4];
 };
 
 SeFrame Sefram;  // Anthony note: this seems to be creating an object of class "SeFrame", but not sure where that class is defined.
+// Declare function to convert 4-byte response to a floating point number
 float Rev_float( unsigned char indata[], int stindex)
 {
   Sefram.Byte[0] = indata[stindex];//Serial.read( );
@@ -39,9 +51,9 @@ float Rev_float( unsigned char indata[], int stindex)
   return Sefram.Float;
 }
 
-float Rev_float(unsigned char indata[], int stindex);
-
-
+// ---------------------------------------------------------------------------
+// Main setup function
+// ---------------------------------------------------------------------------
 void setup()
 {
   pinMode(8, OUTPUT);   // Anthony Note: LED2 green
@@ -67,9 +79,12 @@ void setup()
   //Serial.print("Sesnor SN "); Serial.println(SN); //Beth note: trying to print serial number in header
 }
 
+// ---------------------------------------------------------------------------
+// Main loop function
+// ---------------------------------------------------------------------------
 void loop()
 {
-  // Anthony Note: Switch State8
+  // Anthony Note: Switch State8 high or low, to alternate light colors every loop
   if (State8 == LOW)
   {
     State8 = HIGH;
