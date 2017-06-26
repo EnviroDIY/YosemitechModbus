@@ -66,6 +66,10 @@ void setup()
 
   delay(8);
   Serial1.write(startmeasure, 8); // byte array of length = 8, see https://www.arduino.cc/en/Serial/Write
+  delay(8);
+  Serial1.write(getSN, 8); // byte array of length = 8, see https://www.arduino.cc/en/Serial/Write
+
+  //Modbus manuals recommend the following warm-up times: 2 s for Chl, 20 s for Turb, 10 s for Cond
 
   delay(2000);  // recommended >2 second delay (see p 15 of manual) after Start Meaurement before Get values
 
@@ -101,13 +105,15 @@ void loop()
   // Anthony note: seems to allow for commands from computer serial monitor to interupt normal loop
   if (Serial.available() > 0)
   {
-    incomingByte = Serial.readBytes(command, 17); // see https://www.arduino.cc/en/Serial/ReadBytes
-    Serial1.write(command, incomingByte);
+    Serial.println("Recieving command from computer serial");
+    //incomingByte = Serial.readBytes(command, 17); // see https://www.arduino.cc/en/Serial/ReadBytes
+    //Serial1.write(command, incomingByte);
   }
   else
     Serial1.write(getTempandVarX, 8); // byte array of length = 8, see https://www.arduino.cc/en/Serial/Write
 
-  delay(1000);
+  //Modbus manuals recommend the following remeasure times: 2 s for Chl &Turb, 3 s for Cond
+  delay(2000);
 
   if (Serial1.available() > 0)
   {

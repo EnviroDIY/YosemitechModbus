@@ -66,7 +66,7 @@ void setup()
   delay(8);
   Serial1.write(startmeasure, 9); // byte array of length = 9, see https://www.arduino.cc/en/Serial/Write
 
-  //Beth note: user manual says to wait 10 seconds before conductivity, then to use as average
+  //Modbus manuals recommend the following warm-up times: 2 s for Chl, 20 s for Turb, 10 s for Cond
   delay(7000); // 7 sec delay here, plus 3 second delay below
   //Serial.print("Sesnor SN "); Serial.println(SN); //Beth note: trying to print serial number in header
   Serial.println("Temp(C) Cond(mS/cm)");
@@ -102,6 +102,7 @@ void loop()
   else
     Serial1.write(getTempandCond, 8); // byte array of length = 8, see https://www.arduino.cc/en/Serial/Write
 
+  //Modbus manuals recommend the following remeasure times: 2 s for Chl &Turb, 3 s for Cond
   delay(3000); //Beth note: user manual says to wait 3 secs between readings
 
   if (Serial1.available() > 0)
