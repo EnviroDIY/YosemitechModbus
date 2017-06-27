@@ -1,7 +1,7 @@
 /*****************************************************************************
 Modified by Anthony & Beth
 From sketch from YosemiTech for
-Y511 Turbidity with wiper
+Y514 Turbidity with wiper
 *****************************************************************************/
 
 // ---------------------------------------------------------------------------
@@ -9,28 +9,50 @@ Y511 Turbidity with wiper
 // ---------------------------------------------------------------------------
 #include <Arduino.h>
 
+
 // ---------------------------------------------------------------------------
 // Set up the sensor specific information
 //   ie, pin locations, addresses, calibrations and related settings
 // ---------------------------------------------------------------------------
-// Anthony note: Declare variables
-int State8 = LOW;
-int State9 = LOW;
-int incomingByte = 0; // for incoming serial data. Anthony Note: where to store the bytes read
-// Anthony Note: "unsigned char" datatype is equivalent to "byte". https://oscarliang.com/arduino-difference-byte-uint8-t-unsigned-cha/
-unsigned char buffer[13];   // Anthony Note: Allocate some space for the Bytes, as 13-element array of bytes
-unsigned char command[16];  // Anthony Note: Allocate some space for the Bytes, as 16-element array of bytes
-float Temperature, VarXvalue, SN;
+char sensorName[] = "Yosemitech Y514-A Chlorophyl sensor with wiper";
+//Modbus manuals recommend the following warm-up times: 2 s for Chl, 20 s for Turb, 10 s for Cond
+const int     warmUp = 2000; // in milliseconds
+//Modbus manuals recommend the following remeasure times: 2 s for Chl &Turb, 3 s for Cond
+const int     remeasure = 2000; // in milliseconds
 
-unsigned char startmeasure[8] = {0x01, 0x03, 0x25, 0x00, 0x00, 0x01, 0x8F, 0x06};  // from Turb code
-// unsigned char startmeasure[8] = {0x01, 0x03, 0x25, 0x00, 0x00, 0x00, 0x4E, 0xC6};  // from Turb manual
-unsigned char getTempandVarX[8] = {0x01, 0x03, 0x26, 0x00, 0x00, 0x04, 0x4F, 0x41};  // from Turbidity manual
+// Anthony Note: "unsigned char" datatype is equivalent to "byte". https://oscarliang.com/arduino-difference-byte-uint8-t-unsigned-cha/
+//unsigned char startMeasure[8] = {0x01, 0x03, 0x25, 0x00, 0x00, 0x01, 0x8F, 0x06};  // from Turb code
+unsigned char startMeasure[8] = {0x01, 0x03, 0x25, 0x00, 0x00, 0x00, 0x4E, 0xC6};  // from Chl manual
+
+unsigned char getValues[8] = {0x01, 0x03, 0x26, 0x00, 0x00, 0x05, 0x8E, 0x81};  // from Chl manual, 15 byte response
+const int     getValuesBufferLen = 15; // Length of response frame, in bytes
+unsigned char getValuesBuffer[getValuesBufferLen];   // Allocate some space for the Bytes, as n+1 element array of bytes
+char var1Name[] = "Temperature(C)"; char var2Name[] = "Chlorophyl(ug/L)";
+float var1, var2;
 
 unsigned char getSN[8] = {0x01, 0x03, 0x09, 0x00, 0x00, 0x07, 0x07, 0x94};
+const int     getSNBufferLen = 19; // Length of response frame, in bytes
+unsigned char getSNBuffer[getSNBufferLen];   // Allocate some space for the Bytes, as n+1 element array of bytes
+
 unsigned char activateBrush[9] = {0x01, 0x10, 0x31, 0x00, 0x00, 0x00, 0x00, 0x74, 0x94};
+
+
+int incomingByte = 0; // for incoming serial data. Anthony Note: where to store the bytes read
+unsigned char command[16];  // Anthony Note: Allocate some space for the Bytes, as n+1 element array of bytes
+
 int i = 0;      // Anthony note: Index into array; where to store the Bytes
 int inbyte;     // Anthony note: Where to store the Bytes read
 String inputString = "";
+
+// ---------------------------------------------------------------------------
+// Board setup info
+// ---------------------------------------------------------------------------
+const long SERIAL_BAUD = 9600;  // Serial port baud rate
+const int GREEN_LED = 8;  // Pin for the green LED
+const int RED_LED = 9;  // Pin for the red LED
+int State8 = LOW;
+int State9 = LOW;
+
 
 // ---------------------------------------------------------------------------
 // Working Functions
@@ -56,30 +78,54 @@ float Rev_float( unsigned char indata[], int stindex)
 // ---------------------------------------------------------------------------
 void setup()
 {
-  pinMode(8, OUTPUT);   // Anthony Note: LED2 green
-  pinMode(9, OUTPUT);   // Anthony Note: LED1 red
+  // Set up pins for the LED's
+  pinMode(GREEN_LED, OUTPUT);   // Anthony Note: LED2 green
+  pinMode(RED_LED, OUTPUT);   // Anthony Note: LED1 red
+
   pinMode(22, OUTPUT);  // Anthony Note: switched power. 5V to sensor, 3.3V to RS485 adaptor
   digitalWrite(22, HIGH);
 
-  Serial.begin(9600);  // Anthony Note: this is the Mayfly's default USB port (UART-0)
-  Serial1.begin(9600); //this is the Mayfly's default Xbee port (UART-1)
+  Serial.begin(SERIAL_BAUD);  // Anthony Note: this is the Mayfly's default USB port (UART-0)
+  Serial1.begin(SERIAL_BAUD); //this is the Mayfly's default Xbee port (UART-1)
 
-  delay(8);
-  Serial1.write(startmeasure, 8); // byte array of length = 8, see https://www.arduino.cc/en/Serial/Write
-  delay(8);
-  Serial1.write(getSN, 8); // byte array of length = 8, see https://www.arduino.cc/en/Serial/Write
+  Serial.println(sensorName);
+
+  if (Serial.available() > 0)
+  {
+    Serial.println("X");
+  }
+  else
+    Serial1.write(getSN, 8); // byte array of length = 8, see https://www.arduino.cc/en/Serial/Write
+
+  delay(1000);
+  if (Serial1.available() > 0)
+  {
+    incomingByte = Serial1.readBytes(getSNBuffer, getSNBufferLen);
+    Serial.print("SN: ");
+    // say what you got:
+    if (incomingByte == getValuesBufferLen)
+    {
+      for(int i = 0; i <= (getSNBufferLen-1); i++)
+      {
+        Serial.print(getSNBuffer[i], HEX);
+        Serial.print(", ");
+      }
+    }
+    Serial.println("end");
+  }
+
+  Serial1.write(startMeasure, 8); // byte array of length = 8, see https://www.arduino.cc/en/Serial/Write
 
   //Modbus manuals recommend the following warm-up times: 2 s for Chl, 20 s for Turb, 10 s for Cond
-
-  delay(2000);  // recommended >2 second delay (see p 15 of manual) after Start Meaurement before Get values
-
+  delay(warmUp);  // recommended >2 second delay (see p 15 of manual) after Start Meaurement before Get values
+/*
   if (Serial1.available() > 0)
   {
     // read the incoming byte:
-    incomingByte = Serial1.readBytes(buffer, 13);
-  }
-  //Serial.println(buffer[2]);
-  Serial.println("Temp(C)   TUR(NTU)");
+    incomingByte = Serial1.readBytes(getValuesBuffer, getValuesBufferLen);
+  } */
+  //Serial.println(getValuesBuffer[2]);
+  Serial.print(var1Name); Serial.print(", "); Serial.println(var2Name);
   //Serial.print("Sesnor SN "); Serial.println(SN); //Beth note: trying to print serial number in header
 }
 
@@ -96,10 +142,9 @@ void loop()
   else {
     State8 = LOW;
   }
-
-  digitalWrite(8, State8);  // Anthony Note: Turn on LED2 green if State8 is high
+  digitalWrite(GREEN_LED, State8);  // Anthony Note: Turn on LED2 green if State8 is high
   State9 = !State8;         // Anthony Note: Assign State9 to be NOT State8 (the opposite of State8)
-  digitalWrite(9, State9);  // Anthony Note: Turn on LED1 red if State9 is high
+  digitalWrite(RED_LED, State9);  // Anthony Note: Turn on LED1 red if State9 is high
 
   // send data only when you receive data:
   // Anthony note: seems to allow for commands from computer serial monitor to interupt normal loop
@@ -110,28 +155,28 @@ void loop()
     //Serial1.write(command, incomingByte);
   }
   else
-    Serial1.write(getTempandVarX, 8); // byte array of length = 8, see https://www.arduino.cc/en/Serial/Write
+    Serial1.write(getValues, 8); // byte array of length = 8, see https://www.arduino.cc/en/Serial/Write
 
   //Modbus manuals recommend the following remeasure times: 2 s for Chl &Turb, 3 s for Cond
-  delay(2000);
+  delay(remeasure);
 
   if (Serial1.available() > 0)
   {
     // read the incoming byte: see https://www.arduino.cc/en/Serial/ReadBytes
-    incomingByte = Serial1.readBytes(buffer, 13); //default to 1 second
+    incomingByte = Serial1.readBytes(getValuesBuffer, getValuesBufferLen);
     // say what you got:
-    if (incomingByte == 13)
+    if (incomingByte == getValuesBufferLen)
     {
-      Temperature = Rev_float(buffer, 3);  // Anthony note: read response frame buffer starting at byte 3
-      VarXvalue = Rev_float(buffer, 7);    // Anthony note: read response frame buffer starting at byte 7
-      Serial.print(Temperature, 4);
+      var1 = Rev_float(getValuesBuffer, 3);  // Anthony note: read response frame buffer starting at byte 3
+      var2 = Rev_float(getValuesBuffer, 7);    // Anthony note: read response frame buffer starting at byte 7
+      Serial.print(var1, 4);
       Serial.print(", ");
-      Serial.println(VarXvalue, 4);
+      Serial.println(var2, 4);
 
       // Print response frame buffer as hexidecimal bytes
-      for(int i = 0; i <= 14; i++)
+      for(int i = 0; i <= (getValuesBufferLen-1); i++)
       {
-        Serial.print(buffer[i], HEX);
+        Serial.print(getValuesBuffer[i], HEX);
         Serial.print(", ");
       }
       Serial.println("done");
