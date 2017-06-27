@@ -27,23 +27,12 @@ unsigned char startmeasure[8] = {0x01, 0x03, 0x25, 0x00, 0x00, 0x01, 0x8F, 0x06}
                                  // Addr, Fxn , Start Addr, # Register,    CRC
                                  //   01, Read, Coil 9472 ,   0 Regs  ,    CRC
 unsigned char getTempandVarX[8] = {0x01, 0x03, 0x26, 0x00, 0x00, 0x04, 0x4F, 0x41};  // from Turbidity manual
-<<<<<<< Updated upstream
                                  // Addr, Fxn , Start Addr, # Register,    CRC
                                  //   01, Read, Coil 9728 ,   4 Regs  ,    CRC
 unsigned char getSN[8] =          {0x01, 0x03, 0x09, 0x00, 0x00, 0x07, 0x07, 0x94};
                                 // Addr, Fxn , Start Addr, # Register,    CRC
                                 //   01, Read, Coil 2304 ,   7 Regs  ,    CRC
-||||||| merged common ancestors
-
-unsigned char getSN[8] = {0x01, 0x03, 0x09, 0x00, 0x00, 0x07, 0x07, 0x94};
-=======
-
-unsigned char getSN[8] = {0x01, 0x03, 0x09, 0x00, 0x00, 0x07, 0x07, 0x94}; 
->>>>>>> Stashed changes
 unsigned char activateBrush[9] = {0x01, 0x10, 0x31, 0x00, 0x00, 0x00, 0x00, 0x74, 0x94};
-//Beth note: slave ID is byte 1 for all commands. This should be a variable in final code. 
-//unsigned char setSlaveID[11] = {0x01, 0x10, 0x30, 0x00, 0x00, 0x01, 0x02, 0x14, 0x00, 0x99, 0x53}; //sets slave ID from 0x01 (at byte 1) to 0x14 (at byte 8)
-
 int i = 0;      // Anthony note: Index into array; where to store the Bytes
 int inbyte;     // Anthony note: Where to store the Bytes read
 String inputString = "";
