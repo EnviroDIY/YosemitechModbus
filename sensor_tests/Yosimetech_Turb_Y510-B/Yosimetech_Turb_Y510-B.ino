@@ -1,7 +1,7 @@
 /*****************************************************************************
 Modified by Anthony & Beth
 From sketch from YosemiTech for
-Y510-B Turbidity with wiper
+Y510-B Turbidity without wiper
 *****************************************************************************/
 
 // ---------------------------------------------------------------------------
@@ -23,10 +23,18 @@ const int DEREPin = -1;   // The pin controlling Recieve Enable and Driver Enabl
 const int SSRxPin = 10;  // Recieve pin for software serial (Rx on RS485 adapter)
 const int SSTxPin = 11;  // Send pin for software serial (Tx on RS485 adapter)
 
-// Define the sensor addresses
-unsigned char modbusAddress = 0x01;
-const int modbusTimeout = 1000;  // time to wait for response in ms
+// Define the sensor's modbus parameters
+unsigned char modbusAddress = 0x01;  // The sensor's modbus address
+const int modbusTimeout = 500;  // The time to wait for response after a command (in ms)
+const int modbusBaud = 9600;  // The baudrate for the modbus connection
+const int modbusFrameTimeout = 3;  // the time to wait between characters within a frame (in ms)
+// The modbus protocol defines that there can be no more than 1.5 characters
+// of silence between characters in a frame and any space over 3.5 characters
+// defines a new frame.
+// At 9600 baud with 1 start bit, no parity and 1 stop bit 1 character takes ~1.04ms
+// So the readBytes() command should time out within 3ms
 
+// Include software serial
 #include <SoftwareSerial.h>
 SoftwareSerial modbusSerial(SSRxPin, SSTxPin);
 
@@ -34,6 +42,13 @@ SoftwareSerial modbusSerial(SSRxPin, SSTxPin);
 unsigned char startMeasurement[8] = {modbusAddress, 0x03, 0x25, 0x00, 0x00, 0x00, 0x4E, 0xC6};
                                   // Address      , Fxn , Start Addr, # Register,    CRC
                                   // modbusAddress, Read, Coil 9472 ,   0 Regs  ,    CRC
+unsigned char altStartMeasurement[8] = {modbusAddress, 0x03, 0x25, 0x00, 0x00, 0x01, 0x8F, 0x06};
+                                // Address      , Fxn , Start Addr, # Register,    CRC
+                                // modbusAddress, Read, Coil 9472 ,   1 Reg   ,    CRC
+// altStartMeasurement is identical to startMeasurement except that it asks for the
+// value of a single coil instead of asking for values in response.  Either can be
+// used to start measurements.  If you use altStartMeasurement you will get a longer
+// return with the '0' value of the single coil.
 unsigned char getTempandVarX[8] = {modbusAddress, 0x03, 0x26, 0x00, 0x00, 0x04, 0x4F, 0x41};
                                 // Address      , Fxn , Start Addr, # Register,    CRC
                                 // modbusAddress, Read, Coil 9728 ,   4 Regs  ,    CRC
@@ -115,7 +130,8 @@ void setup()
     if (DEREPin > 0) pinMode(DEREPin, OUTPUT);
 
     Serial.begin(9600);  // Main serial port for debugging
-    modbusSerial.begin(9600);
+    modbusSerial.begin(modbusBaud);
+    modbusSerial.setTimeout(modbusFrameTimeout);
 
     // Allow the sensor and converter to warm up
     delay(500);
@@ -132,10 +148,10 @@ void setup()
 
     if (modbusSerial.available() > 0)
     {
-        // read the incoming byte:
-        bytesRead = modbusSerial.readBytes(responseBuffer, 18);
+        // Read the incoming byte:
+        bytesRead = modbusSerial.readBytes(responseBuffer, 20);
 
-        // print the raw response (for debugging)
+        // Print the raw response (for debugging)
         // Serial.print("Raw SN Response (");
         // Serial.print(bytesRead);
         // Serial.print(" bytes):");
@@ -143,7 +159,7 @@ void setup()
         // Serial.println();
 
         // Parse into a string and print that
-        if (bytesRead == 18)
+        if (bytesRead >= 18)
         {
             int sn_len = responseBuffer[2];
             char sn_arr[sn_len] = {0,};
@@ -175,11 +191,11 @@ void setup()
 
     if (modbusSerial.available() > 0)
     {
-        // read the incoming byte:
-        bytesRead = modbusSerial.readBytes(responseBuffer, 18);
+        // Read the incoming byte:
+        bytesRead = modbusSerial.readBytes(responseBuffer, 20);
         warmup = millis();
 
-        // print the raw response (for debugging)
+        // Print the raw response (for debugging)
         Serial.print("Raw Start Measurement Response (");
         Serial.print(bytesRead);
         Serial.print(" bytes):");
@@ -195,7 +211,7 @@ void setup()
     // before requesting values.  My testing actually indicates that turbidity
     // returns 0 until about 5-6 seconds after the start measurement command.
     // It may take up to 22 seconds to get stable values.
-    // delay(5000);
+    delay(5000);
 
     Serial.println("Temp(C)  Turb(NTU)  Warmup(ms)");
 }
@@ -217,10 +233,10 @@ void loop()
 
     if (modbusSerial.available() > 0)
     {
-        // read the incoming byte:
-        bytesRead = modbusSerial.readBytes(responseBuffer, 18);
+        // Read the incoming byte:
+        bytesRead = modbusSerial.readBytes(responseBuffer, 20);
 
-        // print the raw response (for debugging)
+        // Print the raw response (for debugging)
         // Serial.print("Raw Get Value Response (");
         // Serial.print(bytesRead);
         // Serial.print(" bytes):");
@@ -243,6 +259,9 @@ void loop()
     else Serial.println("  -         -           -");
 
     // Delay between readings
-    // Sensor returns values no more frequently than once per second
-    // delay(1000);
+    // The turbidity sensor only appears to be capable of taking readings
+    // approximately once every 1.6 seconds, although the teperature sensor can
+    // take readings much more quickly.  The same reading results can be read
+    // many times from the coils betweeen the sensor readings.
+    delay(1600);
 }
