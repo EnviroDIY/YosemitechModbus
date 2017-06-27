@@ -13,64 +13,208 @@ Y520 CT conductivity sensor
 // Set up the sensor specific information
 //   ie, pin locations, addresses, calibrations and related settings
 // ---------------------------------------------------------------------------
-// Anthony note: Declare variables
-int State8 = LOW;
-int State9 = LOW;
-int incomingByte = 0; // for incoming serial data. Anthony Note: where to store the bytes read
-// Anthony Note: "unsigned char" datatype is equivalent to "byte". https://oscarliang.com/arduino-difference-byte-uint8-t-unsigned-cha/
-unsigned char buffer[14];   // Anthony Note: Allocate some space for the bytes, as 15-element array of bytes (15 for Cond, 13 for all other sensors)
-unsigned char command[16];  // Anthony Note: Allocate some space for the bytes, as 17-element array of bytes
-float Temperature, Conductivity;
-//float Temperature, Conductivity, SN; //Beth note: trying to print serial number in header
-unsigned char startmeasure[9] = {0x01, 0x10, 0x1C, 0x00, 0x00, 0x00, 0x00, 0xd8, 0x92};
 
-//unsigned char getTempandCond[8] = {0x01, 0x03, 0x26, 0x00, 0x00, 0x04, 0x4F, 0x41}; //From the Cond sketch, and Cond always = 0 but T works
-unsigned char getTempandCond[8] = {0x01, 0x03, 0x26, 0x00, 0x00, 0x05, 0x8E, 0x81}; //From Cond Modbus manual, ovf "overflow as floats" error occurs
-//unsigned char getSN[8] = {0x01, 0x03, 0x09, 0x00, 0x00, 0x07, 0x07, 0x94};
-int i = 0;      // Anthony note: Index into array; where to store the bytes
-int inbyte;     // Anthony note: Where to store the bytes read
-String inputString = "";
+// Define pin number variables
+const int PwrPin = 22;  // The pin sending power to the sensor AND RS485 adapter
+const int DEREPin = -1;   // The pin controlling Recieve Enable and Driver Enable
+                          // on the RS485 adapter, if applicable (else, -1)
+                          // Setting HIGH enables the driver (arduino) to send text
+                          // Setting LOW enables the receiver (sensor) to send text
+const int SSRxPin = 10;  // Recieve pin for software serial (Rx on RS485 adapter)
+const int SSTxPin = 11;  // Send pin for software serial (Tx on RS485 adapter)
+
+// Define the sensor's modbus parameters
+unsigned char modbusAddress = 0x01;  // The sensor's modbus address
+const int modbusTimeout = 500;  // The time to wait for response after a command (in ms)
+const int modbusBaud = 9600;  // The baudrate for the modbus connection
+const int modbusFrameTimeout = 3;  // the time to wait between characters within a frame (in ms)
+// The modbus protocol defines that there can be no more than 1.5 characters
+// of silence between characters in a frame and any space over 3.5 characters
+// defines a new frame.
+// At 9600 baud with 1 start bit, no parity and 1 stop bit 1 character takes ~1.04ms
+// So the readBytes() command should time out within 3ms
+
+// Include software serial
+#include <SoftwareSerial.h>
+SoftwareSerial modbusSerial(SSRxPin, SSTxPin);
+
+// Define arrays with the modbus commands
+unsigned char startMeasurement[9] = {modbusAddress, 0x10, 0x1C, 0x00, 0x00, 0x00, 0x00, 0xd8, 0x92};
+                                  // Address      , Fxn , Start Addr, # Register,    CRC
+                                  // modbusAddress, Read, Coil 9472 ,   0 Regs  ,    CRC
+unsigned char getTempandVarX[8] = {modbusAddress, 0x03, 0x26, 0x00, 0x00, 0x04, 0x4F, 0x41};
+                              // Address      , Fxn , Start Addr, # Register,    CRC
+                              // modbusAddress, Read, Coil 9728 ,   4 Regs  ,    CRC
+unsigned char altGetTempandVarX[8] = {modbusAddress, 0x03, 0x26, 0x00, 0x00, 0x05, 0x8E, 0x81};
+                                   // Address      , Fxn , Start Addr, # Register,    CRC
+                                   // modbusAddress, Read, Coil 9728 ,   5 Regs  ,    CRC
+unsigned char getSN[8] = {modbusAddress, 0x03, 0x09, 0x00, 0x00, 0x07, 0x07, 0x94};
+                       // Address      , Fxn , Start Addr, # Register,    CRC
+                       // modbusAddress, Read, Coil 2304 ,   7 Regs  ,    CRC
+unsigned char stopMeasurement[8] = {modbusAddress, 0x03, 0x2E, 0x00, 0x00, 0x00, 0x4C, 0xE2};
+                                 // Address      , Fxn , Start Addr, # Register,    CRC
+                                 // modbusAddress, Read, Coil 11776,   0 Regs  ,    CRC
+
+// Define variables for the response;
+uint32_t start;  // For time-outs
+uint32_t warmup;  // For time-outs
+int bytesRead;
+unsigned char responseBuffer[20];  // This needs to be bigger than the largest response
+
+// Define variables to hold the float values calculated from the response
+float Temperature, VarXvalue;
+String SN;
+
 
 // ---------------------------------------------------------------------------
 // Working Functions
 // ---------------------------------------------------------------------------
+
+// Define a small-endian frame as a union - that is a special class type that
+// can hold only one of its non-static data members at a time, in this case,
+// either 4-bytes OR a single float.
+// With avr-gcc (Arduino's compiler), integer and floating point variables are
+// all physically stored in memory in little-endian byte order, so this union
+// is all that is needed to get the correct float value from the small-endian
+// hex frames returned by YosemiTech's Modbus Sensors
 union SeFrame {
   float Float;
   unsigned char Byte[4];
 };
 
-SeFrame Sefram;  // Anthony note: this seems to be creating an object of class "SeFrame", but not sure where that class is defined.
-// Declare function to convert 4-byte response to a floating point number
-float Rev_float( unsigned char indata[], int stindex)
+// This functions return the float from a 4-byte small-endian array beginning
+// at a specific index of another array.
+float floatFromFrame( unsigned char indata[], int stindex)
 {
-  Sefram.Byte[0] = indata[stindex];//Serial.read( );
-  Sefram.Byte[1] = indata[stindex + 1]; //Serial.read( );
-  Sefram.Byte[2] = indata[stindex + 2]; //Serial.read( );
-  Sefram.Byte[3] = indata[stindex + 3]; //Serial.read( );
+    SeFrame Sefram;
+    Sefram.Byte[0] = indata[stindex];
+    Sefram.Byte[1] = indata[stindex + 1];
+    Sefram.Byte[2] = indata[stindex + 2];
+    Sefram.Byte[3] = indata[stindex + 3];
   return Sefram.Float;
 }
+
+// This flips the device/receive enable to DRIVER so the arduino can send text
+void driverEnable(void)
+{
+    if (DEREPin > 0)
+    {
+        digitalWrite(DEREPin, HIGH);
+        delay(8);
+    }
+}
+
+// This flips the device/receive enable to RECIEVER so the sensor can send text
+void recieverEnable(void)
+{
+    if (DEREPin > 0)
+    {
+        digitalWrite(DEREPin, LOW);
+        delay(8);
+    }
+}
+
 
 // ---------------------------------------------------------------------------
 // Main setup function
 // ---------------------------------------------------------------------------
 void setup()
 {
-  pinMode(8, OUTPUT);   // Anthony Note: LED2 green
-  pinMode(9, OUTPUT);   // Anthony Note: LED1 red
-  pinMode(22, OUTPUT);  // Anthony Note: switched power. 5V to sensor, 3.3V to RS485 adaptor
-  digitalWrite(22, HIGH);
 
-  Serial.begin(9600);  // Anthony Note: this is the Mayfly's default USB port (UART-0)
-  Serial1.begin(9600); //this is the Mayfly's default Xbee port (UART-1)
+    pinMode(PwrPin, OUTPUT);
+    digitalWrite(PwrPin, HIGH);
 
-  delay(8);
-  Serial1.write(startmeasure, 9); // byte array of length = 9, see https://www.arduino.cc/en/Serial/Write
+    if (DEREPin > 0) pinMode(DEREPin, OUTPUT);
 
-  //Modbus manuals recommend the following warm-up times: 2 s for Chl, 20 s for Turb, 10 s for Cond
-  delay(7000); // 7 sec delay here, plus 3 second delay below
-  //Serial.print("Sesnor SN "); Serial.println(SN); //Beth note: trying to print serial number in header
-  Serial.println("Temp(C) Cond(mS/cm)");
+    Serial.begin(9600);  // Main serial port for debugging
+    modbusSerial.begin(modbusBaud);
+    modbusSerial.setTimeout(modbusFrameTimeout);
 
+    // Allow the sensor and converter to warm up
+    delay(500);
+
+    // Send the "get serial number" command
+    driverEnable();
+    modbusSerial.write(getSN, 8);
+    modbusSerial.flush();
+
+    recieverEnable();
+    start = millis();
+    while (modbusSerial.available() == 0 && millis() - start < modbusTimeout)
+    { delay(1);}
+
+    if (modbusSerial.available() > 0)
+    {
+        // Read the incoming bytes
+        // 18 byte response frame for serial number, according to  the manual
+        bytesRead = modbusSerial.readBytes(responseBuffer, 20);
+
+        // Print the raw response (for debugging)
+        // Serial.print("Raw SN Response (");
+        // Serial.print(bytesRead);
+        // Serial.print(" bytes):");
+        // for (int i = 0; i < bytesRead; i++) Serial.print(responseBuffer[i]);
+        // Serial.println();
+
+        // Parse into a string and print that
+        if (bytesRead >= 18)
+        {
+            int sn_len = responseBuffer[2];
+            char sn_arr[sn_len] = {0,};
+            int j = 0;
+            for (int i = 4; i < 16; i++)
+            {
+                sn_arr[j] = responseBuffer[i];
+                j++;
+            }
+            SN = String(sn_arr);
+            Serial.print("Serial Number: ");
+            Serial.println(SN);
+        }
+    }
+    else
+    {
+        Serial.println("No response to serial number request");
+    }
+
+    // Send the "start measurement" command
+    driverEnable();
+    modbusSerial.write(startMeasurement, 9);
+    modbusSerial.flush();
+
+    recieverEnable();
+    start = millis();
+    while (modbusSerial.available() == 0 && millis() - start < modbusTimeout)
+    { delay(1);}
+
+    if (modbusSerial.available() > 0)
+    {
+        // Read the incoming bytes
+        // 8 byte response frame for start measurement, according to  the manual
+        bytesRead = modbusSerial.readBytes(responseBuffer, 10);
+        warmup = millis();
+
+        // Print the raw response (for debugging)
+        Serial.print("Raw Start Measurement Response (");
+        Serial.print(bytesRead);
+        Serial.print(" bytes):");
+        for (int i = 0; i < bytesRead; i++) Serial.print(responseBuffer[i], HEX);
+        Serial.println();
+    }
+    else
+    {
+        Serial.println("No response to Start Measurement request");
+    }
+
+    // The modbus manuals recommend the following warm-up times between starting
+    // measurements and requesting values :
+    //    2 s for whipered chlorophyll
+    //    20 s for turbidity
+    //    10 s for conductivity
+
+    delay(7000);
+
+    Serial.println("Temp(C)  Cond(mS/cm)  Warmup(ms)");
   }
 
 // ---------------------------------------------------------------------------
@@ -78,54 +222,49 @@ void setup()
 // ---------------------------------------------------------------------------
 void loop()
 {
-  // Anthony Note: Switch State8 high or low, to alternate light colors every loop
-  if (State8 == LOW)
-  {
-    State8 = HIGH;
-  }
-  else {
-    State8 = LOW;
-  }
+    // send the command to get the temperature
+    driverEnable();
+    modbusSerial.write(getTempandVarX, 8);
+    modbusSerial.flush();
 
-  digitalWrite(8, State8);  // Anthony Note: Turn on LED2 green if State8 is high
-  State9 = !State8;         // Anthony Note: Assign State9 to be NOT State8 (the opposite of State8)
-  digitalWrite(9, State9);  // Anthony Note: Turn on LED1 red if State9 is high
+    recieverEnable();
+    start = millis();
+    while (modbusSerial.available() == 0 && millis() - start < modbusTimeout)
+    { delay(1);}
 
-  // send data only when you receive data:
-  // Anthony note: seems to allow for commands from computer serial monitor to interupt normal loop
-  if (Serial.available() > 0)
-  {
-    Serial.println("Recieving command from computer serial");
-    //incomingByte = Serial.readBytes(command, 17); // see https://www.arduino.cc/en/Serial/ReadBytes
-    //Serial1.write(command, incomingByte);
-  }
-  else
-    Serial1.write(getTempandCond, 8); // byte array of length = 8, see https://www.arduino.cc/en/Serial/Write
-
-  //Modbus manuals recommend the following remeasure times: 2 s for Chl &Turb, 3 s for Cond
-  delay(3000); //Beth note: user manual says to wait 3 secs between readings
-
-  if (Serial1.available() > 0)
-  {
-    // read the incoming byte: see https://www.arduino.cc/en/Serial/ReadBytes
-    incomingByte = Serial1.readBytes(buffer, 15); // 15 byte response frame for Cond, according to  the manual
-    // say what you got:
-    if (incomingByte == 15)
+    if (modbusSerial.available() > 0)
     {
-      Temperature = Rev_float(buffer, 3);  // Anthony note: read response frame buffer starting at byte 3
-      Conductivity = Rev_float(buffer, 7); // Anthony note: read response frame buffer starting at byte 7
-      Serial.print(Temperature, 4);
-      Serial.print(", ");
-      Serial.println(Conductivity, 4);
+        // Read the incoming bytes
+        // 13 byte response frame for Cond, according to  the manual
+        bytesRead = modbusSerial.readBytes(responseBuffer, 14);
 
-      // Print response frame buffer as hexidecimal bytes
-      for(int i = 0; i <= 14; i++)
-      {
-        Serial.print(buffer[i], HEX);
-        Serial.print(", ");
-      }
-      Serial.println("done");
+        // Print the raw response (for debugging)
+        // Serial.print("Raw Get Value Response (");
+        // Serial.print(bytesRead);
+        // Serial.print(" bytes):");
+        // for (int i = 0; i < bytesRead; i++) Serial.print(responseBuffer[i], HEX);
+        // Serial.println();
 
+        // Print response converted to floats
+        if (bytesRead == 15)
+        {
+          Temperature = floatFromFrame(responseBuffer, 3);
+          VarXvalue = floatFromFrame(responseBuffer, 7);
+          Serial.print(Temperature, 3);
+          Serial.print("     ");
+          Serial.print(VarXvalue, 3);
+          Serial.print("       ");
+          Serial.print(millis() - warmup);
+          Serial.println();
+          }
     }
-  }
+    else Serial.println("  -         -           -");
+
+    // Delay between readings
+    // Modbus manuals recommend the following remeasure times:
+    //     2 s for chlorophyll
+    //     2 s for turbidity
+    //     3 s for conductivity
+
+    delay(3000);
 }
