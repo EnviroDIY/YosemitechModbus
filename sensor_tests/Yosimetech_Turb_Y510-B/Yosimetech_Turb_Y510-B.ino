@@ -149,7 +149,8 @@ void setup()
 
     if (modbusSerial.available() > 0)
     {
-        // Read the incoming byte:
+        // Read the incoming bytes
+        // 18 byte response frame for serial number, according to  the manual
         bytesRead = modbusSerial.readBytes(responseBuffer, 20);
 
         // Print the raw response (for debugging)
@@ -192,8 +193,9 @@ void setup()
 
     if (modbusSerial.available() > 0)
     {
-        // Read the incoming byte:
-        bytesRead = modbusSerial.readBytes(responseBuffer, 20);
+        // Read the incoming bytes
+        // 5 byte response frame for start measurement, according to  the manual
+        bytesRead = modbusSerial.readBytes(responseBuffer, 10);
         warmup = millis();
 
         // Print the raw response (for debugging)
@@ -208,9 +210,14 @@ void setup()
         Serial.println("No response to Start Measurement request");
     }
 
-    // Modbus manual (p15) recommendeds >2 second delay after Start Meaurement
-    // before requesting values.  My testing actually indicates that turbidity
-    // returns 0 until about 5-6 seconds after the start measurement command.
+    // The modbus manuals recommend the following warm-up times between starting
+    // measurements and requesting values :
+    //    2 s for whipered chlorophyll
+    //    20 s for turbidity
+    //    10 s for conductivity
+
+    // SRGD testing actually indicates that turbidity returns 0 until about
+    // 5-6 seconds after the start measurement command.
     // It may take up to 22 seconds to get stable values.
     delay(5000);
 
@@ -234,8 +241,9 @@ void loop()
 
     if (modbusSerial.available() > 0)
     {
-        // Read the incoming byte:
-        bytesRead = modbusSerial.readBytes(responseBuffer, 20);
+        // Read the incoming bytes
+        // 13 byte response frame for Cond, according to  the manual
+        bytesRead = modbusSerial.readBytes(responseBuffer, 14);
 
         // Print the raw response (for debugging)
         // Serial.print("Raw Get Value Response (");
@@ -249,9 +257,9 @@ void loop()
         {
             Temperature = floatFromFrame(responseBuffer, 3);
             VarXvalue = floatFromFrame(responseBuffer, 7);
-            Serial.print(Temperature, 2);
+            Serial.print(Temperature, 3);
             Serial.print("     ");
-            Serial.print(VarXvalue, 2);
+            Serial.print(VarXvalue, 3);
             Serial.print("       ");
             Serial.print(millis() - warmup);
             Serial.println();
@@ -260,9 +268,14 @@ void loop()
     else Serial.println("  -         -           -");
 
     // Delay between readings
-    // The turbidity sensor only appears to be capable of taking readings
-    // approximately once every 1.6 seconds, although the teperature sensor can
-    // take readings much more quickly.  The same reading results can be read
-    // many times from the coils betweeen the sensor readings.
+    // Modbus manuals recommend the following remeasure times:
+    //     2 s for chlorophyll
+    //     2 s for turbidity
+    //     3 s for conductivity
+
+    // SRGD testing shows the turbidity sensor appears to be capable of taking
+    // readings approximately once every 1.6 seconds, although the teperature
+    // sensor can take readings much more quickly.  The same reading results
+    // can be read many times from the coils betweeen the sensor readings.
     delay(1600);
 }
