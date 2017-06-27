@@ -250,6 +250,8 @@ void loop()
         {
           Temperature = floatFromFrame(responseBuffer, 3);
           VarXvalue = floatFromFrame(responseBuffer, 7);
+          int errorFlag = responseBuffer[11];
+          int reserved = responseBuffer[12];
           Serial.print(Temperature, 3);
           Serial.print("     ");
           Serial.print(VarXvalue, 3);
