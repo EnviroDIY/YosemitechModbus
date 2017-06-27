@@ -58,6 +58,7 @@ unsigned char getSN[8] = {modbusAddress, 0x03, 0x09, 0x00, 0x00, 0x07, 0x07, 0x9
 unsigned char stopMeasurement[8] = {modbusAddress, 0x03, 0x2E, 0x00, 0x00, 0x00, 0x4C, 0xE2};
                                  // Address      , Fxn , Start Addr, # Register,    CRC
                                  // modbusAddress, Read, Coil 11776,   0 Regs  ,    CRC
+
 // Define variables for the response;
 uint32_t start;  // For time-outs
 uint32_t warmup;  // For time-outs
@@ -87,7 +88,7 @@ union SeFrame {
 
 // This functions return the float from a 4-byte small-endian array beginning
 // at a specific index of another array.
-float Rev_float( unsigned char indata[], int stindex)
+float floatFromFrame( unsigned char indata[], int stindex)
 {
     SeFrame Sefram;
     Sefram.Byte[0] = indata[stindex];
@@ -246,8 +247,8 @@ void loop()
         // Print response converted to floats
         if (bytesRead == 13)
         {
-            Temperature = Rev_float(responseBuffer, 3);
-            VarXvalue = Rev_float(responseBuffer, 7);
+            Temperature = floatFromFrame(responseBuffer, 3);
+            VarXvalue = floatFromFrame(responseBuffer, 7);
             Serial.print(Temperature, 2);
             Serial.print("     ");
             Serial.print(VarXvalue, 2);
