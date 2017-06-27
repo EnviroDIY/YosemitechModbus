@@ -24,9 +24,14 @@ float Temperature, VarXvalue, SN;
 
 unsigned char startmeasure[8] = {0x01, 0x03, 0x25, 0x00, 0x00, 0x01, 0x8F, 0x06};  // from Turb code
 // unsigned char startmeasure[8] = {0x01, 0x03, 0x25, 0x00, 0x00, 0x00, 0x4E, 0xC6};  // from Turb manual
+                                 // Addr, Fxn , Start Addr, # Register,    CRC
+                                 //   01, Read, Coil 9472 ,   0 Regs  ,    CRC
 unsigned char getTempandVarX[8] = {0x01, 0x03, 0x26, 0x00, 0x00, 0x04, 0x4F, 0x41};  // from Turbidity manual
-
-unsigned char getSN[8] = {0x01, 0x03, 0x09, 0x00, 0x00, 0x07, 0x07, 0x94};
+                                 // Addr, Fxn , Start Addr, # Register,    CRC
+                                 //   01, Read, Coil 9728 ,   4 Regs  ,    CRC
+unsigned char getSN[8] =          {0x01, 0x03, 0x09, 0x00, 0x00, 0x07, 0x07, 0x94};
+                                // Addr, Fxn , Start Addr, # Register,    CRC
+                                //   01, Read, Coil 2304 ,   7 Regs  ,    CRC
 unsigned char activateBrush[9] = {0x01, 0x10, 0x31, 0x00, 0x00, 0x00, 0x00, 0x74, 0x94};
 int i = 0;      // Anthony note: Index into array; where to store the Bytes
 int inbyte;     // Anthony note: Where to store the Bytes read
@@ -56,8 +61,10 @@ float Rev_float( unsigned char indata[], int stindex)
 // ---------------------------------------------------------------------------
 void setup()
 {
+    // set initial pin modes
   pinMode(8, OUTPUT);   // Anthony Note: LED2 green
   pinMode(9, OUTPUT);   // Anthony Note: LED1 red
+
   pinMode(22, OUTPUT);  // Anthony Note: switched power. 5V to sensor, 3.3V to RS485 adaptor
   digitalWrite(22, HIGH);
 
