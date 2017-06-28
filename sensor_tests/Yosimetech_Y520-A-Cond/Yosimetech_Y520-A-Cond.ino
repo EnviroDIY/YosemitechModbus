@@ -40,19 +40,22 @@ SoftwareSerial modbusSerial(SSRxPin, SSTxPin);
 
 // Define arrays with the modbus commands
 byte startMeasurement[] = {modbusAddress, 0x10, 0x1C, 0x00, 0x00, 0x00, 0x00, 0xD8, 0x92};
-                        // Address      , Fxn , Start Addr, # Register,    CRC
+                        // Address      , Fxn , Start Addr, #Registers,    CRC
                         // modbusAddress, Read, Coil 9472 ,   0 Regs  ,    CRC
 byte getResults[] = {modbusAddress, 0x03, 0x26, 0x00, 0x00, 0x05, 0x8E, 0x81};
-                  // Address      , Fxn , Start Addr, # Register,    CRC
+                  // Address      , Fxn , Start Addr, #Registers,    CRC
                   // modbusAddress, Read, Coil 9728 ,   5 Regs  ,    CRC
 byte altGetResults[] = {modbusAddress, 0x03, 0x26, 0x00, 0x00, 0x04, 0x4F, 0x41};
-                     // Address      , Fxn , Start Addr, # Register,    CRC
+                     // Address      , Fxn , Start Addr, #Registers,    CRC
                      // modbusAddress, Read, Coil 9728 ,   4 Regs  ,    CRC
+// altGetResults is identical to getResults except that it only asks for the 4
+// registers of results, not the 5th register with the flag values.  Either can
+// be used, but, obviously, you won't get the flag values with altGetResults.
 byte getSN[] = {modbusAddress, 0x03, 0x09, 0x00, 0x00, 0x07, 0x07, 0x94};
-             // Address      , Fxn , Start Addr, # Register,    CRC
+             // Address      , Fxn , Start Addr, #Registers,    CRC
              // modbusAddress, Read, Coil 2304 ,   7 Regs  ,    CRC
 byte stopMeasurement[] = {modbusAddress, 0x03, 0x2E, 0x00, 0x00, 0x00, 0x4C, 0xE2};
-                       // Address      , Fxn , Start Addr, # Register,    CRC
+                       // Address      , Fxn , Start Addr, #Registers,    CRC
                        // modbusAddress, Read, Coil 11776,   0 Regs  ,    CRC
 
 // Define variables for the response;

@@ -46,9 +46,9 @@ byte altStartMeasurement[] = {modbusAddress, 0x03, 0x25, 0x00, 0x00, 0x01, 0x8F,
                            // Address      , Fxn , Start Addr, #Registers,    CRC
                            // modbusAddress, Read, Coil 9472 ,   1 Reg   ,    CRC
 // altStartMeasurement is identical to startMeasurement except that it asks for the
-// value of a single coil instead of asking for values in response.  Either can be
-// used to start measurements.  If you use altStartMeasurement you will get a longer
-// return with the '0' value of the single coil.
+// value of a single register instead of asking for values in response.  Either
+// can beused to start measurements.  If you use altStartMeasurement you will
+// get a longer return with the '0' value of the single register.
 byte getResults[] = {modbusAddress, 0x03, 0x26, 0x00, 0x00, 0x04, 0x4F, 0x41};
                   // Address      , Fxn , Start Addr, #Registers,    CRC
                   // modbusAddress, Read, Coil 9728 ,   4 Regs  ,    CRC
