@@ -8,6 +8,7 @@ Y520 CT conductivity sensor
 // Include the base required libraries
 // ---------------------------------------------------------------------------
 #include <Arduino.h>
+#include <SoftwareSerial.h>
 
 // ---------------------------------------------------------------------------
 // Set up the sensor specific information
@@ -24,7 +25,7 @@ const int SSRxPin = 10;  // Recieve pin for software serial (Rx on RS485 adapter
 const int SSTxPin = 11;  // Send pin for software serial (Tx on RS485 adapter)
 
 // Define the sensor's modbus parameters
-unsigned char modbusAddress = 0x01;  // The sensor's modbus address
+byte modbusAddress = 0x01;  // The sensor's modbus address, or SlaveID
 const int modbusTimeout = 500;  // The time to wait for response after a command (in ms)
 const int modbusBaud = 9600;  // The baudrate for the modbus connection
 const int modbusFrameTimeout = 3;  // the time to wait between characters within a frame (in ms)
@@ -34,36 +35,37 @@ const int modbusFrameTimeout = 3;  // the time to wait between characters within
 // At 9600 baud with 1 start bit, no parity and 1 stop bit 1 character takes ~1.04ms
 // So the readBytes() command should time out within 3ms
 
-// Include software serial
-#include <SoftwareSerial.h>
+// Construct software serial object for Modbus
 SoftwareSerial modbusSerial(SSRxPin, SSTxPin);
 
 // Define arrays with the modbus commands
-unsigned char startMeasurement[9] = {modbusAddress, 0x10, 0x1C, 0x00, 0x00, 0x00, 0x00, 0xd8, 0x92};
-                                  // Address      , Fxn , Start Addr, # Register,    CRC
-                                  // modbusAddress, Read, Coil 9472 ,   0 Regs  ,    CRC
-unsigned char getTempandVarX[8] = {modbusAddress, 0x03, 0x26, 0x00, 0x00, 0x04, 0x4F, 0x41};
-                              // Address      , Fxn , Start Addr, # Register,    CRC
-                              // modbusAddress, Read, Coil 9728 ,   4 Regs  ,    CRC
-unsigned char altGetTempandVarX[8] = {modbusAddress, 0x03, 0x26, 0x00, 0x00, 0x05, 0x8E, 0x81};
-                                   // Address      , Fxn , Start Addr, # Register,    CRC
-                                   // modbusAddress, Read, Coil 9728 ,   5 Regs  ,    CRC
-unsigned char getSN[8] = {modbusAddress, 0x03, 0x09, 0x00, 0x00, 0x07, 0x07, 0x94};
+byte startMeasurement[] = {modbusAddress, 0x10, 0x1C, 0x00, 0x00, 0x00, 0x00, 0xD8, 0x92};
+                        // Address      , Fxn , Start Addr, # Register,    CRC
+                        // modbusAddress, Read, Coil 9472 ,   0 Regs  ,    CRC
+byte getResults[] = {modbusAddress, 0x03, 0x26, 0x00, 0x00, 0x05, 0x8E, 0x81};
+                  // Address      , Fxn , Start Addr, # Register,    CRC
+                  // modbusAddress, Read, Coil 9728 ,   5 Regs  ,    CRC
+byte altGetResults[] = {modbusAddress, 0x03, 0x26, 0x00, 0x00, 0x04, 0x4F, 0x41};
+                     // Address      , Fxn , Start Addr, # Register,    CRC
+                     // modbusAddress, Read, Coil 9728 ,   4 Regs  ,    CRC
+byte getSN[] = {modbusAddress, 0x03, 0x09, 0x00, 0x00, 0x07, 0x07, 0x94};
+             // Address      , Fxn , Start Addr, # Register,    CRC
+             // modbusAddress, Read, Coil 2304 ,   7 Regs  ,    CRC
+byte stopMeasurement[] = {modbusAddress, 0x03, 0x2E, 0x00, 0x00, 0x00, 0x4C, 0xE2};
                        // Address      , Fxn , Start Addr, # Register,    CRC
-                       // modbusAddress, Read, Coil 2304 ,   7 Regs  ,    CRC
-unsigned char stopMeasurement[8] = {modbusAddress, 0x03, 0x2E, 0x00, 0x00, 0x00, 0x4C, 0xE2};
-                                 // Address      , Fxn , Start Addr, # Register,    CRC
-                                 // modbusAddress, Read, Coil 11776,   0 Regs  ,    CRC
+                       // modbusAddress, Read, Coil 11776,   0 Regs  ,    CRC
 
 // Define variables for the response;
-uint32_t start;  // For time-outs
-uint32_t warmup;  // For time-outs
+uint32_t start;  // Timestamp for time-outs
+uint32_t warmup;  // For debugging, to track stability
 int bytesRead;
-unsigned char responseBuffer[20];  // This needs to be bigger than the largest response
+byte responseBuffer[20];  // This needs to be bigger than the largest response
 
 // Define variables to hold the float values calculated from the response
-float Temperature, VarXvalue;
+float Value1, Value2;
 String SN;
+int errorFlag = 0;
+int reserved = 0;
 
 
 // ---------------------------------------------------------------------------
@@ -79,12 +81,12 @@ String SN;
 // hex frames returned by YosemiTech's Modbus Sensors
 union SeFrame {
   float Float;
-  unsigned char Byte[4];
+  byte Byte[4];
 };
 
 // This functions return the float from a 4-byte small-endian array beginning
 // at a specific index of another array.
-float floatFromFrame( unsigned char indata[], int stindex)
+float floatFromFrame( byte indata[], int stindex)
 {
     SeFrame Sefram;
     Sefram.Byte[0] = indata[stindex];
@@ -126,16 +128,16 @@ void setup()
 
     if (DEREPin > 0) pinMode(DEREPin, OUTPUT);
 
-    Serial.begin(9600);  // Main serial port for debugging
+    Serial.begin(9600);  // Main serial port for debugging via USB Serial Monitor
     modbusSerial.begin(modbusBaud);
     modbusSerial.setTimeout(modbusFrameTimeout);
 
     // Allow the sensor and converter to warm up
-    delay(500);
+    delay(5000);
 
     // Send the "get serial number" command
     driverEnable();
-    modbusSerial.write(getSN, 8);
+    modbusSerial.write(getSN, sizeof(getSN)/sizeof(getSN[0]));
     modbusSerial.flush();
 
     recieverEnable();
@@ -179,7 +181,7 @@ void setup()
 
     // Send the "start measurement" command
     driverEnable();
-    modbusSerial.write(startMeasurement, 9);
+    modbusSerial.write(startMeasurement, sizeof(startMeasurement)/sizeof(startMeasurement[0]));
     modbusSerial.flush();
 
     recieverEnable();
@@ -212,10 +214,10 @@ void setup()
     //    20 s for turbidity
     //    10 s for conductivity
 
-    delay(7000);
+    // delay(7000);
 
-    Serial.println("Temp(C)  Cond(mS/cm)  Warmup(ms)");
-  }
+    Serial.println("Temp(C)  Cond(mS/cm)  Error  Flag2  Warmup(ms)");
+}
 
 // ---------------------------------------------------------------------------
 // Main loop function
@@ -224,41 +226,48 @@ void loop()
 {
     // send the command to get the temperature
     driverEnable();
-    modbusSerial.write(getTempandVarX, 8);
+    modbusSerial.write(getResults, sizeof(getResults)/sizeof(getResults[0]));
     modbusSerial.flush();
 
     recieverEnable();
     start = millis();
-    while (modbusSerial.available() == 0 && millis() - start < modbusTimeout)
+    while ((modbusSerial.available() == 0) && ((millis() - start) < modbusTimeout))
     { delay(1);}
 
     if (modbusSerial.available() > 0)
     {
         // Read the incoming bytes
-        // 13 byte response frame for Cond, according to  the manual
-        bytesRead = modbusSerial.readBytes(responseBuffer, 14);
+        // 15 byte response frame for Cond, according to  the manual
+        bytesRead = modbusSerial.readBytes(responseBuffer, 17);
 
         // Print the raw response (for debugging)
-        // Serial.print("Raw Get Value Response (");
-        // Serial.print(bytesRead);
-        // Serial.print(" bytes):");
-        // for (int i = 0; i < bytesRead; i++) Serial.print(responseBuffer[i], HEX);
-        // Serial.println();
+        Serial.print("Raw Get Value Response (");
+        Serial.print(bytesRead);
+        Serial.print(" bytes):");
+        for (int i = 0; i < bytesRead; i++) Serial.print(responseBuffer[i], HEX);
+        Serial.println();
 
         // Print response converted to floats
-        if (bytesRead == 15)
+        if (bytesRead >= 13)
         {
-          Temperature = floatFromFrame(responseBuffer, 3);
-          VarXvalue = floatFromFrame(responseBuffer, 7);
-          int errorFlag = responseBuffer[11];
-          int reserved = responseBuffer[12];
-          Serial.print(Temperature, 3);
-          Serial.print("     ");
-          Serial.print(VarXvalue, 3);
-          Serial.print("       ");
-          Serial.print(millis() - warmup);
-          Serial.println();
-          }
+            Value1 = floatFromFrame(responseBuffer, 3);
+            Value2 = floatFromFrame(responseBuffer, 7);
+            if (bytesRead >= 15)  // if using "altGetResults" flags will not be sent
+            {
+                errorFlag = responseBuffer[11];
+                reserved = responseBuffer[12];
+            }
+            Serial.print(Value1, 3);
+            Serial.print("     ");
+            Serial.print(Value2, 3);
+            Serial.print("       ");
+            Serial.print(errorFlag);
+            Serial.print("     ");
+            Serial.print(reserved);
+            Serial.print("      ");
+            Serial.print(millis() - warmup);
+            Serial.println();
+        }
     }
     else Serial.println("  -         -           -");
 
@@ -268,5 +277,5 @@ void loop()
     //     2 s for turbidity
     //     3 s for conductivity
 
-    delay(3000);
+    delay(500);
 }

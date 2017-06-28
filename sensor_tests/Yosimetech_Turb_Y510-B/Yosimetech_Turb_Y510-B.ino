@@ -25,7 +25,7 @@ const int SSRxPin = 10;  // Recieve pin for software serial (Rx on RS485 adapter
 const int SSTxPin = 11;  // Send pin for software serial (Tx on RS485 adapter)
 
 // Define the sensor's modbus parameters
-unsigned char modbusAddress = 0x01;  // The sensor's modbus address, or SlaveID
+byte modbusAddress = 0x01;  // The sensor's modbus address, or SlaveID
 const int modbusTimeout = 500;  // The time to wait for response after a command (in ms)
 const int modbusBaud = 9600;  // The baudrate for the modbus connection
 const int modbusFrameTimeout = 3;  // the time to wait between characters within a frame (in ms)
@@ -38,35 +38,35 @@ const int modbusFrameTimeout = 3;  // the time to wait between characters within
 // Construct software serial object for Modbus
 SoftwareSerial modbusSerial(SSRxPin, SSTxPin);
 
-// Define arrays with the modbus commands // Sara, do we switch from "unsigned char" type to "byte" type, as reccommended: https://www.arduino.cc/en/Reference/UnsignedChar
-unsigned char startMeasurement[8] = {modbusAddress, 0x03, 0x25, 0x00, 0x00, 0x00, 0x4E, 0xC6};  // Sara, the CRC will be different if we use a different modbusAddress
-                                  // Address      , Fxn , Start Addr, # Register,    CRC
-                                  // modbusAddress, Read, Coil 9472 ,   0 Regs  ,    CRC    // Sara, how do you calculate coil number from that Hex?
-unsigned char altStartMeasurement[8] = {modbusAddress, 0x03, 0x25, 0x00, 0x00, 0x01, 0x8F, 0x06};
-                                     // Address      , Fxn , Start Addr, # Register,    CRC
-                                     // modbusAddress, Read, Coil 9472 ,   1 Reg   ,    CRC
+// Define arrays with the modbus commands
+byte startMeasurement[] = {modbusAddress, 0x03, 0x25, 0x00, 0x00, 0x00, 0x4E, 0xC6};  // Sara, the CRC will be different if we use a different modbusAddress
+                        // Address      , Fxn , Start Addr, # Register,    CRC
+                        // modbusAddress, Read, Coil 9472 ,   0 Regs  ,    CRC
+byte altStartMeasurement[] = {modbusAddress, 0x03, 0x25, 0x00, 0x00, 0x01, 0x8F, 0x06};
+                           // Address      , Fxn , Start Addr, # Register,    CRC
+                           // modbusAddress, Read, Coil 9472 ,   1 Reg   ,    CRC
 // altStartMeasurement is identical to startMeasurement except that it asks for the
 // value of a single coil instead of asking for values in response.  Either can be
 // used to start measurements.  If you use altStartMeasurement you will get a longer
 // return with the '0' value of the single coil.
-unsigned char getTempandVarX[8] = {modbusAddress, 0x03, 0x26, 0x00, 0x00, 0x04, 0x4F, 0x41};
-                                // Address      , Fxn , Start Addr, # Register,    CRC
-                                // modbusAddress, Read, Coil 9728 ,   4 Regs  ,    CRC
-unsigned char getSN[8] = {modbusAddress, 0x03, 0x09, 0x00, 0x00, 0x07, 0x07, 0x94};
+byte getResults[] = {modbusAddress, 0x03, 0x26, 0x00, 0x00, 0x04, 0x4F, 0x41};
+                  // Address      , Fxn , Start Addr, # Register,    CRC
+                  // modbusAddress, Read, Coil 9728 ,   4 Regs  ,    CRC
+byte getSN[] = {modbusAddress, 0x03, 0x09, 0x00, 0x00, 0x07, 0x07, 0x94};
+             // Address      , Fxn , Start Addr, # Register,    CRC
+             // modbusAddress, Read, Coil 2304 ,   7 Regs  ,    CRC
+byte stopMeasurement[] = {modbusAddress, 0x03, 0x2E, 0x00, 0x00, 0x00, 0x4C, 0xE2};
                        // Address      , Fxn , Start Addr, # Register,    CRC
-                       // modbusAddress, Read, Coil 2304 ,   7 Regs  ,    CRC
-unsigned char stopMeasurement[8] = {modbusAddress, 0x03, 0x2E, 0x00, 0x00, 0x00, 0x4C, 0xE2};
-                                 // Address      , Fxn , Start Addr, # Register,    CRC
-                                 // modbusAddress, Read, Coil 11776,   0 Regs  ,    CRC
+                       // modbusAddress, Read, Coil 11776,   0 Regs  ,    CRC
 
 // Define variables for the response;
 uint32_t start;  // Timestamp for time-outs
-uint32_t warmup;  // Timestamp for time-outs
+uint32_t warmup;  // For debugging, to track stability
 int bytesRead;
-unsigned char responseBuffer[20];  // This needs to be bigger than the largest response
+byte responseBuffer[20];  // This needs to be bigger than the largest response
 
 // Define variables to hold the float values calculated from the response
-float Temperature, VarXvalue;
+float Value1, Value2;
 String SN;
 
 
@@ -83,12 +83,12 @@ String SN;
 // hex frames returned by YosemiTech's Modbus Sensors
 union SeFrame {     // Declaring a new "union" class(?) for a Small-endian Frame
   float Float;
-  unsigned char Byte[4];
+  byte Byte[4];
 };
 
 // This functions return the float from a 4-byte small-endian array beginning
 // at a specific index of another array.
-float floatFromFrame( unsigned char indata[], int stindex)
+float floatFromFrame( byte indata[], int stindex)
 {
     SeFrame Sefram;
     Sefram.Byte[0] = indata[stindex];
@@ -139,7 +139,7 @@ void setup()
 
     // Send the "get serial number" command
     driverEnable();
-    modbusSerial.write(getSN, 8);
+    modbusSerial.write(getSN, sizeof(getSN)/sizeof(getSN[0]));
     modbusSerial.flush(); // Waits for the transmission of outgoing serial data to complete.
 
     recieverEnable();
@@ -168,7 +168,7 @@ void setup()
             int j = 0;
             for (int i = 4; i < 16; i++)
             {
-                sn_arr[j] = responseBuffer[i];  // converts from "unsigned char" or "byte" type to "char" type
+                sn_arr[j] = responseBuffer[i];  // converts from "byte" or "byte" type to "char" type
                 j++;
             }
             SN = String(sn_arr);
@@ -183,7 +183,7 @@ void setup()
 
     // Send the "start measurement" command
     driverEnable();
-    modbusSerial.write(startMeasurement, 8);
+    modbusSerial.write(startMeasurement, sizeof(startMeasurement)/sizeof(startMeasurement[0]));
     modbusSerial.flush();
 
     recieverEnable();
@@ -231,7 +231,7 @@ void loop()
 {
     // send the command to get the temperature
     driverEnable();
-    modbusSerial.write(getTempandVarX, 8);
+    modbusSerial.write(getResults, sizeof(getResults)/sizeof(getResults[0]));
     modbusSerial.flush();
 
     recieverEnable();
@@ -253,13 +253,13 @@ void loop()
         // Serial.println();
 
         // Print response converted to floats
-        if (bytesRead == 13)
+        if (bytesRead >= 13)
         {
-            Temperature = floatFromFrame(responseBuffer, 3);
-            VarXvalue = floatFromFrame(responseBuffer, 7);
-            Serial.print(Temperature, 3);
+            Value1 = floatFromFrame(responseBuffer, 3);
+            Value2 = floatFromFrame(responseBuffer, 7);
+            Serial.print(Value1, 3);
             Serial.print("     ");
-            Serial.print(VarXvalue, 3);
+            Serial.print(Value2, 3);
             Serial.print("       ");
             Serial.print(millis() - warmup);
             Serial.println();
