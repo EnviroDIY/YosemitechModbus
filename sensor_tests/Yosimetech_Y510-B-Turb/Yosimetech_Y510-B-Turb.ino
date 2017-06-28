@@ -28,7 +28,7 @@ const int SSTxPin = 11;  // Send pin for software serial (Tx on RS485 adapter)
 byte modbusAddress = 0x01;  // The sensor's modbus address, or SlaveID
 const int modbusTimeout = 500;  // The time to wait for response after a command (in ms)
 const int modbusBaud = 9600;  // The baudrate for the modbus connection
-const int modbusFrameTimeout = 3;  // the time to wait between characters within a frame (in ms)
+const int modbusFrameTimeout = 4;  // the time to wait between characters within a frame (in ms)
 // The modbus protocol defines that there can be no more than 1.5 characters
 // of silence between characters in a frame and any space over 3.5 characters
 // defines a new frame.
@@ -68,6 +68,8 @@ byte responseBuffer[20];  // This needs to be bigger than the largest response
 // Define variables to hold the float values calculated from the response
 float Value1, Value2;
 String SN;
+int errorFlag = 0;
+int reserved = 0;
 
 
 // ---------------------------------------------------------------------------
@@ -116,6 +118,38 @@ void recieverEnable(void)
         digitalWrite(DEREPin, LOW);
         delay(8);
     }
+}
+
+// This empties the serial buffer
+void emptyResponseBuffer(Stream *stream)
+{
+    while (stream->available() > 0)
+    {
+        stream->read();
+        delay(1);
+    }
+}
+
+// From: https://ctlsys.com/support/how_to_compute_the_modbus_rtu_message_crc/
+// and: https://stackoverflow.com/questions/19347685/calculating-modbus-rtu-crc-16
+uint16_t ModRTU_CRC(byte modbusFrame[], int frameLength)
+{
+  uint16_t crc = 0xFFFF;
+  for (int pos = 0; pos < frameLength; pos++)
+  {
+  crc ^= (unsigned int)modbusFrame[pos];  // XOR byte into least sig. byte of crc
+
+  for (int i = 8; i != 0; i--) {    // Loop over each bit
+    if ((crc & 0x0001) != 0) {      // If the LSB is set
+      crc >>= 1;                    // Shift right and XOR 0xA001
+      crc ^= 0xA001;
+    }
+    else                            // Else LSB is not set
+      crc >>= 1;                    // Just shift right
+    }
+  }
+
+  return crc;
 }
 
 
@@ -180,6 +214,7 @@ void setup()
     {
         Serial.println("No response to serial number request");
     }
+    emptyResponseBuffer(&modbusSerial);
 
     // Send the "start measurement" command
     driverEnable();
@@ -209,6 +244,7 @@ void setup()
     {
         Serial.println("No response to Start Measurement request");
     }
+    emptyResponseBuffer(&modbusSerial);
 
     // The modbus manuals recommend the following warm-up times between starting
     // measurements and requesting values :
@@ -266,6 +302,7 @@ void loop()
         }
     }
     else Serial.println("  -         -           -");
+    emptyResponseBuffer(&modbusSerial);
 
     // Delay between readings
     // Modbus manuals recommend the following remeasure times:

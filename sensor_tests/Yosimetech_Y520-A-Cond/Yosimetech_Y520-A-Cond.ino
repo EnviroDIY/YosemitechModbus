@@ -41,7 +41,7 @@ SoftwareSerial modbusSerial(SSRxPin, SSTxPin);
 // Define arrays with the modbus commands
 byte startMeasurement[] = {modbusAddress, 0x10, 0x1C, 0x00, 0x00, 0x00, 0x00, 0xD8, 0x92};
                         // Address      , Fxn , Start Addr, #Registers,    CRC
-                        // modbusAddress, Read, Coil 9472 ,   0 Regs  ,    CRC
+                        // modbusAddress,Write, Coil 9472 ,   0 Regs  ,    CRC
 byte getResults[] = {modbusAddress, 0x03, 0x26, 0x00, 0x00, 0x05, 0x8E, 0x81};
                   // Address      , Fxn , Start Addr, #Registers,    CRC
                   // modbusAddress, Read, Coil 9728 ,   5 Regs  ,    CRC
