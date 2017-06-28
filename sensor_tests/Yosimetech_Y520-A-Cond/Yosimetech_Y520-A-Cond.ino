@@ -147,7 +147,10 @@ uint16_t ModRTU_CRC(byte modbusFrame[], int frameLength)
       crc >>= 1;                    // Just shift right
     }
   }
-
+  // Reverse byte order so crcLo byte is first & crcHi byte is last
+  uint16_t crc2 = temp >> 8;
+  crc = (crc << 8) | crc2;
+  crc &= 0xFFFF;
   return crc;
 }
 
