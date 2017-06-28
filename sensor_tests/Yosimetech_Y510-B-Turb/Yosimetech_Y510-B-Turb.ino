@@ -137,9 +137,6 @@ void setup()
     // Allow the sensor and converter to warm up
     delay(500);
 
-    Serial.println(sizeof(getSN));
-    Serial.println(sizeof(getSN[0]));
-
     // Send the "get serial number" command
     driverEnable();
     modbusSerial.write(getSN, sizeof(getSN)/sizeof(getSN[0]));
@@ -149,25 +146,22 @@ void setup()
     start = millis();
     while (modbusSerial.available() == 0 && millis() - start < modbusTimeout)
     { delay(1);}
-    
-    delay(500);
-    
+
     if (modbusSerial.available() > 0)
     {
         // Read the incoming bytes
-        // 19 (?) byte response frame for serial number, according to  the manual
+        // 18 byte response frame for serial number, according to  the manual
         bytesRead = modbusSerial.readBytes(responseBuffer, 20);
 
         // Print the raw response (for debugging)
-        Serial.print("Raw SN Response (");
-        Serial.print(bytesRead);
-        Serial.print(" bytes):");
-        for (int i = 0; i < bytesRead; i++) Serial.print(responseBuffer[i]);
-        Serial.println();
+        // Serial.print("Raw SN Response (");
+        // Serial.print(bytesRead);
+        // Serial.print(" bytes):");
+        // for (int i = 0; i < bytesRead; i++) Serial.print(responseBuffer[i]);
+        // Serial.println();
 
         // Parse into a string and print that
-        if (bytesRead >= 7)
-
+        if (bytesRead >= 18)
         {
             int sn_len = responseBuffer[2];
             char sn_arr[sn_len] = {0,};
@@ -187,8 +181,6 @@ void setup()
         Serial.println("No response to serial number request");
     }
 
-    delay(3000);
-  
     // Send the "start measurement" command
     driverEnable();
     modbusSerial.write(startMeasurement, sizeof(startMeasurement)/sizeof(startMeasurement[0]));
