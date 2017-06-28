@@ -7,6 +7,22 @@
 
 #include <Arduino.h>
 
+
+// The various modbus function codes
+// from http://simplymodbus.ca/FAQ.htm#FC
+// Yosemitech sensors only support 0x03 and 0x10
+typedef enum modbusFunction
+{
+    readCoil = 0x01,  // 01 - Read Discrete Output Coils
+    readInputContacts = 0x02, // 02 - Read Discrete Input Contacts
+    readOutputRegisters = 0x03, // 03 - Read Analog Output Holding Registers
+    readInputRegisters = 0x04, // 04 - Read Analog Input Registers
+    writeSingleCoil = 0x05,  // 05 - Write Single Discrete Output Coil
+    writeSingleRegister = 0x06, // 06 - Write Single Analog Output Holding Register
+    writeMultipleCoils = 0x0F,  // 15 - Write Multiple Discrete Output Coils
+    writeMultipleRegisters = 0x10 // 16 - Write Multiple Analog Output Holding Registers
+} modbusFunction;
+
 class yosemitech
 {
 public:
@@ -41,6 +57,8 @@ public:
 
 private:
     int DEREPin;
+    byte commandBuffer[20];  // This needs to be bigger than the largest response
+    byte responseBuffer[20];  // This needs to be bigger than the largest response
 
 };
 
