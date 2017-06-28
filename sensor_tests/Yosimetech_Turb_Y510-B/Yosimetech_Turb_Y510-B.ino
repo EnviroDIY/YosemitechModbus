@@ -39,24 +39,24 @@ const int modbusFrameTimeout = 3;  // the time to wait between characters within
 SoftwareSerial modbusSerial(SSRxPin, SSTxPin);
 
 // Define arrays with the modbus commands
-byte startMeasurement[] = {modbusAddress, 0x03, 0x25, 0x00, 0x00, 0x00, 0x4E, 0xC6};  // Sara, the CRC will be different if we use a different modbusAddress
-                        // Address      , Fxn , Start Addr, # Register,    CRC
+byte startMeasurement[] = {modbusAddress, 0x03, 0x25, 0x00, 0x00, 0x00, 0x4E, 0xC6};
+                        // Address      , Fxn , Start Addr, #Registers,    CRC
                         // modbusAddress, Read, Coil 9472 ,   0 Regs  ,    CRC
 byte altStartMeasurement[] = {modbusAddress, 0x03, 0x25, 0x00, 0x00, 0x01, 0x8F, 0x06};
-                           // Address      , Fxn , Start Addr, # Register,    CRC
+                           // Address      , Fxn , Start Addr, #Registers,    CRC
                            // modbusAddress, Read, Coil 9472 ,   1 Reg   ,    CRC
 // altStartMeasurement is identical to startMeasurement except that it asks for the
 // value of a single coil instead of asking for values in response.  Either can be
 // used to start measurements.  If you use altStartMeasurement you will get a longer
 // return with the '0' value of the single coil.
 byte getResults[] = {modbusAddress, 0x03, 0x26, 0x00, 0x00, 0x04, 0x4F, 0x41};
-                  // Address      , Fxn , Start Addr, # Register,    CRC
+                  // Address      , Fxn , Start Addr, #Registers,    CRC
                   // modbusAddress, Read, Coil 9728 ,   4 Regs  ,    CRC
 byte getSN[] = {modbusAddress, 0x03, 0x09, 0x00, 0x00, 0x07, 0x07, 0x94};
-             // Address      , Fxn , Start Addr, # Register,    CRC
+             // Address      , Fxn , Start Addr, #Registers,    CRC
              // modbusAddress, Read, Coil 2304 ,   7 Regs  ,    CRC
 byte stopMeasurement[] = {modbusAddress, 0x03, 0x2E, 0x00, 0x00, 0x00, 0x4C, 0xE2};
-                       // Address      , Fxn , Start Addr, # Register,    CRC
+                       // Address      , Fxn , Start Addr, #Registers,    CRC
                        // modbusAddress, Read, Coil 11776,   0 Regs  ,    CRC
 
 // Define variables for the response;
