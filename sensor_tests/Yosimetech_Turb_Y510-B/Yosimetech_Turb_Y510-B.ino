@@ -40,23 +40,23 @@ SoftwareSerial modbusSerial(SSRxPin, SSTxPin);
 
 // Define arrays with the modbus commands // Sara, do we switch from "unsigned char" type to "byte" type, as reccommended: https://www.arduino.cc/en/Reference/UnsignedChar
 unsigned char startMeasurement[8] = {modbusAddress, 0x03, 0x25, 0x00, 0x00, 0x00, 0x4E, 0xC6};  // Sara, the CRC will be different if we use a different modbusAddress
-                                  // Address      , Fxn , Start Addr, # Register,    CRC
+                                  // Address      , Fxn , Start Addr, # Registers,    CRC
                                   // modbusAddress, Read, Coil 9472 ,   0 Regs  ,    CRC    // Sara, how do you calculate coil number from that Hex?
 unsigned char altStartMeasurement[8] = {modbusAddress, 0x03, 0x25, 0x00, 0x00, 0x01, 0x8F, 0x06};
-                                     // Address      , Fxn , Start Addr, # Register,    CRC
+                                     // Address      , Fxn , Start Addr, # Registers,    CRC
                                      // modbusAddress, Read, Coil 9472 ,   1 Reg   ,    CRC
 // altStartMeasurement is identical to startMeasurement except that it asks for the
 // value of a single coil instead of asking for values in response.  Either can be
 // used to start measurements.  If you use altStartMeasurement you will get a longer
 // return with the '0' value of the single coil.
 unsigned char getTempandVarX[8] = {modbusAddress, 0x03, 0x26, 0x00, 0x00, 0x04, 0x4F, 0x41};
-                                // Address      , Fxn , Start Addr, # Register,    CRC
+                                // Address      , Fxn , Start Addr, # Registers,    CRC
                                 // modbusAddress, Read, Coil 9728 ,   4 Regs  ,    CRC
 unsigned char getSN[8] = {modbusAddress, 0x03, 0x09, 0x00, 0x00, 0x07, 0x07, 0x94};
-                       // Address      , Fxn , Start Addr, # Register,    CRC
+                       // Address      , Fxn , Start Addr, # Registers,    CRC
                        // modbusAddress, Read, Coil 2304 ,   7 Regs  ,    CRC
 unsigned char stopMeasurement[8] = {modbusAddress, 0x03, 0x2E, 0x00, 0x00, 0x00, 0x4C, 0xE2};
-                                 // Address      , Fxn , Start Addr, # Register,    CRC
+                                 // Address      , Fxn , Start Addr, # Registers,    CRC
                                  // modbusAddress, Read, Coil 11776,   0 Regs  ,    CRC
 
 // Define variables for the response;
@@ -135,7 +135,7 @@ void setup()
     modbusSerial.setTimeout(modbusFrameTimeout);
 
     // Allow the sensor and converter to warm up
-    delay(500);
+    delay(5000);
 
     // Send the "get serial number" command
     driverEnable();
@@ -154,11 +154,11 @@ void setup()
         bytesRead = modbusSerial.readBytes(responseBuffer, 20);
 
         // Print the raw response (for debugging)
-        // Serial.print("Raw SN Response (");
-        // Serial.print(bytesRead);
-        // Serial.print(" bytes):");
-        // for (int i = 0; i < bytesRead; i++) Serial.print(responseBuffer[i]);
-        // Serial.println();
+        Serial.print("Raw SN Response (");
+        Serial.print(bytesRead);
+        Serial.print(" bytes):");
+        for (int i = 0; i < bytesRead; i++) Serial.print(responseBuffer[i]);
+        Serial.println();
 
         // Parse into a string and print that
         if (bytesRead >= 18)
