@@ -1,23 +1,12 @@
 /*****************************************************************************
-Yosemitech_GetSlaveID.ino
+Yosemitech_ChangeSlaveID.ino
 
-This scans through all possible addresses and asks for the standard Yosemitech
-serial number response at each address to idenitfy the sensors.
+This sends a change address command to a YosemiTech sensor.
 
-The scan may take up to several minutes to complete.
-
-I recommend you only attach a single device while running this scan because if
-multiple devices are connected with the same address you will only see garbled
-responses.
-
-This uses the serial number request because not all of the YosemiTech sensors
-will respond to a Get Slave Device ID command sent to address 0xFF and none
-of the sensors support modbus function 17 (report slave ID).
-
-The sensors also do not seem to respond to any register requests except those
-exactly listed in the manuals, that is, I cannot even send a generic pool for
-register 1 because the sensors will not respond.  The get serial number command
-seems to be one of few all support identically.
+You MUST know the old address of this sensor or it will not work.  The (poor)
+implentation of modbus for the YosemiTech sensors does not support responses
+to broadcasts at address 0x00.  (Official modbus specifications require that
+all slaves accept and comply with writing functions broadcast to address 0.)
 *****************************************************************************/
 
 // ---------------------------------------------------------------------------
@@ -39,6 +28,11 @@ const int DEREPin = -1;   // The pin controlling Recieve Enable and Driver Enabl
                           // Setting LOW enables the receiver (sensor) to send text
 const int SSRxPin = 10;  // Recieve pin for software serial (Rx on RS485 adapter)
 const int SSTxPin = 11;  // Send pin for software serial (Tx on RS485 adapter)
+
+// Define the old and new sensor addresses
+byte oldAddress = 0x12;
+byte newAddress = 0x03;
+
 
 // Define the sensor's modbus parameters
 const int modbusTimeout = 500;  // The time to wait for response after a command (in ms)
@@ -137,62 +131,6 @@ void printFrameHex(byte modbusFrame[], int frameLength, Stream *stream)
     stream->println("}");
 }
 
-void scanSNs(void)
-{
-    Serial.println(F("Scanning for YosemiTech modbus sensors...."));
-    Serial.println(F("------------------------------------------"));
-    Serial.println(F("Modbus Address ------ Sensor Serial Number"));
-
-    int numFound = 0;
-    for (uint8_t addrTest = 1; addrTest <= 247; addrTest++)
-    {
-        byte getSN[] = {addrTest, 0x03, 0x09, 0x00, 0x00, 0x07, 0x00, 0x00};
-        insertCRC(getSN, sizeof(getSN)/sizeof(getSN[0]));
-
-        // Send the "get serial number" command
-        driverEnable();
-        modbusSerial.write(getSN, sizeof(getSN)/sizeof(getSN[0]));
-        modbusSerial.flush();
-
-        recieverEnable();
-        start = millis();
-        while (modbusSerial.available() == 0 && millis() - start < modbusTimeout)
-        { delay(1);}
-
-        if (modbusSerial.available() > 0)
-        {
-            // Read the incoming bytes
-            // 18 byte response frame for serial number, according to  the manual
-            bytesRead = modbusSerial.readBytes(responseBuffer, 20);
-
-            // Parse into a string and print that
-            if (bytesRead >= 18)
-            {
-                int sn_len = responseBuffer[2];
-                char sn_arr[sn_len] = {0,};
-                int j = 0;
-                for (int i = 4; i < 16; i++)
-                {
-                    sn_arr[j] = responseBuffer[i];
-                    j++;
-                }
-                numFound++;
-                SN = String(sn_arr);
-                Serial.print(F("     0x"));
-                if (addrTest < 16) Serial.print(F("0"));
-                Serial.print(addrTest, HEX);
-                Serial.print(F("      ------    "));
-                Serial.println(SN);
-            }
-        }
-        emptyResponseBuffer(&modbusSerial);
-    }
-    Serial.println(F("------------------------------------------"));
-    Serial.println(F("Scan complete."));
-
-    if (numFound == 0) Serial.println(F("XXX  --  NO SENSORS FOUND  --  XXX"));
-}
-
 // ---------------------------------------------------------------------------
 // Main setup function
 // ---------------------------------------------------------------------------
@@ -212,7 +150,43 @@ void setup()
     Serial.println(F("Allowing sensor and adapter to warm up"));
     delay(10000);
 
-    scanSNs();
+    // Set up the setSlaveID command
+    byte setSlaveID[] = {oldAddress, 0x10, 0x30, 0x00, 0x00, 0x01, 0x02, newAddress, 0x00, 0x00, 0x00};
+                        // Address, Write,  Reg 12288, 1 Register, 2byte,newAddress, Rsvd,    CRC
+    insertCRC(setSlaveID, sizeof(setSlaveID)/sizeof(setSlaveID[0]));
+
+    // Send the set slave ID command
+    driverEnable();
+    modbusSerial.write(setSlaveID, sizeof(setSlaveID)/sizeof(setSlaveID[0]));
+    modbusSerial.flush();
+    // Print the raw send (for debugging)
+    Serial.print("Set Slave ID Request: ");
+    printFrameHex(setSlaveID, sizeof(setSlaveID)/sizeof(setSlaveID[0]), &Serial);
+
+    recieverEnable();
+    start = millis();
+    while (modbusSerial.available() == 0 && millis() - start < modbusTimeout)
+    { delay(1);}
+
+    if (modbusSerial.available() > 0)
+    {
+        // Read the incoming bytes
+        // 8 byte response frame for start measurement, according to  the manual
+        bytesRead = modbusSerial.readBytes(responseBuffer, 10);
+
+        // Print the raw response (for debugging)
+        Serial.print("Set Slave ID Response (");
+        Serial.print(bytesRead);
+        Serial.print(" bytes): ");
+        printFrameHex(responseBuffer, bytesRead, &Serial);
+    }
+    else
+    {
+        Serial.println("No response to Set Slave ID request");
+    }
+    emptyResponseBuffer(&modbusSerial);
+
+    Serial.println("Address change complete.");
 }
 
 // ---------------------------------------------------------------------------
