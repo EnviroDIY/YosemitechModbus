@@ -19,7 +19,7 @@ Note the cable colors:
 #### Sensor connection:
 The Yosemitech sensors require 5-12v of power. For convenience, We have been giving them 5v switched power off an analog grove port on the Mayfly, as you can see in the photo, to keep digital ports open for other sensors. (Be sure that the jumper for the analog grove port is in the 5v position.) Also for convenience, we merge the RS485 signals from the adapter board with the 5v power via a 4-port grove hub, which allows us to use a grove screw terminal to receive the bare wires from the sensor.
 
-![Photo of hardware configuration](https://github.com/EnviroDIY/YosemitechModbus/blob/yosemitech/doc/HardwarePhotos/IMG_3529.JPG)
+![Photo of hardware configuration](https://github.com/EnviroDIY/YosemitechModbus/blob/yosemitech/doc/IMG_3529.JPG)
 
 #### How to add more sensors:
 Modbus/RS485 allows 247 devices to be attached to the same pair of receive/transmit wires. You can use the spare port on the grove hub to connect additional sensors (not yet tested). Some software considerations for adding additional sensors: the Yosemitech sensors all arrive with a "slaveID" (sensor address) of 0x01. These need to be re-assigned to run multiple sensors on the same Arduino board, which will become part of the procedure, probably as a re-assign utility prior to connection to the modular library.
