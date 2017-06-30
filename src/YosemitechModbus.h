@@ -7,25 +7,45 @@
 
 #include <Arduino.h>
 
-
-// The various modbus function codes
-// from http://simplymodbus.ca/FAQ.htm#FC
-// Yosemitech sensors only support 0x03 and 0x10
-typedef enum modbusFunction
+// The various Yosemitech sensors
+typedef enum yosemitechModel
 {
-    readCoil = 0x01,  // 01 - Read Discrete Output Coils
-    readInputContacts = 0x02, // 02 - Read Discrete Input Contacts
-    readOutputRegisters = 0x03, // 03 - Read Analog Output Holding Registers
-    readInputRegisters = 0x04, // 04 - Read Analog Input Registers
-    writeSingleCoil = 0x05,  // 05 - Write Single Discrete Output Coil
-    writeSingleRegister = 0x06, // 06 - Write Single Analog Output Holding Register
-    writeMultipleCoils = 0x0F,  // 15 - Write Multiple Discrete Output Coils
-    writeMultipleRegisters = 0x10 // 16 - Write Multiple Analog Output Holding Registers
-} modbusFunction;
+    Y502 = 0,  // Online Optical Dissolved Oxygen Sensor http://www.yosemitech.com/en/product-10.html
+    Y504,  // Online Optical Dissolved Oxygen Sensor http://www.yosemitech.com/en/product-10.html
+    Y510,  // Optical Turbidity Sensor http://www.yosemitech.com/en/product-2.html
+    Y511,  // Auto Cleaning Optical Turbidity Sensor http://www.yosemitech.com/en/product-16.html
+    Y513,  // Blue Green Algae sensor with Wiper http://www.yosemitech.com/en/product-15.html
+    Y514,  // Chlorophyll Sensor with Wiper http://www.yosemitech.com/en/product-14.html
+    Y516,  // Oil in water?
+    Y520,  // 4-Electrode Conductivity Sensor http://www.yosemitech.com/en/product-3.html
+    Y532,  // pH?
+    Y533,  // ORP?
+    Y550  // UV254 Sensor http://www.yosemitech.com/en/product-21.html
+} yosemitechModel;
 
 class yosemitech
 {
+
 public:
+    bool begin(yosemitechModel model, byte modbusSlaveID, Stream *stream, int enablePin = -1);
+    byte getSlaveID(void);
+    bool setSlaveID(byte newSlaveID);
+    String getSerialNumber(void);
+    bool startMeasurement(void);
+    bool stopMeasurement(void);
+    bool getValues(float value1, float value2, byte ErrorCode);
+    bool getVersion(float hardwareVersion, float softwareVersion);
+    bool getCalibration(float K, float B);
+    bool setCalibration(float K, float B);
+    bool setCapCoefficients(float K0, float K1, float K2, float K3,
+                            float K4, float K5, float K6, float K7);
+    bool activateBrush(void);
+    bool setBrushInterval(int intervalMinutes);
+    int getBrushInterval(void);
+
+
+
+private:
 
     // Define a small-endian frame as a union - that is a special class type that
     // can hold only one of its non-static data members at a time, in this case,
@@ -52,11 +72,17 @@ public:
     // This empties the serial buffer
     void emptyResponseBuffer(Stream *stream);
 
-    // Calculates a Modbus RTC cyclical redudancy code (CRC)
-    uint16_t ModRTU_CRC(byte modbusFrame[], int frameLength);
+    // A debugging function for prettily printing raw modbus frames
+    void printFrameHex(byte modbusFrame[], int frameLength, Stream *stream = &Serial);
 
-private:
-    int DEREPin;
+    // Calculates a Modbus RTC cyclical redudancy code (CRC)
+    // and adds it to the last two bytes of a frame
+    uint16_t insertCRC(byte modbusFrame[], int frameLength);
+
+    int _model;
+    int _enablePin;
+    Stream *_stream;
+    byte _slaveID;
     byte commandBuffer[20];  // This needs to be bigger than the largest response
     byte responseBuffer[20];  // This needs to be bigger than the largest response
 
