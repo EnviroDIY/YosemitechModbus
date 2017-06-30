@@ -34,7 +34,7 @@ byte yosemitech::getSlaveID(void)
     else return 0x01;  // This is the default address
 }
 
-
+// This sets a new modbus slave ID
 bool yosemitech::setSlaveID(byte newSlaveID)
 {
     byte setSlaveID[11] = {_slaveID, 0x10, 0x30, 0x00, 0x00, 0x01, 0x02, newSlaveID, 0x00, 0x00, 0x00};
@@ -49,7 +49,7 @@ bool yosemitech::setSlaveID(byte newSlaveID)
     else return false;
 }
 
-
+// This gets the instrument serial number as a String
 String yosemitech::getSerialNumber(void)
 {
     byte getSN[] = {_slaveID, 0x03, 0x09, 0x00, 0x00, 0x07, 0x00, 0x00};
@@ -57,7 +57,7 @@ String yosemitech::getSerialNumber(void)
     return "";
 }
 
-
+// This tells the optical sensors to begin taking measurements
 bool yosemitech::startMeasurement(void)
 {
     byte startMeasurementR[] = {_slaveID, 0x03, 0x25, 0x00, 0x00, 0x00, 0x00, 0x00};
@@ -74,7 +74,7 @@ bool yosemitech::startMeasurement(void)
     return false;
 }
 
-
+// This tells the optical sensors to stop taking measurements
 bool yosemitech::stopMeasurement(void)
 {
     byte stopMeasurement[] = {_slaveID, 0x03, 0x2E, 0x00, 0x00, 0x00, 0x00, 0x00};
@@ -82,7 +82,7 @@ bool yosemitech::stopMeasurement(void)
     return false;
 }
 
-
+// This gets values back from the sensor
 bool yosemitech::getValues(float value1, float value2, byte ErrorCode)
 {
     byte getValues[] = {_slaveID, 0x03, 0x26, 0x00, 0x00, 0x05, 0x00, 0x00};
@@ -95,32 +95,33 @@ bool yosemitech::getValues(float value1, float value2, byte ErrorCode)
     return false;
 }
 
-
+// This gets the hardware and software version of the sensor
 bool yosemitech::getVersion(float hardwareVersion, float softwareVersion)
 {
     return false;
 }
 
-
+// This gets the calibration constants for the sensor
 bool yosemitech::getCalibration(float K, float B)
 {
     return false;
 }
 
-
+// This sets the calibration constants for the sensor
 bool yosemitech::setCalibration(float K, float B)
 {
     return false;
 }
 
-
+// This sets the cap coefficients constants for a sensor
+// This only applies to dissolved oxygen sensors
 bool yosemitech::setCapCoefficients(float K0, float K1, float K2, float K3,
                                     float K4, float K5, float K6, float K7)
 {
     return false;
 }
 
-
+// This immediately activates the cleaning brush for sensors with one.
 bool yosemitech::activateBrush(void)
 {
 
@@ -129,13 +130,13 @@ bool yosemitech::activateBrush(void)
     return false;
 }
 
-
+// This sets the brush interval
 bool yosemitech::setBrushInterval(int intervalMinutes)
 {
     return false;
 }
 
-
+// This returns the brushing interval
 int yosemitech::getBrushInterval(void)
 {
     return 30;
@@ -185,17 +186,18 @@ void yosemitech::emptyResponseBuffer(Stream *stream)
 }
 
 // Just a function to pretty-print the modbus hex frames
-void yosemitech::printFrameHex(byte modbusFrame[], int frameLength, Stream *stream)
+// This is purely for debugging
+void yosemitech::printFrameHex(byte modbusFrame[], int frameLength)
 {
-    stream->print("{");
+    _debugStream->print("{");
     for (int i = 0; i < frameLength; i++)
     {
-        stream->print("0x");
-        if (modbusFrame[i] < 16) stream->print("0");
-        stream->print(modbusFrame[i], HEX);
-        if (i < frameLength - 1) stream->print(", ");
+        _debugStream->print("0x");
+        if (modbusFrame[i] < 16) _debugStream->print("0");
+        _debugStream->print(modbusFrame[i], HEX);
+        if (i < frameLength - 1) _debugStream->print(", ");
     }
-    stream->println("}");
+    _debugStream->println("}");
 }
 
 
@@ -229,6 +231,7 @@ void yosemitech::insertCRC(byte modbusFrame[], int frameLength)
     modbusFrame[frameLength - 1] = crcHigh;
 }
 
+// This sends a command to the sensor bus and listens for a response
 int yosemitech::sendCommand(byte command[], int commandLength)
 {
     // Add the CRC to the frame
@@ -239,8 +242,8 @@ int yosemitech::sendCommand(byte command[], int commandLength)
     _stream->write(command, commandLength);
     _stream->flush();
     // Print the raw send (for debugging)
-    // Serial.print("Raw Get SN Request: ");
-    // printFrameHex(command, commandLength, &Serial);
+    _debugStream->print("Raw Request: ");
+    printFrameHex(command, commandLength);
 
     // Listen for a response
     recieverEnable();
@@ -256,10 +259,10 @@ int yosemitech::sendCommand(byte command[], int commandLength)
         emptyResponseBuffer(_stream);
 
         // Print the raw response (for debugging)
-        Serial.print("Raw Response (");
-        Serial.print(bytesRead);
-        Serial.print(" bytes): ");
-        printFrameHex(responseBuffer, bytesRead, &Serial);
+        _debugStream->print("Raw Response (");
+        _debugStream->print(bytesRead);
+        _debugStream->print(" bytes): ");
+        printFrameHex(responseBuffer, bytesRead);
 
         return bytesRead;
     }

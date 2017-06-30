@@ -35,18 +35,53 @@ public:
 
     // This gets the modbus slave ID.  Not supported by many sensors.
     byte getSlaveID(void);
+
+    // This sets a new modbus slave ID
     bool setSlaveID(byte newSlaveID);
+
+    // This gets the instrument serial number as a String
     String getSerialNumber(void);
+
+    // This tells the optical sensors to begin taking measurements
     bool startMeasurement(void);
+
+    // This tells the optical sensors to stop taking measurements
     bool stopMeasurement(void);
+
+    // This gets values back from the sensor
+    // The float variables for value1 and value2 and the byte for the error
+    // code must be initialized prior to calling this function.
     bool getValues(float value1, float value2, byte ErrorCode);
+
+    // This gets the hardware and software version of the sensor
+    // The float variables for the hardware and software versions must be
+    // initialized prior to calling this function.
     bool getVersion(float hardwareVersion, float softwareVersion);
+
+    // This gets the calibration constants for the sensor
+    // The float variables for K and B must be
+    // initialized prior to calling this function.
     bool getCalibration(float K, float B);
+
+    // This sets the calibration constants for the sensor
     bool setCalibration(float K, float B);
+
+    // This sets the cap coefficients constants for a sensor
+    // This only applies to dissolved oxygen sensors
     bool setCapCoefficients(float K0, float K1, float K2, float K3,
                             float K4, float K5, float K6, float K7);
+
+    // This immediately activates the cleaning brush for sensors with one.
+    // NOTE:  The brush also activates as soon as power is applied.
+    // NOTE:  One cleaning sweep with the brush takes about 10 seconds.
     bool activateBrush(void);
+
+    // This sets the brush interval - that is, how frequently the brush will
+    // run if power is continuously applied to the sensor.
     bool setBrushInterval(int intervalMinutes);
+
+    // This returns the brushing interval - that is, how frequently the brush
+    // will run if power is continuously applied to the sensor.
     int getBrushInterval(void);
 
 
@@ -78,19 +113,26 @@ private:
     // This empties the serial buffer
     void emptyResponseBuffer(Stream *stream);
 
+    // This sets a stream for debugging information to go to;
+    void setDebugStream(Stream *stream){_debugStream = stream;}
+
     // A debugging function for prettily printing raw modbus frames
-    void printFrameHex(byte modbusFrame[], int frameLength, Stream *stream = &Serial);
+    // This is purely for debugging
+    void printFrameHex(byte modbusFrame[], int frameLength);
 
     // Calculates a Modbus RTC cyclical redudancy code (CRC)
     // and adds it to the last two bytes of a frame
     void insertCRC(byte modbusFrame[], int frameLength);
 
+    // This sends a command to the sensor bus and listens for a response
     int sendCommand(byte command[], int commandLength);
 
-    int _model;
-    byte _slaveID;
-    Stream *_stream;
-    int _enablePin;
+    int _model;  // The sensor model
+    byte _slaveID;  // The sensor slave id
+    Stream *_stream;  // The stream instance (serial port) for communication with the RS485
+    int _enablePin;  // The pin controlling the driver/receiver enable on the RS485-to-TLL chip
+
+    Stream *_debugStream;  // The stream instance (serial port) for debugging
 
     int respSize;
     byte responseBuffer[20];  // This needs to be bigger than the largest response
