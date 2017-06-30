@@ -4,6 +4,11 @@
 
 #include "YosemitechModbus.h"
 
+
+//----------------------------------------------------------------------------
+//                          PUBLIC SENSOR FUNCTIONS
+//----------------------------------------------------------------------------
+
 // This function sets up the communication
 // It should be run during the arduino "setup" function.
 // The "stream" device must be initialized and begun prior to running this.
@@ -41,7 +46,7 @@ bool yosemitech::setSlaveID(byte newSlaveID)
                          // Address, Write, Reg 12288, 1 Register, 2byte,newAddress, Rsvd,    CRC
     respSize = sendCommand(setSlaveID, 11);
 
-    if (respSize == 8)
+    if (respSize == 8 && responseBuffer[0] == _slaveID)
     {
         _slaveID = newSlaveID;
         return true;
@@ -52,53 +57,111 @@ bool yosemitech::setSlaveID(byte newSlaveID)
 // This gets the instrument serial number as a String
 String yosemitech::getSerialNumber(void)
 {
-    byte getSN[] = {_slaveID, 0x03, 0x09, 0x00, 0x00, 0x07, 0x00, 0x00};
+    byte getSN[8] = {_slaveID, 0x03, 0x09, 0x00, 0x00, 0x07, 0x00, 0x00};
                  // _slaveID, Read,  Reg 2304 ,   7 Regs  ,    CRC
-    return "";
-}
+    respSize = sendCommand(getSN, 8);
 
-// This tells the optical sensors to begin taking measurements
-bool yosemitech::startMeasurement(void)
-{
-    byte startMeasurementR[] = {_slaveID, 0x03, 0x25, 0x00, 0x00, 0x00, 0x00, 0x00};
-                             // _slaveID, Read,  Reg 9472 ,   0 Regs  ,    CRC
-    byte altStartMeasurementR[] = {_slaveID, 0x03, 0x25, 0x00, 0x00, 0x01, 0x00, 0x00};
-                                // _slaveID, Read,  Reg 9472 ,   1 Reg   ,    CRC
-    // altStartMeasurementR is identical to startMeasurementR except that it asks for the
-    // value of a single register instead of asking for values in response.  Either
-    // can beused to start measurements.  If you use altStartMeasurementR you will
-    // get a longer return with the '0' value of the single register.
-
-    byte startMeasurementW[] = {_slaveID, 0x10, 0x1C, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-                             // _slaveID, Write, Reg 7168 ,0 Registers, 0byte,    CRC
-    return false;
-}
-
-// This tells the optical sensors to stop taking measurements
-bool yosemitech::stopMeasurement(void)
-{
-    byte stopMeasurement[] = {_slaveID, 0x03, 0x2E, 0x00, 0x00, 0x00, 0x00, 0x00};
-                           // _slaveID, Read,  Reg 11776,   0 Regs  ,    CRC
-    return false;
-}
-
-// This gets values back from the sensor
-bool yosemitech::getValues(float value1, float value2, byte ErrorCode)
-{
-    byte getValues[] = {_slaveID, 0x03, 0x26, 0x00, 0x00, 0x05, 0x00, 0x00};
-                      // _slaveID, Read,  Reg 9728 ,   5 Regs  ,    CRC
-    byte altGetValues[] = {_slaveID, 0x03, 0x26, 0x00, 0x00, 0x04, 0x00, 0x00};
-                        // _slaveID, Read,  Reg 9728 ,   4 Regs  ,    CRC
-    // altGetValues is identical to getValues except that it only asks for the 4
-    // registers of results, not the 5th register with the flag values.  Either can
-    // be used, but, obviously, you won't get the flag values with altGetValues.
-    return false;
+    // Parse into a string and print that
+    if (respSize == 18 && responseBuffer[0] == _slaveID)
+    {
+        int sn_len = responseBuffer[2];
+        char sn_arr[sn_len] = {0,};
+        int j = 0;
+        for (int i = 4; i < 16; i++)
+        {
+            sn_arr[j] = responseBuffer[i];  // converts from "byte" or "byte" type to "char" type
+            j++;
+        }
+        String SN = String(sn_arr);
+        return SN;
+    }
+    else return "";
 }
 
 // This gets the hardware and software version of the sensor
 bool yosemitech::getVersion(float hardwareVersion, float softwareVersion)
 {
-    return false;
+    byte getVersion[8] = {_slaveID, 0x03, 0x07, 0x00, 0x00, 0x02, 0x00, 0x00};
+                       // _slaveID, Read,  Reg 1792 ,   2 Regs  ,    CRC
+    respSize = sendCommand(getVersion, 8);
+
+    // Parse into a string and print that
+    if (respSize == 9 && responseBuffer[0] == _slaveID)
+    {
+        hardwareVersion = responseBuffer[3] + responseBuffer[4]/100;
+        softwareVersion = responseBuffer[3] + responseBuffer[4]/100;
+        return true;
+    }
+    else return false;
+}
+
+// This tells the optical sensors to begin taking measurements
+bool yosemitech::startMeasurement(void)
+{
+    switch (_model)
+    {
+        case Y520:
+        {
+            byte startMeasurementW[9] = {_slaveID, 0x10, 0x1C, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+                                      // _slaveID, Write, Reg 7168 ,0 Registers, 0byte,    CRC
+            respSize = sendCommand(startMeasurementW, 9);
+            if (respSize == 8 && responseBuffer[0] == _slaveID) return true;
+            else return false;
+        }
+        default:
+        {
+            byte startMeasurementR[8] = {_slaveID, 0x03, 0x25, 0x00, 0x00, 0x00, 0x00, 0x00};
+                                      // _slaveID, Read,  Reg 9472 ,   0 Regs  ,    CRC
+            respSize = sendCommand(startMeasurementR, 8);
+            if (respSize == 5 && responseBuffer[0] == _slaveID) return true;
+            else return false;
+        }
+    }
+}
+
+// This tells the optical sensors to stop taking measurements
+bool yosemitech::stopMeasurement(void)
+{
+    byte stopMeasurement[8] = {_slaveID, 0x03, 0x2E, 0x00, 0x00, 0x00, 0x00, 0x00};
+                           // _slaveID, Read,  Reg 11776,   0 Regs  ,    CRC
+    respSize = sendCommand(stopMeasurement, 8);
+    if (respSize == 5 && responseBuffer[0] == _slaveID) return true;
+    else return false;
+}
+
+// This gets values back from the sensor
+bool yosemitech::getValues(float value1, float value2, byte errorCode)
+{    switch (_model)
+    {
+        case Y520:
+        case Y514:
+        {
+            byte getValues[8] = {_slaveID, 0x03, 0x26, 0x00, 0x00, 0x05, 0x00, 0x00};
+                              // _slaveID, Read,  Reg 9728 ,   5 Regs  ,    CRC
+            respSize = sendCommand(getValues, 8);
+        }
+        default:
+        {
+            byte altGetValues[8] = {_slaveID, 0x03, 0x26, 0x00, 0x00, 0x04, 0x00, 0x00};
+                                 // _slaveID, Read,  Reg 9728 ,   4 Regs  ,    CRC
+            respSize = sendCommand(altGetValues, 8);
+            if (respSize == 5 && responseBuffer[0] == _slaveID) return true;
+            else return false;
+        }
+    }
+
+    // Print response converted to floats
+    if (respSize >= 13 && responseBuffer[0] == _slaveID)
+    {
+        value1 = floatFromFrame(responseBuffer, 3);
+        value2 = floatFromFrame(responseBuffer, 7);
+        if (respSize >= 15)  // if using "altGetValues" flags will not be sent
+        {
+            errorCode = responseBuffer[11];
+        }
+        return true;
+    }
+    else return false;
 }
 
 // This gets the calibration constants for the sensor
@@ -142,6 +205,10 @@ int yosemitech::getBrushInterval(void)
     return 30;
 }
 
+
+//----------------------------------------------------------------------------
+//                           PRIVATE HELPER FUNCTIONS
+//----------------------------------------------------------------------------
 
 // This functions return the float from a 4-byte small-endian array beginning
 // at a specific index of another array.

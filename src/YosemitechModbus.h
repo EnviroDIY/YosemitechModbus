@@ -42,6 +42,11 @@ public:
     // This gets the instrument serial number as a String
     String getSerialNumber(void);
 
+    // This gets the hardware and software version of the sensor
+    // The float variables for the hardware and software versions must be
+    // initialized prior to calling this function.
+    bool getVersion(float hardwareVersion, float softwareVersion);
+
     // This tells the optical sensors to begin taking measurements
     bool startMeasurement(void);
 
@@ -51,12 +56,7 @@ public:
     // This gets values back from the sensor
     // The float variables for value1 and value2 and the byte for the error
     // code must be initialized prior to calling this function.
-    bool getValues(float value1, float value2, byte ErrorCode);
-
-    // This gets the hardware and software version of the sensor
-    // The float variables for the hardware and software versions must be
-    // initialized prior to calling this function.
-    bool getVersion(float hardwareVersion, float softwareVersion);
+    bool getValues(float value1, float value2, byte errorCode);
 
     // This gets the calibration constants for the sensor
     // The float variables for K and B must be
@@ -135,7 +135,7 @@ private:
     Stream *_debugStream;  // The stream instance (serial port) for debugging
 
     int respSize;
-    byte responseBuffer[20];  // This needs to be bigger than the largest response
+    byte responseBuffer[18];  // This needs to be bigger than the largest response
 
     const uint32_t modbusTimeout = 500;  // The time to wait for response after a command (in ms)
     const int modbusFrameTimeout = 4;  // the time to wait between characters within a frame (in ms)
