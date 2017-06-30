@@ -4,13 +4,13 @@ Yosemitech_GetSlaveID.ino
 This scans through all possible addresses and asks for the standard Yosemitech
 serial number response at each address to idenitfy the sensors.
 
-The scan may take up to several minutes to complete.
+The scan will take several minutes to complete.  (Sorry, please be patient!)
 
-I recommend you only attach a single device while running this scan because if
-multiple devices are connected with the same address you will only see garbled
-responses.
+I recommend that if you really don't know your device's address, you only attach
+a single device to the bus while running this scan because if multiple devices
+on the bus have the same address their responses will overlap each-other.
 
-This uses the serial number request because not all of the YosemiTech sensors
+This uses the serial number request because not all of the Yosemitech sensors
 will respond to a Get Slave Device ID command sent to address 0xFF and none
 of the sensors support modbus function 17 (report slave ID).
 
@@ -137,9 +137,23 @@ void printFrameHex(byte modbusFrame[], int frameLength, Stream *stream)
     stream->println("}");
 }
 
+String parseSN(byte modbusFrame[])
+{
+    int sn_len = responseBuffer[2];
+    char sn_arr[sn_len] = {0,};
+    int j = 0;
+    for (int i = 4; i < 16; i++)
+    {
+        sn_arr[j] = responseBuffer[i];
+        j++;
+    }
+    String SN = String(sn_arr);
+    return SN;
+}
+
 void scanSNs(void)
 {
-    Serial.println(F("Scanning for YosemiTech modbus sensors...."));
+    Serial.println(F("Scanning for Yosemitech modbus sensors...."));
     Serial.println(F("------------------------------------------"));
     Serial.println(F("Modbus Address ------ Sensor Serial Number"));
 
@@ -168,24 +182,26 @@ void scanSNs(void)
             // Parse into a string and print that
             if (bytesRead >= 18)
             {
-                int sn_len = responseBuffer[2];
-                char sn_arr[sn_len] = {0,};
-                int j = 0;
-                for (int i = 4; i < 16; i++)
-                {
-                    sn_arr[j] = responseBuffer[i];
-                    j++;
-                }
+                SN = parseSN(responseBuffer);
                 numFound++;
-                SN = String(sn_arr);
                 Serial.print(F("     0x"));
                 if (addrTest < 16) Serial.print(F("0"));
                 Serial.print(addrTest, HEX);
                 Serial.print(F("      ------    "));
                 Serial.println(SN);
             }
+            else  // if recieved a response, but less than 18 bytes
+            {
+                Serial.print(F("     0x"));
+                if (addrTest < 16) Serial.print(F("0"));
+                Serial.print(addrTest, HEX);
+                Serial.print(F("      ------    "));
+                Serial.println(F("????????????"));
+            }
         }
         emptyResponseBuffer(&modbusSerial);
+        // A short delay between sensors helps.
+        delay(500);
     }
     Serial.println(F("------------------------------------------"));
     Serial.println(F("Scan complete."));
@@ -210,7 +226,18 @@ void setup()
 
     // Allow the sensor and converter to warm up
     Serial.println(F("Allowing sensor and adapter to warm up"));
-    delay(10000);
+    for (int i = 10; i > 0; i--)
+    {
+        Serial.print(i);
+        delay (250);
+        Serial.print(".");
+        delay (250);
+        Serial.print(".");
+        delay (250);
+        Serial.print(".");
+        delay (250);
+    }
+    Serial.println("\n");
 
     scanSNs();
 }

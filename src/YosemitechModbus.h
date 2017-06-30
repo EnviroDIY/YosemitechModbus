@@ -33,7 +33,7 @@ public:
     // With avr-gcc (Arduino's compiler), integer and floating point variables are
     // all physically stored in memory in little-endian byte order, so this union
     // is all that is needed to get the correct float value from the small-endian
-    // hex frames returned by YosemiTech's Modbus Sensors
+    // hex frames returned by Yosemitech's Modbus Sensors
     union SeFrame {
       float Float;
       byte Byte[4];

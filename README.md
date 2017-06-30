@@ -1,8 +1,14 @@
 # Yosemitech Modbus
 
-A library to use an Arduino as a master to control and communicate with the modbus sensors produced by Yosemitech. These sensors only support these modbus commands:
+A library to use an Arduino as a master to control and communicate with the sensors produced by [Yosemitech](http://www.yosemitech.com/en/) via Modbus RTU over an RS485 line. These sensors only support these modbus commands:
 * 3 (0x03, Read holding registers)
-* 16 (0x10, Write multiple registers).
+* 16 (0x10, Write multiple registers)
+
+The implementation of modbus by these sensors is _not_ fully compliant with the [official modbus standards](http://modbus.org/specs.php).  These are some of the irregularities we have found so far:
+* The sensors do not act on server broadcast messages (that is, write commands sent to address 0x00).
+* The sensors give no response to properly formed requests for data from any registers except those few listed in the modbus manuals.  (See the "doc" folder for copies of the manuals for the sensors we have.)
+
+Another note:  The sensors seem to be somewhat.. finickey about resolving similar addresses when several are connected to the same bus.  I strongly recommend giving the sensors addresses a few numbers away from each other to help separate them on the bus.  (That is, instead of numbering them as 0x01, 0x02, 0x03, 0x04, and 0x05 try 0x01, 0x03, 0x05, 0x07, and 0x09.)
 
 ## Hardware
 

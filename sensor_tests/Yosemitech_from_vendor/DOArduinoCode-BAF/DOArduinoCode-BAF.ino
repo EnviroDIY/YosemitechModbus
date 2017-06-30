@@ -1,6 +1,6 @@
 /************
 Modified by Anthony & Beth
-From sketch from YosemiTech for DO probe
+From sketch from Yosemitech for DO probe
 ************/
 #include <Arduino.h>
 

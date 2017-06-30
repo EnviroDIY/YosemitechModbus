@@ -1,6 +1,6 @@
 /*****************************************************************************
 Modified by Anthony & Beth
-From sketch from YosemiTech for
+From sketch from Yosemitech for
 Y510-B Turbidity without wiper
 *****************************************************************************/
 
@@ -25,7 +25,7 @@ const int SSRxPin = 10;  // Recieve pin for software serial (Rx on RS485 adapter
 const int SSTxPin = 11;  // Send pin for software serial (Tx on RS485 adapter)
 
 // Define the sensor's modbus parameters
-byte modbusAddress = 0x01;  // The sensor's modbus address, or SlaveID
+byte modbusAddress = 0x0B;  // The sensor's modbus address, or SlaveID
 const int modbusTimeout = 500;  // The time to wait for response after a command (in ms)
 const int modbusBaud = 9600;  // The baudrate for the modbus connection
 const int modbusFrameTimeout = 4;  // the time to wait between characters within a frame (in ms)
@@ -39,25 +39,30 @@ const int modbusFrameTimeout = 4;  // the time to wait between characters within
 SoftwareSerial modbusSerial(SSRxPin, SSTxPin);
 
 // Define arrays with the modbus commands
-byte startMeasurement[] = {modbusAddress, 0x03, 0x25, 0x00, 0x00, 0x00, 0x4E, 0xC6};
-                        // Address      , Fxn , Start Addr, #Registers,    CRC
-                        // modbusAddress, Read, Coil 9472 ,   0 Regs  ,    CRC
-byte altStartMeasurement[] = {modbusAddress, 0x03, 0x25, 0x00, 0x00, 0x01, 0x8F, 0x06};
-                           // Address      , Fxn , Start Addr, #Registers,    CRC
-                           // modbusAddress, Read, Coil 9472 ,   1 Reg   ,    CRC
-// altStartMeasurement is identical to startMeasurement except that it asks for the
+byte startMeasurementR[] = {modbusAddress, 0x03, 0x25, 0x00, 0x00, 0x00, 0x00, 0x00};
+                        // modbusAddress, Read,  Reg 9472 ,   0 Regs  ,    CRC
+byte altStartMeasurementR[] = {modbusAddress, 0x03, 0x25, 0x00, 0x00, 0x01, 0x00, 0x00};
+                           // modbusAddress, Read,  Reg 9472 ,   1 Reg   ,    CRC
+// altStartMeasurementR is identical to startMeasurementR except that it asks for the
 // value of a single register instead of asking for values in response.  Either
-// can beused to start measurements.  If you use altStartMeasurement you will
+// can beused to start measurements.  If you use altStartMeasurementR you will
 // get a longer return with the '0' value of the single register.
-byte getResults[] = {modbusAddress, 0x03, 0x26, 0x00, 0x00, 0x04, 0x4F, 0x41};
-                  // Address      , Fxn , Start Addr, #Registers,    CRC
-                  // modbusAddress, Read, Coil 9728 ,   4 Regs  ,    CRC
-byte getSN[] = {modbusAddress, 0x03, 0x09, 0x00, 0x00, 0x07, 0x07, 0x94};
-             // Address      , Fxn , Start Addr, #Registers,    CRC
-             // modbusAddress, Read, Coil 2304 ,   7 Regs  ,    CRC
-byte stopMeasurement[] = {modbusAddress, 0x03, 0x2E, 0x00, 0x00, 0x00, 0x4C, 0xE2};
-                       // Address      , Fxn , Start Addr, #Registers,    CRC
-                       // modbusAddress, Read, Coil 11776,   0 Regs  ,    CRC
+
+byte startMeasurementW[] = {modbusAddress, 0x10, 0x1C, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+                               // Address, Write, Reg 7168 ,0 Registers, 0byte,    CRC
+
+byte getValues[] = {modbusAddress, 0x03, 0x26, 0x00, 0x00, 0x05, 0x00, 0x00};
+                  // modbusAddress, Read,  Reg 9728 ,   5 Regs  ,    CRC
+byte altGetValues[] = {modbusAddress, 0x03, 0x26, 0x00, 0x00, 0x04, 0x00, 0x00};
+                     // modbusAddress, Read,  Reg 9728 ,   4 Regs  ,    CRC
+// altGetValues is identical to getValues except that it only asks for the 4
+// registers of results, not the 5th register with the flag values.  Either can
+// be used, but, obviously, you won't get the flag values with altGetValues.
+
+byte getSN[] = {modbusAddress, 0x03, 0x09, 0x00, 0x00, 0x07, 0x00, 0x00};
+             // modbusAddress, Read,  Reg 2304 ,   7 Regs  ,    CRC
+byte stopMeasurement[] = {modbusAddress, 0x03, 0x2E, 0x00, 0x00, 0x00, 0x00, 0x00};
+                       // modbusAddress, Read,  Reg 11776,   0 Regs  ,    CRC
 
 // Define variables for the response;
 uint32_t start;  // Timestamp for time-outs
@@ -82,8 +87,8 @@ int reserved = 0;
 // With avr-gcc (Arduino's compiler), integer and floating point variables are
 // all physically stored in memory in little-endian byte order, so this union
 // is all that is needed to get the correct float value from the small-endian
-// hex frames returned by YosemiTech's Modbus Sensors
-union SeFrame {     // Declaring a new "union" class(?) for a Small-endian Frame
+// hex frames returned by Yosemitech's Modbus Sensors
+union SeFrame {
   float Float;
   byte Byte[4];
 };
@@ -92,12 +97,13 @@ union SeFrame {     // Declaring a new "union" class(?) for a Small-endian Frame
 // at a specific index of another array.
 float floatFromFrame( byte indata[], int stindex)
 {
-    SeFrame Sefram;
+    SeFrame Sefram;  // Create an object of the small-endian class
+    // Fill out the bytes
     Sefram.Byte[0] = indata[stindex];
     Sefram.Byte[1] = indata[stindex + 1];
     Sefram.Byte[2] = indata[stindex + 2];
     Sefram.Byte[3] = indata[stindex + 3];
-    return Sefram.Float;    // converts from Byte format to Float format
+    return Sefram.Float;  // Return the float
 }
 
 // This flips the device/receive enable to DRIVER so the arduino can send text
@@ -132,26 +138,45 @@ void emptyResponseBuffer(Stream *stream)
 
 // From: https://ctlsys.com/support/how_to_compute_the_modbus_rtu_message_crc/
 // and: https://stackoverflow.com/questions/19347685/calculating-modbus-rtu-crc-16
-uint16_t ModRTU_CRC(byte modbusFrame[], int frameLength)
+void insertCRC(byte modbusFrame[], int frameLength)
 {
-  uint16_t crc = 0xFFFF;
-  for (int pos = 0; pos < frameLength; pos++)
-  {
-  crc ^= (unsigned int)modbusFrame[pos];  // XOR byte into least sig. byte of crc
+    uint16_t crc = 0xFFFF;
+    for (int pos = 0; pos < frameLength - 2; pos++)
+    {
+        crc ^= (unsigned int)modbusFrame[pos];  // XOR byte into least sig. byte of crc
 
-  for (int i = 8; i != 0; i--) {    // Loop over each bit
-    if ((crc & 0x0001) != 0) {      // If the LSB is set
-      crc >>= 1;                    // Shift right and XOR 0xA001
-      crc ^= 0xA001;
+        for (int i = 8; i != 0; i--) {    // Loop over each bit
+            if ((crc & 0x0001) != 0) {    // If the least significant bit (LSB) is set
+                crc >>= 1;                // Shift right and XOR 0xA001
+                crc ^= 0xA001;
+            }
+            else                          // Else least significant bit (LSB) is not set
+            crc >>= 1;                    // Just shift right
+        }
     }
-    else                            // Else LSB is not set
-      crc >>= 1;                    // Just shift right
-    }
-  }
 
-  return crc;
+    // Break into low and high bytes
+    byte crcLow = crc & 0xFF;
+    byte crcHigh = crc >> 8;
+
+    // Append the bytes to the end of the frame
+    modbusFrame[frameLength - 2] = crcLow;
+    modbusFrame[frameLength - 1] = crcHigh;
 }
 
+// Just a function to pretty-print the modbus hex frames
+void printFrameHex(byte modbusFrame[], int frameLength, Stream *stream)
+{
+    stream->print("{");
+    for (int i = 0; i < frameLength; i++)
+    {
+        stream->print("0x");
+        if (modbusFrame[i] < 16) stream->print("0");
+        stream->print(modbusFrame[i], HEX);
+        if (i < frameLength - 1) stream->print(", ");
+    }
+    stream->println("}");
+}
 
 // ---------------------------------------------------------------------------
 // Main setup function
@@ -168,13 +193,29 @@ void setup()
     modbusSerial.begin(modbusBaud);
     modbusSerial.setTimeout(modbusFrameTimeout);
 
+    // Add CRC's to all commands
+    insertCRC(startMeasurementR, sizeof(startMeasurementR)/sizeof(startMeasurementR[0]));
+    insertCRC(altStartMeasurementR, sizeof(altStartMeasurementR)/sizeof(altStartMeasurementR[0]));
+    insertCRC(startMeasurementW, sizeof(startMeasurementW)/sizeof(startMeasurementW[0]));
+    insertCRC(getValues, sizeof(getValues)/sizeof(getValues[0]));
+    insertCRC(altGetValues, sizeof(altGetValues)/sizeof(altGetValues[0]));
+    insertCRC(getSN, sizeof(getSN)/sizeof(getSN[0]));
+    insertCRC(stopMeasurement, sizeof(stopMeasurement)/sizeof(stopMeasurement[0]));
+
+    // Start up note
+    Serial.println("Yosemitech Y510-B Optical Turbidity Sensor");
+
     // Allow the sensor and converter to warm up
+    Serial.println("Waiting for sensor to warm up.");
     delay(500);
 
     // Send the "get serial number" command
     driverEnable();
     modbusSerial.write(getSN, sizeof(getSN)/sizeof(getSN[0]));
-    modbusSerial.flush(); // Waits for the transmission of outgoing serial data to complete.
+    modbusSerial.flush();
+    // Print the raw send (for debugging)
+    Serial.print("Raw Get SN Request: ");
+    printFrameHex(getSN, sizeof(getSN)/sizeof(getSN[0]), &Serial);
 
     recieverEnable();
     start = millis();
@@ -188,11 +229,10 @@ void setup()
         bytesRead = modbusSerial.readBytes(responseBuffer, 20);
 
         // Print the raw response (for debugging)
-        // Serial.print("Raw SN Response (");
-        // Serial.print(bytesRead);
-        // Serial.print(" bytes):");
-        // for (int i = 0; i < bytesRead; i++) Serial.print(responseBuffer[i]);
-        // Serial.println();
+        Serial.print("Raw SN Response (");
+        Serial.print(bytesRead);
+        Serial.print(" bytes): ");
+        printFrameHex(responseBuffer, bytesRead, &Serial);
 
         // Parse into a string and print that
         if (bytesRead >= 18)
@@ -218,8 +258,11 @@ void setup()
 
     // Send the "start measurement" command
     driverEnable();
-    modbusSerial.write(startMeasurement, sizeof(startMeasurement)/sizeof(startMeasurement[0]));
+    modbusSerial.write(startMeasurementR, sizeof(startMeasurementR)/sizeof(startMeasurementR[0]));
     modbusSerial.flush();
+    // Print the raw send (for debugging)
+    Serial.print("Raw Start Measurement Request: ");
+    printFrameHex(startMeasurementR, sizeof(startMeasurementR)/sizeof(startMeasurementR[0]), &Serial);
 
     recieverEnable();
     start = millis();
@@ -236,9 +279,8 @@ void setup()
         // Print the raw response (for debugging)
         Serial.print("Raw Start Measurement Response (");
         Serial.print(bytesRead);
-        Serial.print(" bytes):");
-        for (int i = 0; i < bytesRead; i++) Serial.print(responseBuffer[i], HEX);
-        Serial.println();
+        Serial.print(" bytes): ");
+        printFrameHex(responseBuffer, bytesRead, &Serial);
     }
     else
     {
@@ -257,7 +299,7 @@ void setup()
     // It may take up to 22 seconds to get stable values.
     delay(5000);
 
-    Serial.println("Temp(C)  Turb(NTU)  Warmup(ms)");
+    Serial.println("Temp(C)  Turb(NTU)  Error  Flag2  Warmup(ms)");
 }
 
 // ---------------------------------------------------------------------------
@@ -267,8 +309,11 @@ void loop()
 {
     // send the command to get the temperature
     driverEnable();
-    modbusSerial.write(getResults, sizeof(getResults)/sizeof(getResults[0]));
+    modbusSerial.write(getValues, sizeof(getValues)/sizeof(getValues[0]));
     modbusSerial.flush();
+    // Print the raw send (for debugging)
+    // Serial.print("Raw Get Value Request: ");
+    // printFrameHex(getValues, sizeof(getValues)/sizeof(getValues[0]), &Serial);
 
     recieverEnable();
     start = millis();
@@ -284,19 +329,27 @@ void loop()
         // Print the raw response (for debugging)
         // Serial.print("Raw Get Value Response (");
         // Serial.print(bytesRead);
-        // Serial.print(" bytes):");
-        // for (int i = 0; i < bytesRead; i++) Serial.print(responseBuffer[i], HEX);
-        // Serial.println();
+        // Serial.print(" bytes): ");
+        // printFrameHex(responseBuffer, bytesRead, &Serial);
 
         // Print response converted to floats
         if (bytesRead >= 13)
         {
             Value1 = floatFromFrame(responseBuffer, 3);
             Value2 = floatFromFrame(responseBuffer, 7);
+            if (bytesRead >= 15)  // if using "altGetValues" flags will not be sent
+            {
+                errorFlag = responseBuffer[11];
+                reserved = responseBuffer[12];
+            }
             Serial.print(Value1, 3);
             Serial.print("     ");
             Serial.print(Value2, 3);
             Serial.print("       ");
+            Serial.print(errorFlag);
+            Serial.print("     ");
+            Serial.print(reserved);
+            Serial.print("      ");
             Serial.print(millis() - warmup);
             Serial.println();
         }
@@ -313,6 +366,6 @@ void loop()
     // SRGD testing shows the turbidity sensor appears to be capable of taking
     // readings approximately once every 1.6 seconds, although the teperature
     // sensor can take readings much more quickly.  The same reading results
-    // can be read many times from the coils betweeen the sensor readings.
+    // can be read many times from the registers betweeen the sensor readings.
     delay(1600);
 }

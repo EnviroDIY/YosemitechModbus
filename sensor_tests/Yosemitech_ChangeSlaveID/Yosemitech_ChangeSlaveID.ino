@@ -1,10 +1,10 @@
 /*****************************************************************************
 Yosemitech_ChangeSlaveID.ino
 
-This sends a change address command to a YosemiTech sensor.
+This sends a change address command to a Yosemitech sensor.
 
 You MUST know the old address of this sensor or it will not work.  The (poor)
-implentation of modbus for the YosemiTech sensors does not support responses
+implentation of modbus for the Yosemitech sensors does not support responses
 to broadcasts at address 0x00.  (Official modbus specifications require that
 all slaves accept and comply with writing functions broadcast to address 0.)
 *****************************************************************************/
@@ -30,8 +30,8 @@ const int SSRxPin = 10;  // Recieve pin for software serial (Rx on RS485 adapter
 const int SSTxPin = 11;  // Send pin for software serial (Tx on RS485 adapter)
 
 // Define the old and new sensor addresses
-byte oldAddress = 0x12;
-byte newAddress = 0x03;
+byte oldAddress = 0x01;
+byte newAddress = 0x1A;
 
 
 // Define the sensor's modbus parameters
@@ -148,7 +148,18 @@ void setup()
 
     // Allow the sensor and converter to warm up
     Serial.println(F("Allowing sensor and adapter to warm up"));
-    delay(10000);
+    for (int i = 10; i > 0; i--)
+    {
+        Serial.print(i);
+        delay (250);
+        Serial.print(".");
+        delay (250);
+        Serial.print(".");
+        delay (250);
+        Serial.print(".");
+        delay (250);
+    }
+    Serial.println("\n");
 
     // Set up the setSlaveID command
     byte setSlaveID[] = {oldAddress, 0x10, 0x30, 0x00, 0x00, 0x01, 0x02, newAddress, 0x00, 0x00, 0x00};
