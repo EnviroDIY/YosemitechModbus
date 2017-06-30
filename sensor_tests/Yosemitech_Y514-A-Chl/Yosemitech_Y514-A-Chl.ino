@@ -64,8 +64,8 @@ byte getSN[] = {modbusAddress, 0x03, 0x09, 0x00, 0x00, 0x07, 0x00, 0x00};
 byte stopMeasurement[] = {modbusAddress, 0x03, 0x2E, 0x00, 0x00, 0x00, 0x00, 0x00};
                        // modbusAddress, Read,  Reg 11776,   0 Regs  ,    CRC
 
-unsigned char activateBrush[] = {modbusAddress, 0x10, 0x31, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-                                    // Address, Write, Reg 7168 ,0 Registers, 0byte,    CRC
+byte activateBrush[] = {modbusAddress, 0x10, 0x31, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+                           // Address, Write, Reg 7168 ,0 Registers, 0byte,    CRC
 
 // Define variables for the response;
 uint32_t start;  // Timestamp for time-outs

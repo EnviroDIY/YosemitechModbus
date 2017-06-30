@@ -27,7 +27,13 @@ class yosemitech
 {
 
 public:
+
+    // This function sets up the communication
+    // It should be run during the arduino "setup" function.
+    // The "stream" device must be initialized prior to running this.
     bool begin(yosemitechModel model, byte modbusSlaveID, Stream *stream, int enablePin = -1);
+
+    // This gets the modbus slave ID.  Not supported by many sensors.
     byte getSlaveID(void);
     bool setSlaveID(byte newSlaveID);
     String getSerialNumber(void);
@@ -77,14 +83,20 @@ private:
 
     // Calculates a Modbus RTC cyclical redudancy code (CRC)
     // and adds it to the last two bytes of a frame
-    uint16_t insertCRC(byte modbusFrame[], int frameLength);
+    void insertCRC(byte modbusFrame[], int frameLength);
+
+    int sendCommand(byte command[], int commandLength);
 
     int _model;
-    int _enablePin;
-    Stream *_stream;
     byte _slaveID;
-    byte commandBuffer[20];  // This needs to be bigger than the largest response
+    Stream *_stream;
+    int _enablePin;
+
+    int respSize;
     byte responseBuffer[20];  // This needs to be bigger than the largest response
+
+    const uint32_t modbusTimeout = 500;  // The time to wait for response after a command (in ms)
+    const int modbusFrameTimeout = 4;  // the time to wait between characters within a frame (in ms)
 
 };
 
