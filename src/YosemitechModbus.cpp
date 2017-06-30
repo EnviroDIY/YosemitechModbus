@@ -145,12 +145,10 @@ bool yosemitech::getValues(float value1, float value2, byte errorCode)
             byte altGetValues[8] = {_slaveID, 0x03, 0x26, 0x00, 0x00, 0x04, 0x00, 0x00};
                                  // _slaveID, Read,  Reg 9728 ,   4 Regs  ,    CRC
             respSize = sendCommand(altGetValues, 8);
-            if (respSize == 5 && responseBuffer[0] == _slaveID) return true;
-            else return false;
         }
     }
 
-    // Print response converted to floats
+    // Parse the response
     if (respSize >= 13 && responseBuffer[0] == _slaveID)
     {
         value1 = floatFromFrame(responseBuffer, 3);
@@ -167,7 +165,18 @@ bool yosemitech::getValues(float value1, float value2, byte errorCode)
 // This gets the calibration constants for the sensor
 bool yosemitech::getCalibration(float K, float B)
 {
-    return false;
+    byte getCalib[8] = {_slaveID, 0x03, 0x11, 0x00, 0x00, 0x04, 0x00, 0x00};
+                     // _slaveID, Read,  Reg 4352 ,   4 Regs  ,    CRC
+    respSize = sendCommand(getCalib, 8);
+
+    // Parse the response
+    if (respSize == 13 && responseBuffer[0] == _slaveID)
+    {
+        K = floatFromFrame(responseBuffer, 3);
+        B = floatFromFrame(responseBuffer, 7);
+        return true;
+    }
+    else return false;
 }
 
 // This sets the calibration constants for the sensor
