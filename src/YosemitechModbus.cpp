@@ -140,6 +140,12 @@ bool yosemitech::getValues(float value1, float value2, byte errorCode)
                               // _slaveID, Read,  Reg 9728 ,   5 Regs  ,    CRC
             respSize = sendCommand(getValues, 8);
         }
+        case Y532:
+        {
+            byte getValues[8] = {_slaveID, 0x03, 0x28, 0x00, 0x00, 0x02, 0x00, 0x00};
+                              // _slaveID, Read,  Reg 10240,   2 Regs  ,    CRC
+            respSize = sendCommand(getValues, 8);
+        }
         default:
         {
             byte altGetValues[8] = {_slaveID, 0x03, 0x26, 0x00, 0x00, 0x04, 0x00, 0x00};
@@ -149,14 +155,52 @@ bool yosemitech::getValues(float value1, float value2, byte errorCode)
     }
 
     // Parse the response
-    if (respSize >= 13 && responseBuffer[0] == _slaveID)
+    // Y532 (pH)
+    if (respSize == 9 && responseBuffer[0] == _slaveID)
+    {
+        value1 = floatFromFrame(responseBuffer, 3);
+        return true;
+    }
+    // Y520, Y514 (Conductivity, Chlorophyll)
+    if (respSize == 13 && responseBuffer[0] == _slaveID)
     {
         value1 = floatFromFrame(responseBuffer, 3);
         value2 = floatFromFrame(responseBuffer, 7);
-        if (respSize >= 15)  // if using "altGetValues" flags will not be sent
+        return true;
+    }
+    // Default
+    if (respSize == 15 && responseBuffer[0] == _slaveID)
+    {
+        value1 = floatFromFrame(responseBuffer, 3);
+        value2 = floatFromFrame(responseBuffer, 7);
+        errorCode = responseBuffer[11];
+        return true;
+    }
+    else return false;
+}
+
+// This gets raw electrical potential values back from the sensor
+// This only applies to pH
+bool yosemitech::getPotentialValues(float value1)
+{    switch (_model)
+    {
+        case Y532:
         {
-            errorCode = responseBuffer[11];
+            byte getValues[8] = {_slaveID, 0x03, 0x12, 0x00, 0x00, 0x02, 0x00, 0x00};
+                              // _slaveID, Read,  Reg 4608 ,   2 Regs  ,    CRC
+            respSize = sendCommand(getValues, 8);
         }
+        default:
+        {
+            return false;
+        }
+    }
+
+    // Parse the response
+    // Y532 (pH)
+    if (respSize == 9 && responseBuffer[0] == _slaveID)
+    {
+        value1 = floatFromFrame(responseBuffer, 3);
         return true;
     }
     else return false;
@@ -182,8 +226,26 @@ bool yosemitech::getCalibration(float K, float B)
 // This sets the calibration constants for the sensor
 bool yosemitech::setCalibration(float K, float B)
 {
+    byte setCalib[9] = {_slaveID, 0x10, 0x1C, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+                              // _slaveID, Write, Reg 7168 ,0 Registers, 0byte,    CRC
     return false;
 }
+
+// This sets the calibration constants for a pH sensor
+// Calibration steps for pH (3 point calibration only):
+//   1. Put sensor in solution and stabilize for 1 minute
+//   2. Input value of calibration standard
+//   3. Repeat for points 2 and 3 (pH of 4.00, 6.86, and 9.18 recommended)
+//   4. Read calibration status
+bool yosemitech::pHCalibrationPoint(float pH);
+
+// This verifies the success of a calibration
+// Return values:
+//   0x00 - Success
+//   0x01 - Non-matching calibration standards
+//   0x02 - Less than 3 points used in calibration
+//   0x04 - Calibration coefficients out of range
+byte yosemitech::pHCalibrationStatus(void);
 
 // This sets the cap coefficients constants for a sensor
 // This only applies to dissolved oxygen sensors

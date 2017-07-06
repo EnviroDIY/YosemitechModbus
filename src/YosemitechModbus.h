@@ -56,7 +56,13 @@ public:
     // This gets values back from the sensor
     // The float variables for value1 and value2 and the byte for the error
     // code must be initialized prior to calling this function.
-    bool getValues(float value1, float value2, byte errorCode);
+    bool getValues(float value1, float value2 = 0.00, byte errorCode = 0x00);
+
+    // This gets raw electrical potential values back from the sensor
+    // This only applies to pH
+    // The float variables for value1 and value2 and the byte for the error
+    // code must be initialized prior to calling this function.
+    bool getPotentialValues(float value1);
 
     // This gets the calibration constants for the sensor
     // The float variables for K and B must be
@@ -65,6 +71,22 @@ public:
 
     // This sets the calibration constants for the sensor
     bool setCalibration(float K, float B);
+
+    // This sets the calibration constants for a pH sensor
+    // Calibration steps for pH (3 point calibration only):
+    //   1. Put sensor in solution and stabilize for 1 minute
+    //   2. Input value of calibration standard
+    //   3. Repeat for points 2 and 3 (pH of 4.00, 6.86, and 9.18 recommended)
+    //   4. Read calibration status
+    bool pHCalibrationPoint(float pH);
+
+    // This verifies the success of a calibration
+    // Return values:
+    //   0x00 - Success
+    //   0x01 - Non-matching calibration standards
+    //   0x02 - Less than 3 points used in calibration
+    //   0x04 - Calibration coefficients out of range
+    byte pHCalibrationStatus(void);
 
     // This sets the cap coefficients constants for a sensor
     // This only applies to dissolved oxygen sensors
