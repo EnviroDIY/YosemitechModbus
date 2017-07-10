@@ -225,6 +225,7 @@ void setup()
     modbusSerial.setTimeout(modbusFrameTimeout);
 
     // Allow the sensor and converter to warm up
+    Serial.println("\n");
     Serial.println(F("Allowing sensor and adapter to warm up"));
     for (int i = 10; i > 0; i--)
     {
@@ -237,6 +238,9 @@ void setup()
         Serial.print(".");
         delay (250);
     }
+    Serial.println("\n");
+
+    Serial.println("Scan takes several minutes, please be patient!");
     Serial.println("\n");
 
     scanSNs();
