@@ -29,6 +29,66 @@ bool yosemitech::begin(yosemitechModel model, byte modbusSlaveID, Stream *stream
 
 }
 
+// This returns a pretty string with the model information
+String yosemitech::getModel(void)
+{
+    switch (_model)
+    {
+        case Y502: {return "Y502"; break;}
+        case Y504: {return "Y504"; break;}
+        case Y510: {return "Y510"; break;}
+        case Y511: {return "Y511"; break;}
+        case Y513: {return "Y513"; break;}
+        case Y514: {return "Y514"; break;}
+        case Y516: {return "Y516"; break;}
+        case Y520: {return "Y520"; break;}
+        case Y532: {return "Y532"; break;}
+        case Y533: {return "Y533"; break;}
+        case Y550: {return "Y550"; break;}
+        default:  {return ""; break;}
+    }
+}
+
+// This returns a pretty string with the parameter measured.
+String yosemitech::getParameter(void)
+{
+    switch (_model)
+    {
+        case Y502: {return "Dissolved Oxygen"; break;}
+        case Y504: {return "Dissolved Oxygen"; break;}
+        case Y510: {return "Turbidity"; break;}
+        case Y511: {return "Turbidity"; break;}
+        case Y513: {return "Blue Green Algae"; break;}
+        case Y514: {return "Chlorophyll"; break;}
+        case Y516: {return "Oil in Water"; break;}
+        case Y520: {return "Conductivity"; break;}
+        case Y532: {return "pH"; break;}
+        case Y533: {return "ORP"; break;}
+        case Y550: {return "UV254"; break;}
+        default:  {return ""; break;}
+    }
+}
+
+// This returns a pretty string with the parameter measured.
+String yosemitech::getUnits(void)
+{
+    switch (_model)
+    {
+        case Y502: {return "percent"; break;}
+        case Y504: {return "percent"; break;}
+        case Y510: {return "NTU"; break;}
+        case Y511: {return "NTU"; break;}
+        case Y513: {return "µg/L"; break;}
+        case Y514: {return "µg/L"; break;}
+        case Y516: {return "ppb"; break;}
+        case Y520: {return "mS/cm"; break;}
+        case Y532: {return "pH"; break;}
+        case Y533: {return "mV"; break;}
+        case Y550: {return "???"; break;}
+        default:  {return ""; break;}
+    }
+}
+
 // This gets the modbus slave ID.  Not supported by many sensors.
 byte yosemitech::getSlaveID(void)
 {
@@ -61,8 +121,8 @@ String yosemitech::getSerialNumber(void)
                  // _slaveID, Read,  Reg 2304 ,   7 Regs  ,    CRC
     respSize = sendCommand(getSN, 8);
 
-    // Parse into a string and print that
-    if (respSize == 18 && responseBuffer[0] == _slaveID)
+    // Parse into a string
+    if (respSize == 19 && responseBuffer[0] == _slaveID)
     {
         int sn_len = responseBuffer[2];
         char sn_arr[sn_len] = {0,};
@@ -79,17 +139,19 @@ String yosemitech::getSerialNumber(void)
 }
 
 // This gets the hardware and software version of the sensor
-bool yosemitech::getVersion(float hardwareVersion, float softwareVersion)
+bool yosemitech::getVersion(float &hardwareVersion, float &softwareVersion)
 {
     byte getVersion[8] = {_slaveID, 0x03, 0x07, 0x00, 0x00, 0x02, 0x00, 0x00};
                        // _slaveID, Read,  Reg 1792 ,   2 Regs  ,    CRC
     respSize = sendCommand(getVersion, 8);
 
-    // Parse into a string and print that
+    // Parse into version numbers
+    // These aren't actually little endian responses.  The first byte is the
+    // major version and the second byte is the minor version.
     if (respSize == 9 && responseBuffer[0] == _slaveID)
     {
-        hardwareVersion = responseBuffer[3] + responseBuffer[4]/100;
-        softwareVersion = responseBuffer[3] + responseBuffer[4]/100;
+        hardwareVersion = responseBuffer[3] + (float)responseBuffer[4] / 100;
+        softwareVersion = responseBuffer[5] + (float)responseBuffer[6] / 100;
         return true;
     }
     else return false;
@@ -107,6 +169,7 @@ bool yosemitech::startMeasurement(void)
             respSize = sendCommand(startMeasurementW, 9);
             if (respSize == 8 && responseBuffer[0] == _slaveID) return true;
             else return false;
+            break;
         }
         default:
         {
@@ -115,6 +178,7 @@ bool yosemitech::startMeasurement(void)
             respSize = sendCommand(startMeasurementR, 8);
             if (respSize == 5 && responseBuffer[0] == _slaveID) return true;
             else return false;
+            break;
         }
     }
 }
@@ -130,7 +194,7 @@ bool yosemitech::stopMeasurement(void)
 }
 
 // This gets values back from the sensor
-bool yosemitech::getValues(float value1, float value2, byte errorCode)
+bool yosemitech::getValues(float &value1, float &value2, byte &errorCode)
 {    switch (_model)
     {
         case Y520:
@@ -139,18 +203,21 @@ bool yosemitech::getValues(float value1, float value2, byte errorCode)
             byte getValues[8] = {_slaveID, 0x03, 0x26, 0x00, 0x00, 0x05, 0x00, 0x00};
                               // _slaveID, Read,  Reg 9728 ,   5 Regs  ,    CRC
             respSize = sendCommand(getValues, 8);
+            break;
         }
         case Y532:
         {
-            byte getValues[8] = {_slaveID, 0x03, 0x28, 0x00, 0x00, 0x02, 0x00, 0x00};
-                              // _slaveID, Read,  Reg 10240,   2 Regs  ,    CRC
-            respSize = sendCommand(getValues, 8);
+            byte getValues2[8] = {_slaveID, 0x03, 0x28, 0x00, 0x00, 0x02, 0x00, 0x00};
+                               // _slaveID, Read,  Reg 10240,   2 Regs  ,    CRC
+            respSize = sendCommand(getValues2, 8);
+            break;
         }
         default:
         {
-            byte altGetValues[8] = {_slaveID, 0x03, 0x26, 0x00, 0x00, 0x04, 0x00, 0x00};
-                                 // _slaveID, Read,  Reg 9728 ,   4 Regs  ,    CRC
-            respSize = sendCommand(altGetValues, 8);
+            byte getValues3[8] = {_slaveID, 0x03, 0x26, 0x00, 0x00, 0x04, 0x00, 0x00};
+                               // _slaveID, Read,  Reg 9728 ,   4 Regs  ,    CRC
+            respSize = sendCommand(getValues3, 8);
+            break;
         }
     }
 
@@ -178,10 +245,21 @@ bool yosemitech::getValues(float value1, float value2, byte errorCode)
     }
     else return false;
 }
+bool yosemitech::getValues(float &value1, float &value2)
+{
+    byte code;
+    return getValues(value1, value2, code);
+}
+bool yosemitech::getValues(float &value1)
+{
+    float val2;
+    byte code;
+    return getValues(value1, val2, code);
+}
 
 // This gets raw electrical potential values back from the sensor
 // This only applies to pH
-bool yosemitech::getPotentialValue(float value1)
+bool yosemitech::getPotentialValue(float &value1)
 {    switch (_model)
     {
         case Y532:
@@ -189,10 +267,12 @@ bool yosemitech::getPotentialValue(float value1)
             byte getValues[8] = {_slaveID, 0x03, 0x12, 0x00, 0x00, 0x02, 0x00, 0x00};
                               // _slaveID, Read,  Reg 4608 ,   2 Regs  ,    CRC
             respSize = sendCommand(getValues, 8);
+            break;
         }
         default:
         {
             return false;
+            break;
         }
     }
 
@@ -208,7 +288,7 @@ bool yosemitech::getPotentialValue(float value1)
 
 // This gets the temperatures value from a sensor
 // The float variable for value1 must be initialized prior to calling this function.
-bool yosemitech::getTemperatureValue(float value1)
+bool yosemitech::getTemperatureValue(float &value1)
 {    switch (_model)
     {
         case Y532:
@@ -225,17 +305,18 @@ bool yosemitech::getTemperatureValue(float value1)
                 return true;
             }
             else return false;
+            break;
         }
         default:
         {
-            float extra_val;
-            return getValues(extra_val, value1);
+            return getValues(value1);
+            break;
         }
     }
 }
 
 // This gets the calibration constants for the sensor
-bool yosemitech::getCalibration(float K, float B)
+bool yosemitech::getCalibration(float &K, float &B)
 {
     byte getCalib[8] = {_slaveID, 0x03, 0x11, 0x00, 0x00, 0x04, 0x00, 0x00};
                      // _slaveID, Read,  Reg 4352 ,   4 Regs  ,    CRC

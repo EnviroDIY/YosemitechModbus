@@ -33,6 +33,21 @@ public:
     // The "stream" device must be initialized prior to running this.
     bool begin(yosemitechModel model, byte modbusSlaveID, Stream *stream, int enablePin = -1);
 
+    // This returns a pretty string with the model information
+    // NOTE:  This is only based on the model input from the "begin" fxn.
+    // The sensor itself does not return its model information.
+    String getModel(void);
+
+    // This returns a pretty string with the parameter measured.
+    // NOTE:  This is only based on the model input from the "begin" fxn.
+    // The sensor itself does not return this information.
+    String getParameter(void);
+
+    // This returns a pretty string with the measurement units.
+    // NOTE:  This is only based on the model input from the "begin" fxn.
+    // The sensor itself does not return this information.
+    String getUnits(void);
+
     // This gets the modbus slave ID.  Not supported by many sensors.
     byte getSlaveID(void);
 
@@ -45,7 +60,11 @@ public:
     // This gets the hardware and software version of the sensor
     // The float variables for the hardware and software versions must be
     // initialized prior to calling this function.
-    bool getVersion(float hardwareVersion, float softwareVersion);
+    // The reference (&) is needed when declaring this function so that
+    // the function is able to modify the actual input floats rather than
+    // create and destroy copies of them.
+    // There is no need to add the & when actually usig the function.
+    bool getVersion(float &hardwareVersion, float &softwareVersion);
 
     // This tells the optical sensors to begin taking measurements
     bool startMeasurement(void);
@@ -56,21 +75,27 @@ public:
     // This gets values back from the sensor
     // The float variables for value1 and value2 and the byte for the error
     // code must be initialized prior to calling this function.
-    bool getValues(float value1, float value2 = 0.00, byte errorCode = 0x00);
+    // This function is overloaded so you have the option of getting 1 value
+    // 2 values, or 2 values and the error code.
+    // For all of the sensors I have manuals for, other than pH, value1
+    // is the temperature and value2 is the "other" value.
+    bool getValues(float &value1);
+    bool getValues(float &value1, float &value2);
+    bool getValues(float &value1, float &value2, byte &errorCode);
 
     // This gets raw electrical potential values back from the sensor
     // This only applies to pH
     // The float variable for value1 must be initialized prior to calling this function.
-    bool getPotentialValue(float value1);
+    bool getPotentialValue(float &value1);
 
     // This gets the temperatures value from a sensor
     // The float variable for value1 must be initialized prior to calling this function.
-    bool getTemperatureValue(float value1);
+    bool getTemperatureValue(float &value1);
 
     // This gets the calibration constants for the sensor
     // The float variables for K and B must be
     // initialized prior to calling this function.
-    bool getCalibration(float K, float B);
+    bool getCalibration(float &K, float &B);
 
     // This sets the calibration constants for the sensor
     // This is for all sensors EXCEPT pH
@@ -115,6 +140,8 @@ public:
     // will run if power is continuously applied to the sensor.
     uint16_t getBrushInterval(void);
 
+    // This sets a stream for debugging information to go to;
+    void setDebugStream(Stream *stream){_debugStream = stream;}
 
 
 private:
@@ -154,9 +181,6 @@ private:
     // This empties the serial buffer
     void emptyResponseBuffer(Stream *stream);
 
-    // This sets a stream for debugging information to go to;
-    void setDebugStream(Stream *stream){_debugStream = stream;}
-
     // A debugging function for prettily printing raw modbus frames
     // This is purely for debugging
     void printFrameHex(byte modbusFrame[], int frameLength);
@@ -181,8 +205,9 @@ private:
     const uint32_t modbusTimeout = 500;  // The time to wait for response after a command (in ms)
     const int modbusFrameTimeout = 4;  // the time to wait between characters within a frame (in ms)
 
+    static float junk_val;
+    static byte junk_byte;
+
 };
-
-
 
 #endif
