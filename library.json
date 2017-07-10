@@ -1,0 +1,22 @@
+{
+  "name": "YosemitechModbus",
+  "version": "0.0.1",
+  "keywords": "Yosemitech, Modbus, communication, bus, sensor",
+  "description": "Arduino library for communication with Yosemitech sensors via Modbus.",
+  "repository":
+  {
+    "type": "git",
+    "url": "https://github.com/EnviroDIY/YosemitechModbus.git"
+  },
+  "authors":
+  [
+    {
+      "name": "Sara Damiano",
+      "email": "sdamiano@stroudcenter.org",
+      "maintainer": true
+    }
+  ],
+  "license": "BSD-3-Clause",
+  "frameworks": "arduino",
+  "platforms": "atmelavr, atmelsam"
+}

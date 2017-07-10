@@ -1,0 +1,28 @@
+# Syntax Coloring Map for YosemitechModbus when
+# using the Arduino IDE.
+
+### Classes (KEYWORD1)
+
+yosemitech	KEYWORD1
+
+### Methods and Functions (KEYWORD2)
+
+begin	KEYWORD2
+getSlaveID	KEYWORD2
+setSlaveID	KEYWORD2
+getSerialNumber	KEYWORD2
+getVersion	KEYWORD2
+startMeasurement	KEYWORD2
+stopMeasurement	KEYWORD2
+getValues	KEYWORD2
+getPotentialValue	KEYWORD2
+getTemperatureValue	KEYWORD2
+getCalibration	KEYWORD2
+setCalibration	KEYWORD2
+pHCalibrationPoint	KEYWORD2
+pHCalibrationStatus	KEYWORD2
+setCapCoefficients	KEYWORD2
+setpHCalibration	KEYWORD2
+activateBrush	KEYWORD2
+setBrushInterval	KEYWORD2
+getBrushInterval	KEYWORD2
