@@ -60,9 +60,12 @@ public:
 
     // This gets raw electrical potential values back from the sensor
     // This only applies to pH
-    // The float variables for value1 and value2 and the byte for the error
-    // code must be initialized prior to calling this function.
-    bool getPotentialValues(float value1);
+    // The float variable for value1 must be initialized prior to calling this function.
+    bool getPotentialValue(float value1);
+
+    // This gets the temperatures value from a sensor
+    // The float variable for value1 must be initialized prior to calling this function.
+    bool getTemperatureValue(float value1);
 
     // This gets the calibration constants for the sensor
     // The float variables for K and B must be
@@ -70,17 +73,18 @@ public:
     bool getCalibration(float K, float B);
 
     // This sets the calibration constants for the sensor
+    // This is for all sensors EXCEPT pH
     bool setCalibration(float K, float B);
 
-    // This sets the calibration constants for a pH sensor
+    // This sets the 3 calibration points for a pH sensor
     // Calibration steps for pH (3 point calibration only):
-    //   1. Put sensor in solution and stabilize for 1 minute
-    //   2. Input value of calibration standard
+    //   1. Put sensor in solution and allow to stabilize for 1 minute
+    //   2. Input value of calibration standard (ie, run command pHCalibrationPoint(pH))
     //   3. Repeat for points 2 and 3 (pH of 4.00, 6.86, and 9.18 recommended)
     //   4. Read calibration status
     bool pHCalibrationPoint(float pH);
 
-    // This verifies the success of a calibration
+    // This verifies the success of a calibration for a pH sensor
     // Return values:
     //   0x00 - Success
     //   0x01 - Non-matching calibration standards
@@ -93,6 +97,11 @@ public:
     bool setCapCoefficients(float K0, float K1, float K2, float K3,
                             float K4, float K5, float K6, float K7);
 
+    // This sets the calibration constants for a pH sensor
+    // Factory calibration values are:  K1=6.86, K2=-6.72, K3=0.04, K4=6.86, K5=-6.56, K6=-1.04
+    bool setpHCalibration(float K1, float K2, float K3,
+                          float K4, float K5, float K6);
+
     // This immediately activates the cleaning brush for sensors with one.
     // NOTE:  The brush also activates as soon as power is applied.
     // NOTE:  One cleaning sweep with the brush takes about 10 seconds.
@@ -100,11 +109,11 @@ public:
 
     // This sets the brush interval - that is, how frequently the brush will
     // run if power is continuously applied to the sensor.
-    bool setBrushInterval(int intervalMinutes);
+    bool setBrushInterval(uint16_t intervalMinutes);
 
     // This returns the brushing interval - that is, how frequently the brush
     // will run if power is continuously applied to the sensor.
-    int getBrushInterval(void);
+    uint16_t getBrushInterval(void);
 
 
 
@@ -122,9 +131,19 @@ private:
       byte Byte[4];
     };
 
+    // This is just as above, but for a 2-byte interger
+    union SeFrame2 {
+      uint16_t Int;
+      byte Byte[2];
+    };
+
     // This functions return the float from a 4-byte small-endian array beginning
     // at a specific index of another array.
-    float floatFromFrame( byte indata[], int stindex);
+    float floatFromFrame(byte indata[], int stindex);
+
+    // This functions inserts a float as a 4-byte small endian array into another
+    // array beginning at the specified index.
+    void floatIntoFrame(byte indata[], int stindex, float value);
 
     // This flips the device/receive enable to DRIVER so the arduino can send text
     void driverEnable(void);

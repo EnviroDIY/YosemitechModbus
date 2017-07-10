@@ -181,7 +181,7 @@ bool yosemitech::getValues(float value1, float value2, byte errorCode)
 
 // This gets raw electrical potential values back from the sensor
 // This only applies to pH
-bool yosemitech::getPotentialValues(float value1)
+bool yosemitech::getPotentialValue(float value1)
 {    switch (_model)
     {
         case Y532:
@@ -206,6 +206,34 @@ bool yosemitech::getPotentialValues(float value1)
     else return false;
 }
 
+// This gets the temperatures value from a sensor
+// The float variable for value1 must be initialized prior to calling this function.
+bool yosemitech::getTemperatureValue(float value1)
+{    switch (_model)
+    {
+        case Y532:
+        {
+            byte getValues[8] = {_slaveID, 0x03, 0x24, 0x00, 0x00, 0x02, 0x00, 0x00};
+                              // _slaveID, Read,  Reg 9216 ,   2 Regs  ,    CRC
+            respSize = sendCommand(getValues, 8);
+
+            // Parse the response
+            // Y532 (pH)
+            if (respSize == 9 && responseBuffer[0] == _slaveID)
+            {
+                value1 = floatFromFrame(responseBuffer, 3);
+                return true;
+            }
+            else return false;
+        }
+        default:
+        {
+            float extra_val;
+            return getValues(extra_val, value1);
+        }
+    }
+}
+
 // This gets the calibration constants for the sensor
 bool yosemitech::getCalibration(float K, float B)
 {
@@ -224,20 +252,33 @@ bool yosemitech::getCalibration(float K, float B)
 }
 
 // This sets the calibration constants for the sensor
+// This is for all sensors EXCEPT pH
 bool yosemitech::setCalibration(float K, float B)
 {
-    byte setCalib[9] = {_slaveID, 0x10, 0x1C, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-                              // _slaveID, Write, Reg 7168 ,0 Registers, 0byte,    CRC
-    return false;
+    byte setCalib[17] = {_slaveID, 0x10, 0x11, 0x00, 0x00, 0x04, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+                     // _slaveID, Write, Reg 4352 ,4 Registers, 8byte,          K            ,           B           ,    CRC
+    floatIntoFrame(setCalib, 7, K);
+    floatIntoFrame(setCalib, 11, B);
+    respSize = sendCommand(setCalib, 17);
+    if (respSize == 8 && responseBuffer[0] == _slaveID) return true;
+    else return false;
 }
 
-// This sets the calibration constants for a pH sensor
+// This sets the 3 calibration points for a pH sensor
 // Calibration steps for pH (3 point calibration only):
-//   1. Put sensor in solution and stabilize for 1 minute
-//   2. Input value of calibration standard
+//   1. Put sensor in solution and allow to stabilize for 1 minute
+//   2. Input value of calibration standard (ie, run command pHCalibrationPoint(pH))
 //   3. Repeat for points 2 and 3 (pH of 4.00, 6.86, and 9.18 recommended)
 //   4. Read calibration status
-bool yosemitech::pHCalibrationPoint(float pH);
+bool yosemitech::pHCalibrationPoint(float pH)
+{
+    byte setpHPoint[13] = {_slaveID, 0x10, 0x23, 0x00, 0x00, 0x02, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+                        // _slaveID, Write, Reg 8960 ,2 Registers, 4byte,         pH           ,    CRC
+    floatIntoFrame(setpHPoint, 7, pH);
+    respSize = sendCommand(setpHPoint, 13);
+    if (respSize == 8 && responseBuffer[0] == _slaveID) return true;
+    else return false;
+}
 
 // This verifies the success of a calibration
 // Return values:
@@ -245,35 +286,99 @@ bool yosemitech::pHCalibrationPoint(float pH);
 //   0x01 - Non-matching calibration standards
 //   0x02 - Less than 3 points used in calibration
 //   0x04 - Calibration coefficients out of range
-byte yosemitech::pHCalibrationStatus(void);
+//   0x05 - Error in sending command or receiving response
+byte yosemitech::pHCalibrationStatus(void)
+{
+    byte getCalibStat[8] = {_slaveID, 0x03, 0x0E, 0x00, 0x00, 0x01, 0x00, 0x00};
+                         // _slaveID, Read,  Reg 3584 ,   1 Reg   ,    CRC
+    respSize = sendCommand(getCalibStat, 8);
+
+    // Parse the response
+    if (respSize == 7 && responseBuffer[0] == _slaveID)
+    {
+        return responseBuffer[3];
+    }
+    else return 0x05;
+}
 
 // This sets the cap coefficients constants for a sensor
 // This only applies to dissolved oxygen sensors
 bool yosemitech::setCapCoefficients(float K0, float K1, float K2, float K3,
                                     float K4, float K5, float K6, float K7)
 {
-    return false;
+    byte setCapCoef[41] = {_slaveID, 0x10, 0x27, 0x00, 0x00, 0x10, 0x20, 0x00,};
+                        // _slaveID, Write, Reg 9984 ,  16 Regs  ,32byte, etc...
+    floatIntoFrame(setCapCoef, 7, K0);
+    floatIntoFrame(setCapCoef, 11, K1);
+    floatIntoFrame(setCapCoef, 15, K2);
+    floatIntoFrame(setCapCoef, 19, K3);
+    floatIntoFrame(setCapCoef, 23, K4);
+    floatIntoFrame(setCapCoef, 27, K5);
+    floatIntoFrame(setCapCoef, 31, K6);
+    floatIntoFrame(setCapCoef, 35, K7);
+    respSize = sendCommand(setCapCoef, 41);
+    if (respSize == 8 && responseBuffer[0] == _slaveID) return true;
+    else return false;
+}
+
+// This sets the calibration constants for a pH sensor
+// Factory calibration values are:  K1=6.86, K2=-6.72, K3=0.04, K4=6.86, K5=-6.56, K6=-1.04
+bool yosemitech::setpHCalibration(float K1, float K2, float K3,
+                                  float K4, float K5, float K6)
+{
+    byte setpHCalib[33] = {_slaveID, 0x10, 0x29, 0x00, 0x00, 0x0C, 0x18, 0x00,};
+                        // _slaveID, Write, Reg 10496,  12 Regs  ,24byte, etc...
+    floatIntoFrame(setpHCalib, 7, K1);
+    floatIntoFrame(setpHCalib, 11, K2);
+    floatIntoFrame(setpHCalib, 15, K3);
+    floatIntoFrame(setpHCalib, 19, K4);
+    floatIntoFrame(setpHCalib, 23, K5);
+    floatIntoFrame(setpHCalib, 27, K6);
+    respSize = sendCommand(setpHCalib, 33);
+    if (respSize == 8 && responseBuffer[0] == _slaveID) return true;
+    else return false;
 }
 
 // This immediately activates the cleaning brush for sensors with one.
 bool yosemitech::activateBrush(void)
 {
-
-    byte activateBrush[] = {_slaveID, 0x10, 0x31, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+    byte activateBrush[9] = {_slaveID, 0x10, 0x31, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
                          // _slaveID, Write, Reg 7168 ,0 Registers, 0byte,    CRC
-    return false;
+    respSize = sendCommand(activateBrush, 9);
+    if (respSize == 8 && responseBuffer[0] == _slaveID) return true;
+    else return false;
 }
 
 // This sets the brush interval
-bool yosemitech::setBrushInterval(int intervalMinutes)
+bool yosemitech::setBrushInterval(uint16_t intervalMinutes)
 {
-    return false;
+    byte setInterval[11] = {_slaveID, 0x10, 0x32, 0x00, 0x00, 0x01, 0x02, 0x00, 0x00, 0x00, 0x00};
+                         // _slaveID, Write, Reg 12800,    1 reg  ,2byte,  interval ,    CRC
+    SeFrame2 Sefram;
+    Sefram.Int = intervalMinutes;
+    setInterval[7] = Sefram.Byte[0];
+    setInterval[8] = Sefram.Byte[1];
+    respSize = sendCommand(setInterval, 11);
+    if (respSize == 8 && responseBuffer[0] == _slaveID) return true;
+    else return false;
 }
 
 // This returns the brushing interval
-int yosemitech::getBrushInterval(void)
+uint16_t yosemitech::getBrushInterval(void)
 {
-    return 30;
+    byte getBrushInt[8] = {_slaveID, 0x03, 0x32, 0x00, 0x00, 0x01, 0x00, 0x00};
+                        // _slaveID, Read,  Reg 12800,   1 Reg   ,    CRC
+    respSize = sendCommand(getBrushInt, 8);
+
+    // Parse the response
+    if (respSize == 7 && responseBuffer[0] == _slaveID)
+    {
+        SeFrame2 Sefram;
+        Sefram.Byte[0] = responseBuffer[3];
+        Sefram.Byte[1] = responseBuffer[4];
+        return Sefram.Int;
+    }
+    else return 0;
 }
 
 
@@ -283,7 +388,7 @@ int yosemitech::getBrushInterval(void)
 
 // This functions return the float from a 4-byte small-endian array beginning
 // at a specific index of another array.
-float yosemitech::floatFromFrame( byte indata[], int stindex)
+float yosemitech::floatFromFrame(byte indata[], int stindex)
 {
     SeFrame Sefram;
     Sefram.Byte[0] = indata[stindex];
@@ -291,6 +396,17 @@ float yosemitech::floatFromFrame( byte indata[], int stindex)
     Sefram.Byte[2] = indata[stindex + 2];
     Sefram.Byte[3] = indata[stindex + 3];
     return Sefram.Float;
+}
+// This functions inserts a float as a 4-byte small endian array into another
+// array beginning at the specified index.
+void yosemitech::floatIntoFrame(byte indata[], int stindex, float value)
+{
+    SeFrame Sefram;
+    Sefram.Float = value;
+    indata[stindex] = Sefram.Byte[0];
+    indata[stindex + 1] = Sefram.Byte[1];
+    indata[stindex + 2] = Sefram.Byte[2];
+    indata[stindex + 3] = Sefram.Byte[3];
 }
 
 // This flips the device/receive enable to DRIVER so the arduino can send text
