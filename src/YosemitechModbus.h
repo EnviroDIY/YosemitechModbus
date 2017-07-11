@@ -211,6 +211,12 @@ private:
     int respSize;
     byte responseBuffer[18];  // This needs to be bigger than the largest response
 
+    // The modbus protocol defines that there can be no more than 1.5 characters
+    // of silence between characters in a frame and any space over 3.5 characters
+    // defines a new frame.
+    // At 9600 baud with 1 start bit, 8 data bits, no parity check, and 2 stop bits
+    // (the transmission mode for all Yosemitech sensors) 1 character takes ~1.14ms
+    // So the readBytes() command should time out within 4ms
     const uint32_t modbusTimeout = 500;  // The time to wait for response after a command (in ms)
     const int modbusFrameTimeout = 4;  // the time to wait between characters within a frame (in ms)
 

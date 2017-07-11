@@ -1,7 +1,11 @@
 /*****************************************************************************
-Modified by Anthony & Beth
-From sketch from Yosemitech for
-Y511 Turbidity with wiper
+GetValues.ino
+
+This prints basic meta-data about a sensor to the first serial port and then
+begins taking measurements from the sensor.
+
+The sensor model and address can easily be modified to use this sketch with any
+Yosemitech modbus sensor.
 *****************************************************************************/
 
 // ---------------------------------------------------------------------------
@@ -19,7 +23,7 @@ Y511 Turbidity with wiper
 // Define the sensor type
 yosemitechModel model = Y511;  // The sensor model number
 
-// Define the sensor's modbus parameters
+// Define the sensor's modbus address
 byte modbusAddress = 0x1A;  // The sensor's modbus address, or SlaveID
 // Yosemitech ships sensors with a default ID of 0x01.
 
@@ -51,10 +55,13 @@ void setup()
     if (DEREPin > 0) pinMode(DEREPin, OUTPUT);
 
     Serial.begin(9600);  // Main serial port for debugging via USB Serial Monitor
-    modbusSerial.begin(9600);  // The modbus serial stream
+    modbusSerial.begin(9600);  // The modbus serial stream - Baud rate MUST be 9600.
 
     // Start up the sensor
     sensor.begin(model, modbusAddress, &modbusSerial, DEREPin);
+
+    // Turn on debugging
+    sensor.setDebugStream(&Serial);
 
     // Start up note
     Serial.print("Yosemitech ");
@@ -67,9 +74,6 @@ void setup()
     // Conductivity doesn't respond until >1s
     Serial.println("Waiting for sensor and adapter to be ready.");
     delay(1100);
-
-    // Turn on debugging
-    sensor.setDebugStream(&Serial);
 
     // Get the sensor's hardware and software version
     Serial.println("Getting sensor version.");
