@@ -18,9 +18,12 @@ typedef enum yosemitechModel
     Y514,  // Chlorophyll Sensor with Wiper http://www.yosemitech.com/en/product-14.html
     Y516,  // Oil in water?
     Y520,  // 4-Electrode Conductivity Sensor http://www.yosemitech.com/en/product-3.html
-    Y532,  // pH?
+    Y532,  // pH
     Y533,  // ORP?
-    Y550  // UV254 Sensor http://www.yosemitech.com/en/product-21.html
+    Y550,   // UV254 Sensor http://www.yosemitech.com/en/product-21.html
+    UNKNOWN   //  Use if the sensor model is unknown. Doing this is generally a
+              // bad idea, but it can be helpful for doing things like getting
+              // the serial number of an unknown model.
 } yosemitechModel;
 
 class yosemitech
@@ -130,14 +133,20 @@ public:
     // This immediately activates the cleaning brush for sensors with one.
     // NOTE:  The brush also activates as soon as power is applied.
     // NOTE:  One cleaning sweep with the brush takes about 10 seconds.
+    // NOTE:  Brushing commands will only work on turbidity sensors with
+    // hardware Rev1.0 and software Rev1.7 or later
     bool activateBrush(void);
 
     // This sets the brush interval - that is, how frequently the brush will
     // run if power is continuously applied to the sensor.
+    // NOTE:  Brushing commands will only work on turbidity sensors with
+    // hardware Rev1.0 and software Rev1.7 or later
     bool setBrushInterval(uint16_t intervalMinutes);
 
     // This returns the brushing interval - that is, how frequently the brush
     // will run if power is continuously applied to the sensor.
+    // NOTE:  Brushing commands will only work on turbidity sensors with
+    // hardware Rev1.0 and software Rev1.7 or later
     uint16_t getBrushInterval(void);
 
     // This sets a stream for debugging information to go to;

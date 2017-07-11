@@ -25,6 +25,9 @@ bool yosemitech::begin(yosemitechModel model, byte modbusSlaveID, Stream *stream
 
     stream->setTimeout(modbusFrameTimeout);
 
+    // Attempt to a model number based on the serial number for an unknown sensor
+    if (_model == UNKNOWN) getSerialNumber();
+
     return true;
 
 }
@@ -45,7 +48,7 @@ String yosemitech::getModel(void)
         case Y532: {return "Y532"; break;}
         case Y533: {return "Y533"; break;}
         case Y550: {return "Y550"; break;}
-        default:  {return ""; break;}
+        default:  {return "Unknown"; break;}
     }
 }
 
@@ -65,7 +68,7 @@ String yosemitech::getParameter(void)
         case Y532: {return "pH"; break;}
         case Y533: {return "ORP"; break;}
         case Y550: {return "UV254"; break;}
-        default:  {return ""; break;}
+        default:  {return "Unknown"; break;}
     }
 }
 
@@ -85,7 +88,7 @@ String yosemitech::getUnits(void)
         case Y532: {return "pH"; break;}
         case Y533: {return "mV"; break;}
         case Y550: {return "???"; break;}
-        default:  {return ""; break;}
+        default:  {return "Unknown"; break;}
     }
 }
 
@@ -133,6 +136,38 @@ String yosemitech::getSerialNumber(void)
             j++;
         }
         String SN = String(sn_arr);
+
+        // Verify model and serial number match
+        // Serial number to model information based on personal communication with Yosemitech
+        // TODO:  Get serial numbers for the rest of the sensors
+        int modelSS = SN.substring(3,5).toInt();
+
+        // If model was unknown, assign it based on serial number
+        if (_model == UNKNOWN)
+        {
+            if (modelSS == 1) _model = Y504;  // 01 means DO sensor
+            if (modelSS == 9) _model = Y520;  // 09 means conductivity sensor
+            if (modelSS == 10) _model = Y510;  // 10 means turbidity sensor
+            if (modelSS == 29) _model = Y511;  // 29 means self-cleaning turbidity sensor
+            if (modelSS == 48) _model = Y514;  // 48 means chlorophyll
+            if (modelSS == 43) _model = Y532;  // 43 must mean pH
+        }
+
+        // Print warnings when model and serial number do not match
+        if (modelSS == 1 && (_model != Y502 && _model !=Y504))  // 01 means DO sensor
+            _debugStream->print(F("Serial number and model number do not match!"));
+        if (modelSS == 9 && (_model != Y520))  // 09 means conductivity sensor
+            _debugStream->print(F("Serial number and model number do not match!"));
+        if (modelSS == 10 && (_model != Y510))  // 10 means turbidity sensor
+            _debugStream->print(F("Serial number and model number do not match!"));
+        if (modelSS == 29 && (_model != Y511))  // 29 means self-cleaning turbidity sensor
+            _debugStream->print(F("Serial number and model number do not match!"));
+        if (modelSS == 48 && (_model != Y514))  // 48 means chlorophyll
+            _debugStream->print(F("Serial number and model number do not match!"));
+        if (modelSS == 43 && (_model != Y532))  // 43 must mean pH
+            _debugStream->print(F("Serial number and model number do not match!"));
+
+        // Return the serial number
         return SN;
     }
     else return "";
