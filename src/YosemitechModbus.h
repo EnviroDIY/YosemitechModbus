@@ -206,7 +206,20 @@ private:
     Stream *_stream;  // The stream instance (serial port) for communication with the RS485
     int _enablePin;  // The pin controlling the driver/receiver enable on the RS485-to-TLL chip
 
-    Stream *_debugStream;  // The stream instance (serial port) for debugging
+    // This creates a null stream to use for "debugging" if you don't want to
+    // actually print to a real stream.
+    struct NullStream : public Stream
+    {
+        NullStream( void ) { return; }
+        int available( void ) { return 0; }
+        void flush( void ) { return; }
+        int peek( void ) { return -1; }
+        int read( void ){ return -1; }
+        size_t write( uint8_t u_Data ){ return 0; }
+        size_t write(const uint8_t *buffer, size_t size) { return 0; }
+    };
+    NullStream nullstream;
+    Stream *_debugStream = &nullstream;  // The stream instance (serial port) for debugging
 
     int respSize;
     byte responseBuffer[18];  // This needs to be bigger than the largest response

@@ -27,7 +27,7 @@ yosemitechModel model = UNKNOWN;  // The sensor model number
 // Define the sensor's modbus address
 byte oldAddress = 0x01;  // The sensor's original modbus address, or SlaveID
 // Yosemitech ships sensors with a default ID of 0x01.
-byte newAddress = 0x1A;
+byte newAddress = 0x32;
 
 // Define pin number variables
 const int PwrPin = 22;  // The pin sending power to the sensor *AND* RS485 adapter

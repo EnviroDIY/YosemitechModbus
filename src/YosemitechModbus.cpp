@@ -29,7 +29,6 @@ bool yosemitech::begin(yosemitechModel model, byte modbusSlaveID, Stream *stream
     if (_model == UNKNOWN) getSerialNumber();
 
     return true;
-
 }
 
 // This returns a pretty string with the model information

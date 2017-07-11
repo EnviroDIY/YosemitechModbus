@@ -21,10 +21,10 @@ Yosemitech modbus sensor.
 // ---------------------------------------------------------------------------
 
 // Define the sensor type
-yosemitechModel model = Y511;  // The sensor model number
+yosemitechModel model = Y532;  // The sensor model number
 
 // Define the sensor's modbus address
-byte modbusAddress = 0x1A;  // The sensor's modbus address, or SlaveID
+byte modbusAddress = 0x32;  // The sensor's modbus address, or SlaveID
 // Yosemitech ships sensors with a default ID of 0x01.
 
 // Define pin number variables
@@ -61,7 +61,7 @@ void setup()
     sensor.begin(model, modbusAddress, &modbusSerial, DEREPin);
 
     // Turn on debugging
-    sensor.setDebugStream(&Serial);
+    // sensor.setDebugStream(&Serial);
 
     // Start up note
     Serial.print("Yosemitech ");
@@ -70,10 +70,11 @@ void setup()
     Serial.println(sensor.getParameter());
 
     // Allow the sensor and converter to warm up
-    // Turbidity and DO seem to be ready in ~500ms
-    // Conductivity doesn't respond until >1s
+    // DO responds within 275-300ms;
+    // Turbidity and pH within 500ms
+    // Conductivity doesn't respond until 1.15-1.2s
     Serial.println("Waiting for sensor and adapter to be ready.");
-    delay(1100);
+    delay(500);
 
     // Get the sensor's hardware and software version
     Serial.println("Getting sensor version.");
@@ -140,9 +141,15 @@ void setup()
     //    20 s for turbidity
     //    10 s for conductivity
 
-    // SRGD testing - the brush immediately activates after getting power and
-    // takes approximately 10-11 seconds to finish.
-    // It may take up to 22 seconds to get stable values.
+    // On wipered (self-cleaning) models, the brush immediately activates after
+    // getting power and takes approximately 10-11 seconds to finish.  No
+    // readings should be taken during this time.
+
+    // pH returns values after ~4.5 seconds
+    // Conductivity returns values after about 2.4 seconds, but is not stable
+    // until ~10 seconds.
+    // DO does not return values until ~8 seconds
+    // Turbidity takes ~22 seconds to get stable values.
     Serial.println("Allowing sensor to stabilize..");
     for (int i = 10; i > 0; i--)
     {
@@ -186,7 +193,8 @@ void setup()
     Serial.print(sensor.getParameter());
     Serial.print("(");
     Serial.print(sensor.getUnits());
-    Serial.println(")");
+    // Serial.print(")    Millis");
+    Serial.println();
 }
 
 // ---------------------------------------------------------------------------
@@ -206,18 +214,22 @@ void loop()
     Serial.print(temp);
     Serial.print("      ");
     Serial.print(val);
+    // Serial.print("      ");
+    // Serial.print(millis());
     Serial.println();
 
 
     // Delay between readings
-    // Modbus manuals recommend the following remeasure times:
+    // Modbus manuals recommend the following re-measure times:
     //     2 s for chlorophyll
     //     2 s for turbidity
     //     3 s for conductivity
 
-    // SRGD testing shows the turbidity sensor appears to be capable of taking
-    // readings approximately once every 1.6 seconds, although the teperature
-    // sensor can take readings much more quickly.  The same reading results
-    // can be read many times from the registers between the sensor readings.
-    delay(2000);
+    // The turbidity and DO sensors appear return new readings about every 1.6 seconds.
+    // The pH sensor returns new readings about every 1.8 seconds.
+    // The conductivity sensor only returns new readings about every 2.7 seconds.
+
+    // The teperature sensors can take readings much more quickly.  The same results
+    // can be read many times from the registers between the new sensor readings.
+    delay(3000);
 }
