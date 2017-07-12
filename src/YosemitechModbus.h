@@ -35,6 +35,7 @@ public:
     // It should be run during the arduino "setup" function.
     // The "stream" device must be initialized prior to running this.
     bool begin(yosemitechModel model, byte modbusSlaveID, Stream *stream, int enablePin = -1);
+    bool begin(yosemitechModel model, byte modbusSlaveID, Stream &stream, int enablePin = -1);
 
     // This returns a pretty string with the model information
     // NOTE:  This is only based on the model input from the "begin" fxn.

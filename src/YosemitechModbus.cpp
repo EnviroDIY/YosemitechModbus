@@ -23,7 +23,25 @@ bool yosemitech::begin(yosemitechModel model, byte modbusSlaveID, Stream *stream
     // Set pin mode for the enable pin
     if (_enablePin > 0) pinMode(_enablePin, OUTPUT);
 
-    stream->setTimeout(modbusFrameTimeout);
+    _stream->setTimeout(modbusFrameTimeout);
+
+    // Attempt to a model number based on the serial number for an unknown sensor
+    if (_model == UNKNOWN) getSerialNumber();
+
+    return true;
+}
+bool yosemitech::begin(yosemitechModel model, byte modbusSlaveID, Stream &stream, int enablePin)
+{
+    // Give values to variables;
+    _model = model;
+    _slaveID = modbusSlaveID;
+    _stream = &stream;
+    _enablePin = enablePin;
+
+    // Set pin mode for the enable pin
+    if (_enablePin > 0) pinMode(_enablePin, OUTPUT);
+
+    _stream->setTimeout(modbusFrameTimeout);
 
     // Attempt to a model number based on the serial number for an unknown sensor
     if (_model == UNKNOWN) getSerialNumber();
