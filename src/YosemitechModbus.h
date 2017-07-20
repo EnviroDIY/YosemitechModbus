@@ -67,7 +67,7 @@ public:
     // The reference (&) is needed when declaring this function so that
     // the function is able to modify the actual input floats rather than
     // create and destroy copies of them.
-    // There is no need to add the & when actually usig the function.
+    // There is no need to add the & when actually using the function.
     bool getVersion(float &hardwareVersion, float &softwareVersion);
 
     // This tells the optical sensors to begin taking measurements
@@ -174,11 +174,11 @@ private:
       byte Byte[2];
     };
 
-    // This functions return the float from a 4-byte small-endian array beginning
+    // This function returns the float from a 4-byte small-endian array beginning
     // at a specific index of another array.
     float floatFromFrame(byte indata[], int stindex);
 
-    // This functions inserts a float as a 4-byte small endian array into another
+    // This function inserts a float as a 4-byte small endian array into another
     // array beginning at the specified index.
     void floatIntoFrame(byte indata[], int stindex, float value);
 

@@ -21,10 +21,10 @@ Yosemitech modbus sensor.
 // ---------------------------------------------------------------------------
 
 // Define the sensor type
-yosemitechModel model = Y532;  // The sensor model number
+yosemitechModel model = Y514;  // The sensor model number
 
 // Define the sensor's modbus address
-byte modbusAddress = 0x32;  // The sensor's modbus address, or SlaveID
+byte modbusAddress = 0x01;  // The sensor's modbus address, or SlaveID
 // Yosemitech ships sensors with a default ID of 0x01.
 
 // Define pin number variables
@@ -74,7 +74,7 @@ void setup()
     // Turbidity and pH within 500ms
     // Conductivity doesn't respond until 1.15-1.2s
     Serial.println("Waiting for sensor and adapter to be ready.");
-    delay(500);
+    delay(1300);
 
     // Get the sensor's hardware and software version
     Serial.println("Getting sensor version.");
@@ -124,7 +124,7 @@ void setup()
 
         // Reset the wiper interval to 30 minutes, the default
         Serial.println("Resetting cleaning interval to 30 minutes.");
-        success = sensor.setBrushInterval(5);
+        success = sensor.setBrushInterval(30);
         if (success) Serial.println("    Reset.");
         else Serial.println("    Set interval failed!");
     }
@@ -193,7 +193,8 @@ void setup()
     Serial.print(sensor.getParameter());
     Serial.print("(");
     Serial.print(sensor.getUnits());
-    // Serial.print(")    Millis");
+    Serial.print(")");
+    //Serial.print("    Millis");
     Serial.println();
 }
 
