@@ -277,21 +277,21 @@ bool yosemitech::getValues(float &value1, float &value2, byte &errorCode)
     // Y532 (pH)
     if (respSize == 9 && responseBuffer[0] == _slaveID)
     {
-        value1 = floatFromFrame(responseBuffer, 3);
+        value1 = float32FromSEFrame(responseBuffer, 3);
         return true;
     }
     // Y520, Y514 (Conductivity, Chlorophyll)
     if (respSize == 13 && responseBuffer[0] == _slaveID)
     {
-        value1 = floatFromFrame(responseBuffer, 3);
-        value2 = floatFromFrame(responseBuffer, 7);
+        value1 = float32FromSEFrame(responseBuffer, 3);
+        value2 = float32FromSEFrame(responseBuffer, 7);
         return true;
     }
     // Default
     if (respSize == 15 && responseBuffer[0] == _slaveID)
     {
-        value1 = floatFromFrame(responseBuffer, 3);
-        value2 = floatFromFrame(responseBuffer, 7);
+        value1 = float32FromSEFrame(responseBuffer, 3);
+        value2 = float32FromSEFrame(responseBuffer, 7);
         errorCode = responseBuffer[11];
         return true;
     }
@@ -332,7 +332,7 @@ bool yosemitech::getPotentialValue(float &value1)
     // Y532 (pH)
     if (respSize == 9 && responseBuffer[0] == _slaveID)
     {
-        value1 = floatFromFrame(responseBuffer, 3);
+        value1 = float32FromSEFrame(responseBuffer, 3);
         return true;
     }
     else return false;
@@ -353,7 +353,7 @@ bool yosemitech::getTemperatureValue(float &value1)
             // Y532 (pH)
             if (respSize == 9 && responseBuffer[0] == _slaveID)
             {
-                value1 = floatFromFrame(responseBuffer, 3);
+                value1 = float32FromSEFrame(responseBuffer, 3);
                 return true;
             }
             else return false;
@@ -377,8 +377,8 @@ bool yosemitech::getCalibration(float &K, float &B)
     // Parse the response
     if (respSize == 13 && responseBuffer[0] == _slaveID)
     {
-        K = floatFromFrame(responseBuffer, 3);
-        B = floatFromFrame(responseBuffer, 7);
+        K = float32FromSEFrame(responseBuffer, 3);
+        B = float32FromSEFrame(responseBuffer, 7);
         return true;
     }
     else return false;
@@ -390,8 +390,8 @@ bool yosemitech::setCalibration(float K, float B)
 {
     byte setCalib[17] = {_slaveID, 0x10, 0x11, 0x00, 0x00, 0x04, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
                      // _slaveID, Write, Reg 4352 ,4 Registers, 8byte,          K            ,           B           ,    CRC
-    floatIntoFrame(setCalib, 7, K);
-    floatIntoFrame(setCalib, 11, B);
+    float32IntoSEFrame(setCalib, 7, K);
+    float32IntoSEFrame(setCalib, 11, B);
     respSize = sendCommand(setCalib, 17);
     if (respSize == 8 && responseBuffer[0] == _slaveID) return true;
     else return false;
@@ -407,7 +407,7 @@ bool yosemitech::pHCalibrationPoint(float pH)
 {
     byte setpHPoint[13] = {_slaveID, 0x10, 0x23, 0x00, 0x00, 0x02, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
                         // _slaveID, Write, Reg 8960 ,2 Registers, 4byte,         pH           ,    CRC
-    floatIntoFrame(setpHPoint, 7, pH);
+    float32IntoSEFrame(setpHPoint, 7, pH);
     respSize = sendCommand(setpHPoint, 13);
     if (respSize == 8 && responseBuffer[0] == _slaveID) return true;
     else return false;
@@ -441,14 +441,14 @@ bool yosemitech::setCapCoefficients(float K0, float K1, float K2, float K3,
 {
     byte setCapCoef[41] = {_slaveID, 0x10, 0x27, 0x00, 0x00, 0x10, 0x20, 0x00,};
                         // _slaveID, Write, Reg 9984 ,  16 Regs  ,32byte, etc...
-    floatIntoFrame(setCapCoef, 7, K0);
-    floatIntoFrame(setCapCoef, 11, K1);
-    floatIntoFrame(setCapCoef, 15, K2);
-    floatIntoFrame(setCapCoef, 19, K3);
-    floatIntoFrame(setCapCoef, 23, K4);
-    floatIntoFrame(setCapCoef, 27, K5);
-    floatIntoFrame(setCapCoef, 31, K6);
-    floatIntoFrame(setCapCoef, 35, K7);
+    float32IntoSEFrame(setCapCoef, 7, K0);
+    float32IntoSEFrame(setCapCoef, 11, K1);
+    float32IntoSEFrame(setCapCoef, 15, K2);
+    float32IntoSEFrame(setCapCoef, 19, K3);
+    float32IntoSEFrame(setCapCoef, 23, K4);
+    float32IntoSEFrame(setCapCoef, 27, K5);
+    float32IntoSEFrame(setCapCoef, 31, K6);
+    float32IntoSEFrame(setCapCoef, 35, K7);
     respSize = sendCommand(setCapCoef, 41);
     if (respSize == 8 && responseBuffer[0] == _slaveID) return true;
     else return false;
@@ -461,12 +461,12 @@ bool yosemitech::setpHCalibration(float K1, float K2, float K3,
 {
     byte setpHCalib[33] = {_slaveID, 0x10, 0x29, 0x00, 0x00, 0x0C, 0x18, 0x00,};
                         // _slaveID, Write, Reg 10496,  12 Regs  ,24byte, etc...
-    floatIntoFrame(setpHCalib, 7, K1);
-    floatIntoFrame(setpHCalib, 11, K2);
-    floatIntoFrame(setpHCalib, 15, K3);
-    floatIntoFrame(setpHCalib, 19, K4);
-    floatIntoFrame(setpHCalib, 23, K5);
-    floatIntoFrame(setpHCalib, 27, K6);
+    float32IntoSEFrame(setpHCalib, 7, K1);
+    float32IntoSEFrame(setpHCalib, 11, K2);
+    float32IntoSEFrame(setpHCalib, 15, K3);
+    float32IntoSEFrame(setpHCalib, 19, K4);
+    float32IntoSEFrame(setpHCalib, 23, K5);
+    float32IntoSEFrame(setpHCalib, 27, K6);
     respSize = sendCommand(setpHCalib, 33);
     if (respSize == 8 && responseBuffer[0] == _slaveID) return true;
     else return false;
@@ -521,7 +521,7 @@ uint16_t yosemitech::getBrushInterval(void)
 
 // This functions return the float from a 4-byte small-endian array beginning
 // at a specific index of another array.
-float yosemitech::floatFromFrame(byte indata[], int stindex)
+float yosemitech::float32FromSEFrame(byte indata[], int stindex)
 {
     SeFrame Sefram;
     Sefram.Byte[0] = indata[stindex];
@@ -532,7 +532,7 @@ float yosemitech::floatFromFrame(byte indata[], int stindex)
 }
 // This functions inserts a float as a 4-byte small endian array into another
 // array beginning at the specified index.
-void yosemitech::floatIntoFrame(byte indata[], int stindex, float value)
+void yosemitech::float32IntoSEFrame(byte indata[], int stindex, float value)
 {
     SeFrame Sefram;
     Sefram.Float = value;

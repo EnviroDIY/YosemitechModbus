@@ -176,11 +176,11 @@ private:
 
     // This function returns the float from a 4-byte small-endian array beginning
     // at a specific index of another array.
-    float floatFromFrame(byte indata[], int stindex);
+    float float32FromSEFrame(byte indata[], int stindex);
 
     // This function inserts a float as a 4-byte small endian array into another
     // array beginning at the specified index.
-    void floatIntoFrame(byte indata[], int stindex, float value);
+    void float32IntoSEFrame(byte indata[], int stindex, float value);
 
     // This flips the device/receive enable to DRIVER so the arduino can send text
     void driverEnable(void);

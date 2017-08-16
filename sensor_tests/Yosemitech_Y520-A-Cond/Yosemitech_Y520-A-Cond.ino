@@ -95,7 +95,7 @@ union SeFrame {
 
 // This functions return the float from a 4-byte small-endian array beginning
 // at a specific index of another array.
-float floatFromFrame( byte indata[], int stindex)
+float float32FromSEFrame( byte indata[], int stindex)
 {
     SeFrame Sefram;  // Create an object of the small-endian class
     // Fill out the bytes
@@ -334,8 +334,8 @@ void loop()
         // Print response converted to floats
         if (bytesRead >= 13)
         {
-            Value1 = floatFromFrame(responseBuffer, 3);
-            Value2 = floatFromFrame(responseBuffer, 7);
+            Value1 = float32FromSEFrame(responseBuffer, 3);
+            Value2 = float32FromSEFrame(responseBuffer, 7);
             if (bytesRead >= 15)  // if using "altGetValues" flags will not be sent
             {
                 errorFlag = responseBuffer[11];
