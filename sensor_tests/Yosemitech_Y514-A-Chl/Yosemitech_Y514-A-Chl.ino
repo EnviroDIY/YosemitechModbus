@@ -96,7 +96,7 @@ union SeFrame {
   byte Byte[4];
 };
 
-// This functions return the float from a 4-byte small-endian array beginning
+// This function returns the float from a 4-byte small-endian array beginning
 // at a specific index of another array.
 float float32FromSEFrame( byte indata[], int stindex)
 {

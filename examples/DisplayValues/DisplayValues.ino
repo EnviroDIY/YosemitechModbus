@@ -13,6 +13,9 @@ Yosemitech modbus sensor.
 // ---------------------------------------------------------------------------
 #include <Arduino.h>
 #include <SoftwareSerial.h>
+#include <Wire.h>  // For the I2C for the OLED display
+#include <AMAdafruit_GFX.h>  // For the OLED display
+#include <SDL_Arduino_SSD1306.h>  // For the OLED display
 #include <YosemitechModbus.h>
 
 // ---------------------------------------------------------------------------
@@ -43,6 +46,9 @@ SoftwareSerial modbusSerial(SSRxPin, SSTxPin);
 yosemitech sensor;
 bool success;
 
+// Set up the OLED display
+SDL_Arduino_SSD1306 display(-1);  // using I2C and not bothering with a reset pin
+
 // ---------------------------------------------------------------------------
 // Main setup function
 // ---------------------------------------------------------------------------
@@ -60,80 +66,92 @@ void setup()
     // Start up the sensor
     sensor.begin(model, modbusAddress, &modbusSerial, DEREPin);
 
+    // Start the OLED
+    display.begin(SSD1306_SWITCHCAPVCC, 0x3C, false);
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(WHITE);
+    display.setCursor(0,0);
+
     // Turn on debugging
     sensor.setDebugStream(&Serial);
 
     // Start up note
-    Serial.print("Yosemitech ");
-    Serial.print(sensor.getModel());
-    Serial.print(" sensor for ");
-    Serial.println(sensor.getParameter());
-
-    // Allow the sensor and converter to warm up
-    // DO responds within 275-300ms;
-    // Turbidity and pH within 500ms
-    // Conductivity doesn't respond until 1.15-1.2s
-    Serial.println("Waiting for sensor and adapter to be ready.");
-    delay(1300);
+    display.println("Yosemitech ");
+    display.println(sensor.getModel());
+    display.display();
+    display.println(sensor.getParameter());
+    display.println("Sensor");
+    display.display();
+    delay(2000);
 
     // Get the sensor's hardware and software version
-    Serial.println("Getting sensor version.");
+    display.clearDisplay();
+    display.setCursor(0,0);
     float hardwareV, softwareV;
     sensor.getVersion(hardwareV, softwareV);
-    Serial.print("    Current Hardware Version: ");
-    Serial.println(hardwareV);
-    Serial.print("    Current Software Version: ");
-    Serial.println(softwareV);
-
-    // Get the sensor serial number
-    Serial.println("Getting sensor serial number.");
+    display.println("Hardware Version:");
+    display.println(hardwareV);
+    display.println("Software Version:");
+    display.println(softwareV);
     String SN = sensor.getSerialNumber();
-    Serial.print("    Serial Number: ");
-    Serial.println(SN);
+    display.println("Serial Number:");
+    display.print(SN);
+    display.display();
+    delay(2000);
 
     // Get the sensor calibration status (pH only)
     if (model == Y532)
     {
-        Serial.println("Getting sensor calibration status.");
+        display.clearDisplay();
+        display.setCursor(0,0);
         byte status = sensor.pHCalibrationStatus();
-        Serial.print("    Status: 0x0");
-        Serial.println(status, HEX);
+        display.println("Calibration Status:");
+        display.print("0x0");
+        display.println(status, HEX);
+        display.display();
+        delay(2000);
     }
 
     // Get the sensor's current calibration values
     if (model != Y532)
     {
-        Serial.println("Getting sensor calibration equation.");
+        display.clearDisplay();
+        display.setCursor(0,0);
         float Kval = 0;
         float Bval = 0;
         sensor.getCalibration(Kval, Bval);
-        Serial.print("    Current Calibration Equation: final = ");
-        Serial.print(Kval);
-        Serial.print("*raw + ");
-        Serial.println(Bval);
+        display.println("Current Calibration Equation: final = ");
+        display.print("final = ");
+        display.print(Kval);
+        display.print("*raw + ");
+        display.println(Bval);
+        display.display();
+        delay(2000);
     }
 
     if (model == Y511 || model == Y513 || model == Y514)
     {
+        display.clearDisplay();
+        display.setCursor(0,0);
         // Check the wiper timing
-        Serial.println("Getting sensor cleaning interval.");
         uint16_t interval = sensor.getBrushInterval();
-        Serial.print("    Sensor auto-cleaning interval: ");
-        Serial.print(interval);
-        Serial.println(" minutes");
-
-        // Reset the wiper interval to 30 minutes, the default
-        Serial.println("Resetting cleaning interval to 30 minutes.");
-        success = sensor.setBrushInterval(30);
-        if (success) Serial.println("    Reset.");
-        else Serial.println("    Set interval failed!");
+        display.println("Sensor auto-cleaning interval: ");
+        display.print(interval);
+        display.println(" minutes");
+        display.display();
+        delay(2000);
     }
 
     // Tell the sensor to start taking measurements
-    Serial.println("Starting sensor measurements");
+    display.clearDisplay();
+    display.setCursor(0,0);
+    display.println("Starting sensor measurements");
+    display.println();
     success = sensor.startMeasurement();
-    if (success) Serial.println("    Measurements started.");
-    else Serial.println("    Failed to start measuring!");
+    if (success) display.println("    Measurements started.");
+    else display.println("    Failed to start measuring!");
+    display.display();
 
     // The modbus manuals recommend the following warm-up times between starting
     // measurements and requesting values :
@@ -150,52 +168,63 @@ void setup()
     // until ~10 seconds.
     // DO does not return values until ~8 seconds
     // Turbidity takes ~22 seconds to get stable values.
-    Serial.println("Allowing sensor to stabilize..");
+    display.clearDisplay();
+    display.setCursor(0,0);
+    display.println("Allowing sensor to stabilize..");
+    display.display();
     for (int i = 10; i > 0; i--)
     {
-        Serial.print(i);
+        display.print(i);
+        display.display();
         delay (250);
-        Serial.print(".");
+        display.print(".");
+        display.display();
         delay (250);
-        Serial.print(".");
+        display.print(".");
+        display.display();
         delay (250);
-        Serial.print(".");
+        display.print(".");
+        display.display();
         delay (250);
     }
-    Serial.println("\n");
+    display.display();
 
     if (model == Y511 || model == Y513 || model == Y514)
     {
+        display.clearDisplay();
+        display.setCursor(0,0);
         // We'll run the brush once in the middle of this
-        Serial.println("Activating brush.");
+        display.println("Activating brush.");
+        display.display();
         success = sensor.activateBrush();
-        if (success) Serial.println("    Brush activated.");
-        else Serial.println("    Failed to activate brush!");
+        if (success) display.println("    Brush activated.");
+        else display.println("    Failed to activate brush!");
+        display.display();
     }
     if (model == Y511 || model == Y513 || model == Y514 || model == Y510)
     {
-        Serial.println("Continuing to stabilize..");
+        display.clearDisplay();
+        display.setCursor(0,0);
+        display.println("Continuing to stabilize..");
+        display.display();
         for (int i = 12; i > 0; i--)
         {
-            Serial.print(i);
+            display.print(i);
+            display.display();
             delay (250);
-            Serial.print(".");
+            display.print(".");
+            display.display();
             delay (250);
-            Serial.print(".");
+            display.print(".");
+            display.display();
             delay (250);
-            Serial.print(".");
+            display.print(".");
+            display.display();
             delay (250);
         }
-        Serial.println("\n");
+        display.println("\n");
+        display.display();
     }
-
-    Serial.print("Temp(°C)  ");
-    Serial.print(sensor.getParameter());
-    Serial.print("(");
-    Serial.print(sensor.getUnits());
-    Serial.print(")");
-    //Serial.print("    Millis");
-    Serial.println();
 }
 
 // ---------------------------------------------------------------------------
@@ -212,12 +241,22 @@ void loop()
         sensor.getTemperatureValue(temp);
     }
     else sensor.getValues(temp, val);
-    Serial.print(temp);
-    Serial.print("      ");
-    Serial.print(val);
-    // Serial.print("      ");
-    // Serial.print(millis());
-    Serial.println();
+
+
+    display.clearDisplay();
+    display.setCursor(0,0);
+    display.setTextSize(2);
+    display.println("Temp (C):");
+    display.print("    ");
+    display.println(temp);
+    // display.print(sensor.getParameter());
+    // display.print("(");
+    // display.print(sensor.getUnits());
+    // display.print("): ");
+    display.println("DO (%):");
+    display.print("    ");
+    display.println(val);
+    display.display();
 
 
     // Delay between readings
@@ -232,5 +271,5 @@ void loop()
 
     // The teperature sensors can take readings much more quickly.  The same results
     // can be read many times from the registers between the new sensor readings.
-    delay(3000);
+    delay(1700);
 }
