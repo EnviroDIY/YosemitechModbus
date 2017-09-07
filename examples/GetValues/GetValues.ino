@@ -54,7 +54,7 @@ void setup()
 
     if (DEREPin > 0) pinMode(DEREPin, OUTPUT);
 
-    Serial.begin(9600);  // Main serial port for debugging via USB Serial Monitor
+    Serial.begin(57600);  // Main serial port for debugging via USB Serial Monitor
     modbusSerial.begin(9600);  // The modbus serial stream - Baud rate MUST be 9600.
 
     // Start up the sensor
@@ -74,7 +74,7 @@ void setup()
     // Turbidity and pH within 500ms
     // Conductivity doesn't respond until 1.15-1.2s
     Serial.println("Waiting for sensor and adapter to be ready.");
-    delay(1300);
+    delay(1500);
 
     // Get the sensor's hardware and software version
     Serial.println("Getting sensor version.");
@@ -194,6 +194,7 @@ void setup()
     Serial.print("(");
     Serial.print(sensor.getUnits());
     Serial.print(")");
+    if (model == Y532 || model == Y504) Serial.print("    Value");
     //Serial.print("    Millis");
     Serial.println();
 }
@@ -204,17 +205,16 @@ void setup()
 void loop()
 {
     // send the command to get the values
-    float temp = 0;
-    float val = 0;
-    if (model == Y532)
-    {
-        sensor.getValues(val);
-        sensor.getTemperatureValue(temp);
-    }
-    else sensor.getValues(temp, val);
-    Serial.print(temp);
+    float parmValue, tempValue, thirdValue = -9999;
+    sensor.getValues(parmValue, tempValue, thirdValue);
+    Serial.print(tempValue);
     Serial.print("      ");
-    Serial.print(val);
+    Serial.print(parmValue);
+    if (model == Y532 || model == Y504)
+    {
+        Serial.print("      ");
+        Serial.print(thirdValue);
+    }
     // Serial.print("      ");
     // Serial.print(millis());
     Serial.println();

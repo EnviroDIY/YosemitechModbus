@@ -219,8 +219,8 @@ bool yosemitech::getValues(float &parmValue, float &tempValue, float &thirdValue
         {
             if (modbus.getRegisters(0x03, 9728, 5))
             {
-                parmValue = modbus.float32FromFrame(littleEndian, 3);
-                tempValue = modbus.float32FromFrame(littleEndian, 7);
+                tempValue = modbus.float32FromFrame(littleEndian, 3);
+                parmValue = modbus.float32FromFrame(littleEndian, 7);
                 thirdValue = -9999;  // Initialize with an error value
                 errorCode = modbus.byteFromFrame(11);
                 return true;
@@ -245,9 +245,9 @@ bool yosemitech::getValues(float &parmValue, float &tempValue, float &thirdValue
         {
             if (modbus.getRegisters(0x03, 9728, 4))
             {
-                float DOpercent = modbus.float32FromFrame(littleEndian, 3);
+                float DOpercent = modbus.float32FromFrame(littleEndian, 7);
                 parmValue = DOpercent * 100;  // Because it returns number not %
-                tempValue = modbus.float32FromFrame(littleEndian, 7);
+                tempValue = modbus.float32FromFrame(littleEndian, 3);
                 errorCode = 0x00;  // No errors
 
                 // Calculate DO saturation at sea level at a given temp/salinity
@@ -439,7 +439,7 @@ bool yosemitech::getCalibration(float &K, float &B)
 // The K value begins in register 0x1100 (4352) and the B value two registers later
 bool yosemitech::setCalibration(float K, float B)
 {
-    bool success;
+    bool success = true;
     success &= modbus.float32ToRegister(4352, K, littleEndian);
     success &= modbus.float32ToRegister(4354, B, littleEndian);
     return success;
