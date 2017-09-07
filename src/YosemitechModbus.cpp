@@ -198,135 +198,214 @@ bool yosemitech::stopMeasurement(void)
 }
 
 // This gets values back from the sensor
-bool yosemitech::getValues(float &value1, float &value2, byte &errorCode)
+// All sensors but pH, return two 32-bit float values beginning in holding register
+// 0x2602 (9730), where the parameter value is in the first two register and the
+// temperature in celsius is in the next two registers.  For some sensors
+// (Y520/Conductivity and Y514/Chlorophyll) this followed by an error code.
+// The pH sensor returns the pH as a 32-bit float beginning in holding register
+// 0x2800 (10240) and the temperature in celsuis as a separate 32-bit float
+// beginning in holding register 0x2400 (9216).  The pH sensor can also return
+// the raw electrical potential values back from the sensor as a 32-bit float
+// beginning in holding register 0x1200 (4608).  As a convienence, I am also
+// calculating the DO in mg/L from the DO sensor, which otherwise would only
+// return percent saturation.
+bool yosemitech::getValues(float &parmValue, float &tempValue, float &thirdValue, byte &errorCode)
 {
-    int respSize;
     switch (_model)
     {
+        // Sensors with the error code Y520, Y514 (Conductivity, Chlorophyll)
         case Y520:
         case Y514:
         {
-            byte getValues[8] = {_slaveID, 0x03, 0x26, 0x00, 0x00, 0x05, 0x00, 0x00};
-                              // _slaveID, Read,  Reg 9728 ,   5 Regs  ,    CRC
-            respSize = modbus.sendCommand(getValues, 8);
-            break;
-        }
-        case Y532:
-        {
-            byte getValues2[8] = {_slaveID, 0x03, 0x28, 0x00, 0x00, 0x02, 0x00, 0x00};
-                               // _slaveID, Read,  Reg 10240,   2 Regs  ,    CRC
-            respSize = modbus.sendCommand(getValues2, 8);
-            break;
-        }
-        default:
-        {
-            byte getValues3[8] = {_slaveID, 0x03, 0x26, 0x00, 0x00, 0x04, 0x00, 0x00};
-                               // _slaveID, Read,  Reg 9728 ,   4 Regs  ,    CRC
-            respSize = modbus.sendCommand(getValues3, 8);
-            break;
-        }
-    }
-
-    // Parse the response
-    // Y532 (pH)
-    if (respSize == 9 && modbus.responseBuffer[0] == _slaveID)
-    {
-        value1 = modbus.float32FromFrame(littleEndian, 3);
-        return true;
-    }
-    // Y520, Y514 (Conductivity, Chlorophyll)
-    if (respSize == 13 && modbus.responseBuffer[0] == _slaveID)
-    {
-        value1 = modbus.float32FromFrame(littleEndian, 3);
-        value2 = modbus.float32FromFrame(littleEndian, 7);
-        return true;
-    }
-    // Default
-    if (respSize == 15 && modbus.responseBuffer[0] == _slaveID)
-    {
-        value1 = modbus.float32FromFrame(littleEndian, 3);
-        value2 = modbus.float32FromFrame(littleEndian, 7);
-        errorCode = modbus.responseBuffer[11];
-        return true;
-    }
-    else return false;
-}
-bool yosemitech::getValues(float &value1, float &value2)
-{
-    byte code;
-    return getValues(value1, value2, code);
-}
-bool yosemitech::getValues(float &value1)
-{
-    float val2;
-    byte code;
-    return getValues(value1, val2, code);
-}
-
-// This gets raw electrical potential values back from the sensor
-// This only applies to pH
-bool yosemitech::getPotentialValue(float &value1)
-{
-    int respSize;
-    switch (_model)
-    {
-        case Y532:
-        {
-            byte getValues[8] = {_slaveID, 0x03, 0x12, 0x00, 0x00, 0x02, 0x00, 0x00};
-                              // _slaveID, Read,  Reg 4608 ,   2 Regs  ,    CRC
-            respSize = modbus.sendCommand(getValues, 8);
-            break;
-        }
-        default:
-        {
-            return false;
-            break;
-        }
-    }
-
-    // Parse the response
-    // Y532 (pH)
-    if (respSize == 9 && modbus.responseBuffer[0] == _slaveID)
-    {
-        value1 = modbus.float32FromFrame(littleEndian, 3);
-        return true;
-    }
-    else return false;
-}
-
-// This gets the temperatures value from a sensor
-// The float variable for value1 must be initialized prior to calling this function.
-// For the pH sensor, the temperature is in holding register 0x2400 (9216)
-// For all other sensors, it is the first value
-bool yosemitech::getTemperatureValue(float &value1)
-{    switch (_model)
-    {
-        case Y532:
-        {
-            byte getValues[8] = {_slaveID, 0x03, 0x24, 0x00, 0x00, 0x02, 0x00, 0x00};
-                              // _slaveID, Read,  Reg 9216 ,   2 Regs  ,    CRC
-            int respSize = modbus.sendCommand(getValues, 8);
-
-            // Parse the response
-            // Y532 (pH)
-            if (respSize == 9 && modbus.responseBuffer[0] == _slaveID)
+            if (modbus.getRegisters(0x03, 9728, 5))
             {
-                value1 = modbus.float32FromFrame(littleEndian, 3);
+                parmValue = modbus.float32FromFrame(littleEndian, 3);
+                tempValue = modbus.float32FromFrame(littleEndian, 7);
+                thirdValue = -9999;  // Initialize with an error value
+                errorCode = modbus.byteFromFrame(11);
                 return true;
             }
-            else return false;
             break;
         }
+        // Y532 (pH)
+        case Y532:
+        {
+            if (modbus.getRegisters(0x03, 10240, 2))
+            {
+                parmValue = modbus.float32FromFrame(littleEndian, 3);
+                tempValue = modbus.float32FromRegister(0x03, 9216, littleEndian);
+                thirdValue = getPotentialValue();
+                errorCode = 0x00;  // No errors
+                return true;
+            }
+            break;
+        }
+        // Y504 (DO)
+        case Y504:
+        {
+            if (modbus.getRegisters(0x03, 9728, 4))
+            {
+                float DOpercent = modbus.float32FromFrame(littleEndian, 3);
+                parmValue = DOpercent * 100;  // Because it returns number not %
+                tempValue = modbus.float32FromFrame(littleEndian, 7);
+                errorCode = 0x00;  // No errors
+
+                // Calculate DO saturation at sea level at a given temp/salinity
+                // using equation by Weiss (1970, Deep-Sea Res. 17:721-735)
+                //
+                // The equation by Weiss reads:
+                //
+                // ln DO = A1 + A2 100/T + A3 ln T/100 + A4 T/100          (1)
+                //
+                //    + S [B1 + B2 T/100 + B3 (T/100)2]
+                //
+                // where:
+                //   ln DO is the natural log of the DO solubility in milliliters per liter (ml/L)
+                //   T = temperature in degrees K(273.15 + t  degrees C)
+                //   S = salinity in g/kg (o/oo)
+                     float A1 = -173.4292;
+                     float A2 = 249.6339;
+                     float A3 = 143.3483;
+                     float A4 = - 21.8492;
+                     float Bl = - 0.033096;
+                     float B2 =   0.014259;
+                     float B3 = - 0.001700;
+
+                //  Calculate DO saturation at sea level at a given temp/salinity
+                float Tkelvin = 273.15 + tempValue; //  celsius to kelvin
+                float salinity = 0.0;  // assume 0 for pure water
+                float lnDO = A1 + A2*(100/Tkelvin) + A3*log(Tkelvin/100) + A4*(Tkelvin/100)
+                             + salinity*(Bl + B2*(Tkelvin/100) + B3*(Tkelvin/100)*(Tkelvin/100));
+                 float DO_saturation_SL_mlL = exp(lnDO);
+
+                //  Multiply by the constant 1.4276 to
+                //  convert to milligrams per liter (mg/L).
+                 float DO_saturation_SL_mgL = DO_saturation_SL_mlL*1.4276;
+
+                //  Calculate the vapor pressur of water at sea level at a given
+                //  temperature from the empirical equation derived from the
+                //  Handbook of Chemistry and Physics
+                //  (Chemical Rubber Company, Cleveland, Ohio, 1964)
+                //
+                //  log u = 8.10765 - (1750.286/ (235+t))                   (3)
+                //  where:
+                //    t is temperature in degrees C
+                //    log u is the log base 10 of the vapor pressur of water in mmHg
+                float logVaporPressureH2O = 8.10765 - (1750.286/(235+tempValue));
+                float VaporPressureH2O = pow(logVaporPressureH2O, 10);
+
+                // Correct the DO saturation for the vapor pressure of water
+                // at pressures other than sea level using the equation:
+                // DO' = D0! (P-u/760-u)                                    (2)
+                //
+                // where:
+                //   DO' is the saturation DO at barometric pressure P
+                //   D0! is saturation DO at barometric pressure 760 mm Hg
+                //   u is the vapor pressure of water
+                float baroPressure_mmHg = 760;  // assume working at sea level
+                float DO_saturation_press_mgL = DO_saturation_SL_mgL*
+                      ((baroPressure_mmHg - VaporPressureH2O) / (760 - VaporPressureH2O));
+
+                // Finally, multiply the measured percent saturation by the mg/L
+                // concentration of O2 at saturation at the given temperature,
+                // pressure, and salinity to get the measured DO concentration in mg/L
+                float DOmgL = DO_saturation_press_mgL*DOpercent;
+                thirdValue = DOmgL;
+
+                return true;
+            }
+            break;
+        }
+        // Everybody else
         default:
         {
-            return getValues(value1);
+            if (modbus.getRegisters(0x03, 9728, 4))
+            {
+                parmValue = modbus.float32FromFrame(littleEndian, 3);
+                tempValue = modbus.float32FromFrame(littleEndian, 7);
+                thirdValue = -9999;  // Initialize with an error value
+                errorCode = 0x00;  // No errors
+                return true;
+            }
             break;
         }
     }
+
+    // If something fails, we'll get here
+    errorCode = 0xFF;  // Error!
+    return false;
+}
+bool yosemitech::getValues(float &parmValue, float &tempValue, float &thirdValue)
+{
+    byte errorCode = 0xFF;  // Initialize as if there's an error
+    return getValues(parmValue, tempValue, thirdValue, errorCode);
+}
+bool yosemitech::getValues(float &parmValue, float &tempValue, byte &errorCode)
+{
+    float thirdValue = -9999;  // Initialize with an error value
+    return getValues(parmValue, tempValue, thirdValue, errorCode);
+}
+bool yosemitech::getValues(float &parmValue, float &tempValue)
+{
+    byte errorCode = 0xFF;  // Initialize as if there's an error
+    return getValues(parmValue, tempValue, errorCode);
+}
+bool yosemitech::getValues(float &parmValue, byte &errorCode)
+{
+    float tempValue = -9999;  // Initialize with an error value
+    return getValues(parmValue, tempValue, errorCode);
+}
+bool yosemitech::getValues(float &parmValue)
+{
+    byte errorCode = 0xFF;  // Initialize as if there's an error
+    return getValues(parmValue, errorCode);
+}
+
+
+// This returns the main "parameter" value as a float
+float yosemitech::getValue(void)
+{
+    float parmValue = -9999;  // Initialize with an error value
+    getValues(parmValue);
+    return parmValue;
+}
+float yosemitech::getValue(byte &errorCode)
+{
+    float parmValue = -9999;  // Initialize with an error value
+    getValues(parmValue, errorCode);
+    return parmValue;
+}
+
+// This returns the temperatures value from a sensor as a float
+float yosemitech::getTemperatureValue(void)
+{
+    float parmValue, tempValue = -9999;  // Initialize with an error value
+    getValues(parmValue, tempValue);
+    return tempValue;
+}
+
+// This returns the raw electrical potential from a pH sensor as a float
+float yosemitech::getPotentialValue(void)
+{
+    float parmValue, tempValue, thirdValue = -9999;  // Initialize with an error value
+    getValues(parmValue, tempValue, thirdValue);
+    return thirdValue;
+}
+
+// This returns DO in mg/L (instead of % saturation) as a float
+// This only applies to DO and is calculated in the getValues() equation using
+// the measured temperature and a salinity of 0 and pressure of 760 mmHg (sea level)
+float yosemitech::getDOmgLValue(void)
+{
+    return getPotentialValue();
 }
 
 // This gets the calibration constants for the sensor
-// For linear sensors: K = slope, B = intercept
+// K = slope, B = intercept
+// The calibration is applied to all values returned by the sensor as:
+//    value_returned = (value_raw * K) + B
+// This is for all sensors EXCEPT pH
+// The K value begins in register 0x1100 (4352) and the B value two registers later
 bool yosemitech::getCalibration(float &K, float &B)
 {
     byte getCalib[8] = {_slaveID, 0x03, 0x11, 0x00, 0x00, 0x04, 0x00, 0x00};
@@ -344,8 +423,20 @@ bool yosemitech::getCalibration(float &K, float &B)
 }
 
 // This sets the calibration constants for the sensor
+// The suggested calibration protocol is:
+//    1.  Use this command to set calibration coefficients as K = 1 and B = 0
+//    2.  Put the probe in a solution of known value.  Sent the "startMeasurement"
+//        command and allow the probe to stabilize
+//    3.  Send the "getValue" command to get the returned parameter value.
+//        (Depending on the sensor, you may want to take multiple values and average them.)
+//    4.  Ideally, repeat steps 2-3 in multiple standard solutions
+//    5.  Calculate the slope (K) and offset (B) between the known values for the standard
+//        solutions and the values returned by the sensor.
+//        (x - values from sensor, y = values of standard solutions)
+//    6.  Send the calculated slope (K) and offset (B) to the sensor using
+//        this command.
 // This is for all sensors EXCEPT pH
-// The k value begins in register 0x1100 (4352) and the B value two registers later
+// The K value begins in register 0x1100 (4352) and the B value two registers later
 bool yosemitech::setCalibration(float K, float B)
 {
     bool success;

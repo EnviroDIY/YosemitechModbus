@@ -1,6 +1,6 @@
 {
   "name": "YosemitechModbus",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "keywords": "Yosemitech, Modbus, communication, bus, sensor",
   "description": "Arduino library for communication with Yosemitech sensors via Modbus.",
   "repository":

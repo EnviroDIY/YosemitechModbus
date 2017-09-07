@@ -80,29 +80,65 @@ public:
     // This gets values back from the sensor
     // The float variables for value1 and value2 and the byte for the error
     // code must be initialized prior to calling this function.
-    // This function is overloaded so you have the option of getting 1 value
-    // 2 values, or 2 values and the error code.
-    // For all of the sensors I have manuals for, other than pH, value1
-    // is the temperature and value2 is the "other" value.
-    bool getValues(float &value1);
-    bool getValues(float &value1, float &value2);
-    bool getValues(float &value1, float &value2, byte &errorCode);
+    // This function is overloaded so you have the option of getting:
+    // 1 value - This will be only the parameter value
+    // 1 value and an error code - Parameter value and the error code
+    // 2 values - This will be the parameter and the temperature,
+    //            with the parameter first and the temperature second
+    // 2 values and an error code - As two values, but with error code
+    // 3 values - The parameter, the temperature, and a third value for the
+    //            sensors that return can return something else
+    //            -- Y532 (pH) can return electrical potential
+    //            -- Y504 (DO) allows calculation of DO in mg/L, which can be returned
+    // 3 values and an error code - As two values, but with error code
+    bool getValues(float &parmValue);
+    bool getValues(float &parmValue, byte &errorCode);
+    bool getValues(float &parmValue, float &tempValue);
+    bool getValues(float &parmValue, float &tempValue, byte &errorCode);
+    bool getValues(float &parmValue, float &tempValue, float &thirdValue);
+    bool getValues(float &parmValue, float &tempValue, float &thirdValue, byte &errorCode);
 
-    // This gets raw electrical potential values back from the sensor
+    // This gets the main "parameter" value as a float
+    // This is overloaded, so you have the option of getting the error code
+    // in another pre-initialized variable, if you want it and the sensor
+    // supports it.
+    float getValue(void);
+    float getValue(byte &errorCode);
+
+    // This returns the temperatures value from a sensor as a float
+    float getTemperatureValue(void);
+
+    // This returns raw electrical potential value from the sensor as a float
     // This only applies to pH
-    // The float variable for value1 must be initialized prior to calling this function.
-    bool getPotentialValue(float &value1);
+    float getPotentialValue(void);
 
-    // This gets the temperatures value from a sensor
-    // The float variable for value1 must be initialized prior to calling this function.
-    bool getTemperatureValue(float &value1);
+    // This returns DO in mg/L (instead of % saturation) as a float
+    // This only applies to DO and is calculated in the getValues() equation using
+    // the measured temperature and a salinity of 0 and pressure of 760 mmHg (sea level)
+    float getDOmgLValue(void);
 
     // This gets the calibration constants for the sensor
+    // K = slope, B = intercept
+    // The calibration is applied to all values returned by the sensor as:
+    //    value_returned = (value_raw * K) + B
+    // This is for all sensors EXCEPT pH
     // The float variables for K and B must be
     // initialized prior to calling this function.
     bool getCalibration(float &K, float &B);
 
     // This sets the calibration constants for the sensor
+    // The suggested calibration protocol is:
+    //    1.  Use this command to set calibration coefficients as K = 1 and B = 0
+    //    2.  Put the probe in a solution of known value.  Sent the "startMeasurement"
+    //        command and allow the probe to stabilize
+    //    3.  Send the "getValue" command to get the returned parameter value.
+    //        (Depending on the sensor, you may want to take multiple values and average them.)
+    //    4.  Ideally, repeat steps 2-3 in multiple standard solutions
+    //    5.  Calculate the slope (K) and offset (B) between the known values for the standard
+    //        solutions and the values returned by the sensor.
+    //        (x - values from sensor, y = values of standard solutions)
+    //    6.  Send the calculated slope (K) and offset (B) to the sensor using
+    //        this command.
     // This is for all sensors EXCEPT pH
     bool setCalibration(float K, float B);
 
@@ -123,7 +159,9 @@ public:
     byte pHCalibrationStatus(void);
 
     // This sets the cap coefficients constants for a sensor
-    // This only applies to dissolved oxygen sensors
+    // This only applies to dissolved oxygen sensors.
+    // The sensor caps should be replaced yearly or as the readings beome unstable.
+    // The values of these coefficients are supplied by the manufacturer.
     bool setCapCoefficients(float K0, float K1, float K2, float K3,
                             float K4, float K5, float K6, float K7);
 
