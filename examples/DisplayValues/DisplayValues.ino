@@ -121,8 +121,7 @@ void setup()
         float Kval = 0;
         float Bval = 0;
         sensor.getCalibration(Kval, Bval);
-        display.println("Current Calibration Equation: final = ");
-        display.print("final = ");
+        display.println("Current Calibration Equation:");
         display.print(Kval);
         display.print("*raw + ");
         display.println(Bval);
@@ -255,7 +254,7 @@ void loop()
     // display.print("): ");
     display.println("DO (%):");
     display.print("    ");
-    display.println(val);
+    display.println(val*100);
     display.display();
 
 

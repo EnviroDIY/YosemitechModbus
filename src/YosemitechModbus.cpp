@@ -326,6 +326,7 @@ bool yosemitech::getTemperatureValue(float &value1)
 }
 
 // This gets the calibration constants for the sensor
+// For linear sensors: K = slope, B = intercept
 bool yosemitech::getCalibration(float &K, float &B)
 {
     byte getCalib[8] = {_slaveID, 0x03, 0x11, 0x00, 0x00, 0x04, 0x00, 0x00};
