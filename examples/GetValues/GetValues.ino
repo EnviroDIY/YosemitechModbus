@@ -225,6 +225,7 @@ void loop()
     //     2 s for chlorophyll
     //     2 s for turbidity
     //     3 s for conductivity
+    //     1 s for DO
 
     // The turbidity and DO sensors appear return new readings about every 1.6 seconds.
     // The pH sensor returns new readings about every 1.8 seconds.

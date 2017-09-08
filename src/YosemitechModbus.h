@@ -129,15 +129,15 @@ public:
     // This sets the calibration constants for the sensor
     // The suggested calibration protocol is:
     //    1.  Use this command to set calibration coefficients as K = 1 and B = 0
-    //    2.  Put the probe in a solution of known value.  Sent the "startMeasurement"
-    //        command and allow the probe to stabilize
-    //    3.  Send the "getValue" command to get the returned parameter value.
+    //    2.  Put the probe in a solution of known value.
+    //    3.  Send the "startMeasurement" command and allow the probe to stabilize.
+    //    4.  Send the "getValue" command to get the returned parameter value.
     //        (Depending on the sensor, you may want to take multiple values and average them.)
-    //    4.  Ideally, repeat steps 2-3 in multiple standard solutions
-    //    5.  Calculate the slope (K) and offset (B) between the known values for the standard
+    //    5.  Ideally, repeat steps 2-4 in multiple standard solutions
+    //    6.  Calculate the slope (K) and offset (B) between the known values for the standard
     //        solutions and the values returned by the sensor.
     //        (x - values from sensor, y = values of standard solutions)
-    //    6.  Send the calculated slope (K) and offset (B) to the sensor using
+    //    7.  Send the calculated slope (K) and offset (B) to the sensor using
     //        this command.
     // This is for all sensors EXCEPT pH
     bool setCalibration(float K, float B);

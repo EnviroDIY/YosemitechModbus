@@ -60,7 +60,7 @@ void setup()
 
     if (DEREPin > 0) pinMode(DEREPin, OUTPUT);
 
-    Serial.begin(9600);  // Main serial port for debugging via USB Serial Monitor
+    Serial.begin(57600);  // Main serial port for debugging via USB Serial Monitor
     modbusSerial.begin(9600);  // The modbus serial stream - Baud rate MUST be 9600.
 
     // Start up the sensor
@@ -94,6 +94,7 @@ void setup()
     display.println(hardwareV);
     display.println("Software Version:");
     display.println(softwareV);
+    // Get the sensor serial number
     String SN = sensor.getSerialNumber();
     display.println("Serial Number:");
     display.print(SN);
@@ -231,31 +232,33 @@ void setup()
 // ---------------------------------------------------------------------------
 void loop()
 {
-    // send the command to get the values
-    float temp = 0;
-    float val = 0;
-    if (model == Y532)
-    {
-        sensor.getValues(val);
-        sensor.getTemperatureValue(temp);
-    }
-    else sensor.getValues(temp, val);
-
-
     display.clearDisplay();
     display.setCursor(0,0);
     display.setTextSize(2);
+
+    // send the command to get the values
+    float parmValue, tempValue, thirdValue = -9999;
+    sensor.getValues(parmValue, tempValue, thirdValue);
     display.println("Temp (C):");
     display.print("    ");
-    display.println(temp);
+    display.println(tempValue);
     // display.print(sensor.getParameter());
     // display.print("(");
     // display.print(sensor.getUnits());
     // display.print("): ");
     display.println("DO (%):");
     display.print("    ");
-    display.println(val*100);
+    display.println(parmValue);
+    if (model == Y532 || model == Y504)
+    {
+        display.println("thirdValue:");
+        display.print("    ");
+        display.println(thirdValue);
+    }
     display.display();
+
+
+
 
 
     // Delay between readings
@@ -263,6 +266,7 @@ void loop()
     //     2 s for chlorophyll
     //     2 s for turbidity
     //     3 s for conductivity
+    //     1 s for DO
 
     // The turbidity and DO sensors appear return new readings about every 1.6 seconds.
     // The pH sensor returns new readings about every 1.8 seconds.
