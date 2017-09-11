@@ -1,6 +1,6 @@
 {
   "name": "YosemitechModbus",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "keywords": "Yosemitech, Modbus, communication, bus, sensor",
   "description": "Arduino library for communication with Yosemitech sensors via Modbus.",
   "repository":
@@ -22,8 +22,7 @@
   "dependencies":
   [
       {
-        "name": "SensorModbusMaster",
-        "version": "https://github.com/EnviroDIY/SensorModbusMaster.git"
+        "name": "SensorModbusMaster"
       }
   ]
 
