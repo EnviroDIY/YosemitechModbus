@@ -24,8 +24,10 @@ seems to be one of few all support identically.
 // Include the base required libraries
 // ---------------------------------------------------------------------------
 #include <Arduino.h>
-//#include <SoftwareSerial.h>  
-#include <AltSoftSerial.h>  // AltSoftSerial library requires use of pins 5 (Tx) and 6 (Rx) on the Mayfly
+//#include <SoftwareSerial.h>
+#include <AltSoftSerial.h>  // AltSoftSerial library requires use of pins D5 (Tx) and D6 (Rx) on the Mayfly
+
+const int USBserialBaud = 9600;
 
 // ---------------------------------------------------------------------------
 // Set up the sensor specific information
@@ -53,9 +55,8 @@ const int modbusFrameTimeout = 4;  // the time to wait between characters within
 
 // Construct software serial object for Modbus
 //SoftwareSerial modbusSerial(SSRxPin, SSTxPin);
-AltSoftSerial modbusSerial;
+AltSoftSerial modbusSerial; // AltSoftSerial library requires use of pins D5 (Tx) and D6 (Rx) on the Mayfly
 //HardwareSerial &modbusSerial = Serial1; // create reference to Serial1 at RX1 & TX1 pins. See https://forum.arduino.cc/index.php?topic=358740.0
-const int serialBaud = 9600;
 
 // Define variables for the response;
 uint32_t start;  // Timestamp for time-outs
@@ -224,9 +225,11 @@ void setup()
 
     if (DEREPin > 0) pinMode(DEREPin, OUTPUT);
 
-    Serial.begin(serialBaud);  // Main serial port for debugging via USB Serial Monitor
+    Serial.begin(USBserialBaud);  // Main serial port for debugging via USB Serial Monitor
     modbusSerial.begin(modbusBaud);
     modbusSerial.setTimeout(modbusFrameTimeout);
+
+    Serial.println(F("GetSlaveID_AltSoftSerial.ino"));
 
     // Allow the sensor and converter to warm up
     Serial.println("\n");
