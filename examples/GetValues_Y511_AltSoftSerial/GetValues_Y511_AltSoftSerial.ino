@@ -39,7 +39,7 @@ const int DEREPin = -1;   // The pin controlling Recieve Enable and Driver Enabl
 //const int SSTxPin = 11;  // Send pin for software serial (Tx on RS485 adapter)
 
 // Construct software serial object for Modbus
-AltSoftSerial modbusSerial; // AltSoftSerial library requires use of pins 5 (Tx) and 6 (Rx) on the Mayfly
+AltSoftSerial modbusSerial; // AltSoftSerial library requires use of pins D5 (Tx) and D6 (Rx) on the Mayfly
 
 // Construct the Yosemitech modbus instance
 yosemitech sensor;
