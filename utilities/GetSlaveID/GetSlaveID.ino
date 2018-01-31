@@ -24,21 +24,21 @@ seems to be one of few all support identically.
 // Include the base required libraries
 // ---------------------------------------------------------------------------
 #include <Arduino.h>
-#include <SoftwareSerial.h>
-
+// #include <SoftwareSerial.h>
+#include <AltSoftSerial.h>
 // ---------------------------------------------------------------------------
 // Set up the sensor specific information
 //   ie, pin locations, addresses, calibrations and related settings
 // ---------------------------------------------------------------------------
 
 // Define pin number variables
-const int PwrPin = 22;  // The pin sending power to the sensor AND RS485 adapter
+const int PwrPin = 22;  // The pin sending power to the sensor *AND* RS485 adapter
 const int DEREPin = -1;   // The pin controlling Recieve Enable and Driver Enable
                           // on the RS485 adapter, if applicable (else, -1)
                           // Setting HIGH enables the driver (arduino) to send text
                           // Setting LOW enables the receiver (sensor) to send text
-const int SSRxPin = 10;  // Recieve pin for software serial (Rx on RS485 adapter)
-const int SSTxPin = 11;  // Send pin for software serial (Tx on RS485 adapter)
+// const int SSRxPin = 10;  // Recieve pin for software serial (Rx on RS485 adapter)
+// const int SSTxPin = 11;  // Send pin for software serial (Tx on RS485 adapter)
 
 // Define the sensor's modbus parameters
 const int modbusTimeout = 500;  // The time to wait for response after a command (in ms)
@@ -51,7 +51,9 @@ const int modbusFrameTimeout = 4;  // the time to wait between characters within
 // So the readBytes() command should time out within 3ms
 
 // Construct software serial object for Modbus
-SoftwareSerial modbusSerial(SSRxPin, SSTxPin);
+// SoftwareSerial modbusSerial(SSRxPin, SSTxPin);
+AltSoftSerial modbusSerial;
+
 
 // Define variables for the response;
 uint32_t start;  // Timestamp for time-outs
@@ -220,7 +222,7 @@ void setup()
 
     if (DEREPin > 0) pinMode(DEREPin, OUTPUT);
 
-    Serial.begin(9600);  // Main serial port for debugging via USB Serial Monitor
+    Serial.begin(57600);  // Main serial port for debugging via USB Serial Monitor
     modbusSerial.begin(modbusBaud);
     modbusSerial.setTimeout(modbusFrameTimeout);
 

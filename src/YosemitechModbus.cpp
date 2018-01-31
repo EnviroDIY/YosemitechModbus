@@ -17,9 +17,12 @@ bool yosemitech::begin(yosemitechModel model, byte modbusSlaveID, Stream *stream
     // Give values to variables;
     _model = model;
     _slaveID = modbusSlaveID;
+    // Start up the modbus instance
+    bool success = modbus.begin(modbusSlaveID, stream, enablePin);
+    // Get the model type from the serial number if it's not known
     if (_model == UNKNOWN) getSerialNumber();
 
-    return modbus.begin(modbusSlaveID, stream, enablePin);
+    return success;
 }
 bool yosemitech::begin(yosemitechModel model, byte modbusSlaveID, Stream &stream, int enablePin)
 {return begin(model, modbusSlaveID, &stream, enablePin);}
@@ -100,19 +103,25 @@ byte yosemitech::getSlaveID(void)
 bool yosemitech::setSlaveID(byte newSlaveID)
 {
     byte dataToSend[2] = {newSlaveID, 0x00};
-    return modbus.setRegisters(12288, 1, dataToSend);
+    return modbus.setRegisters(0x3000, 1, dataToSend, true);
 }
 
 // This gets the instrument serial number as a String
 // Serial number begins in holding register 0x0900 (2304) and occupies 7 registers (14 characters)
 String yosemitech::getSerialNumber(void)
 {
-    String SN = modbus.StringFromRegister(0x03, 2304, 14);
+    String SN = modbus.StringFromRegister(0x03, 0x0900, 14);
+
+    // Strip out the initial ')' that seems to come with some responses
+    if (SN.startsWith(")"))
+    {
+        SN = SN.substring(1);
+    }
 
     // Verify model and serial number match
     // Serial number to model information based on personal communication with Yosemitech
     // TODO:  Get serial numbers for the rest of the sensors
-    int modelSS = SN.substring(3,5).toInt();
+    int modelSS = SN.substring(2,4).toInt();
 
     // If model was unknown, assign it based on serial number
     if (_model == UNKNOWN)
@@ -199,7 +208,7 @@ bool yosemitech::stopMeasurement(void)
 
 // This gets values back from the sensor
 // All sensors but pH, return two 32-bit float values beginning in holding register
-// 0x2602 (9730), where the parameter value is in the first two register and the
+// 0x2600 (9728), where the parameter value is in the first two register and the
 // temperature in celsius is in the next two registers.  For some sensors
 // (Y520/Conductivity and Y514/Chlorophyll) this followed by an error code.
 // The pH sensor returns the pH as a 32-bit float beginning in holding register
@@ -217,7 +226,7 @@ bool yosemitech::getValues(float &parmValue, float &tempValue, float &thirdValue
         case Y520:
         case Y514:
         {
-            if (modbus.getRegisters(0x03, 9728, 5))
+            if (modbus.getRegisters(0x03, 0x2600, 5))
             {
                 tempValue = modbus.float32FromFrame(littleEndian, 3);
                 parmValue = modbus.float32FromFrame(littleEndian, 7);
@@ -230,10 +239,10 @@ bool yosemitech::getValues(float &parmValue, float &tempValue, float &thirdValue
         // Y532 (pH)
         case Y532:
         {
-            if (modbus.getRegisters(0x03, 10240, 2))
+            if (modbus.getRegisters(0x03, 0x2800, 2))
             {
                 parmValue = modbus.float32FromFrame(littleEndian, 3);
-                tempValue = modbus.float32FromRegister(0x03, 9216, littleEndian);
+                tempValue = modbus.float32FromRegister(0x03,  0x2400, littleEndian);
                 thirdValue = getPotentialValue();
                 errorCode = 0x00;  // No errors
                 return true;
@@ -243,7 +252,7 @@ bool yosemitech::getValues(float &parmValue, float &tempValue, float &thirdValue
         // Y504 (DO)
         case Y504:
         {
-            if (modbus.getRegisters(0x03, 9728, 4))
+            if (modbus.getRegisters(0x03, 0x2600, 4))
             {
                 float DOpercent = modbus.float32FromFrame(littleEndian, 7);
                 parmValue = DOpercent * 100;  // Because it returns number not %
@@ -319,7 +328,7 @@ bool yosemitech::getValues(float &parmValue, float &tempValue, float &thirdValue
         // Everybody else
         default:
         {
-            if (modbus.getRegisters(0x03, 9728, 4))
+            if (modbus.getRegisters(0x03, 0x2600, 4))
             {
                 parmValue = modbus.float32FromFrame(littleEndian, 3);
                 tempValue = modbus.float32FromFrame(littleEndian, 7);
@@ -491,7 +500,7 @@ bool yosemitech::setCapCoefficients(float K0, float K1, float K2, float K3,
     modbus.float32ToFrame(K5, littleEndian, capCoeffs, 20);
     modbus.float32ToFrame(K6, littleEndian, capCoeffs, 24);
     modbus.float32ToFrame(K7, littleEndian, capCoeffs, 28);
-    return modbus.setRegisters(9984, 16, capCoeffs);
+    return modbus.setRegisters(9984, 16, capCoeffs, true);
 }
 
 // This sets the calibration constants for a pH sensor
@@ -507,7 +516,7 @@ bool yosemitech::setpHCalibration(float K1, float K2, float K3,
     modbus.float32ToFrame(K4, littleEndian, pHCalibs, 12);
     modbus.float32ToFrame(K5, littleEndian, pHCalibs, 16);
     modbus.float32ToFrame(K6, littleEndian, pHCalibs, 20);
-    return modbus.setRegisters(10496, 12, pHCalibs);
+    return modbus.setRegisters(10496, 12, pHCalibs, true);
 }
 
 // This immediately activates the cleaning brush for sensors with one.
@@ -524,12 +533,12 @@ bool yosemitech::activateBrush(void)
 // The brush interval is in register 0x3200 (12800)
 bool yosemitech::setBrushInterval(uint16_t intervalMinutes)
 {
-    return modbus.uint16ToRegister(12800, intervalMinutes, littleEndian);
+    return modbus.uint16ToRegister(0x3200, intervalMinutes, littleEndian, true);
 }
 
 // This returns the brushing interval
 // The brush interval is in holding register 0x3200 (12800)
 uint16_t yosemitech::getBrushInterval(void)
 {
-    return modbus.int16FromRegister(0x03, 12800, littleEndian);
+    return modbus.int16FromRegister(0x03, 0x3200, littleEndian);
 }

@@ -12,7 +12,8 @@ Yosemitech modbus sensor.
 // Include the base required libraries
 // ---------------------------------------------------------------------------
 #include <Arduino.h>
-#include <SoftwareSerial.h>
+// #include <SoftwareSerial.h>
+#include <AltSoftSerial.h>
 #include <YosemitechModbus.h>
 
 // ---------------------------------------------------------------------------
@@ -21,10 +22,10 @@ Yosemitech modbus sensor.
 // ---------------------------------------------------------------------------
 
 // Define the sensor type
-yosemitechModel model = Y504;  // The sensor model number
+yosemitechModel model = Y511;  // The sensor model number
 
 // Define the sensor's modbus address
-byte modbusAddress = 0x04;  // The sensor's modbus address, or SlaveID
+byte modbusAddress = 0x1A;  // The sensor's modbus address, or SlaveID
 // Yosemitech ships sensors with a default ID of 0x01.
 
 // Define pin number variables
@@ -33,11 +34,12 @@ const int DEREPin = -1;   // The pin controlling Recieve Enable and Driver Enabl
                           // on the RS485 adapter, if applicable (else, -1)
                           // Setting HIGH enables the driver (arduino) to send text
                           // Setting LOW enables the receiver (sensor) to send text
-const int SSRxPin = 10;  // Recieve pin for software serial (Rx on RS485 adapter)
-const int SSTxPin = 11;  // Send pin for software serial (Tx on RS485 adapter)
+// const int SSRxPin = 10;  // Recieve pin for software serial (Rx on RS485 adapter)
+// const int SSTxPin = 11;  // Send pin for software serial (Tx on RS485 adapter)
 
 // Construct software serial object for Modbus
-SoftwareSerial modbusSerial(SSRxPin, SSTxPin);
+// SoftwareSerial modbusSerial(SSRxPin, SSTxPin);
+AltSoftSerial modbusSerial;
 
 // Construct the Yosemitech modbus instance
 yosemitech sensor;
@@ -205,8 +207,8 @@ void setup()
 void loop()
 {
     // send the command to get the values
-    float parmValue, tempValue, thirdValue = -9999;
-    sensor.getValues(parmValue, tempValue, thirdValue);
+    float tempValue, parmValue, thirdValue = -9999;
+    sensor.getValues(tempValue, parmValue, thirdValue);
     Serial.print(tempValue);
     Serial.print("      ");
     Serial.print(parmValue);
@@ -231,7 +233,7 @@ void loop()
     // The pH sensor returns new readings about every 1.8 seconds.
     // The conductivity sensor only returns new readings about every 2.7 seconds.
 
-    // The teperature sensors can take readings much more quickly.  The same results
+    // The temperature sensors can take readings much more quickly.  The same results
     // can be read many times from the registers between the new sensor readings.
     delay(3000);
 }
