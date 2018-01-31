@@ -26,7 +26,7 @@ const int USBserialBaud = 57600;
 yosemitechModel model = Y511;  // The sensor model number
 
 // Define the sensor's modbus address
-byte modbusAddress = 0x01;  // The sensor's modbus address, or SlaveID
+byte modbusAddress = 0x03 ;  // The sensor's modbus address, or SlaveID
 // Yosemitech ships sensors with a default ID of 0x01.
 
 // Define pin number variables
@@ -63,7 +63,7 @@ void setup()
     sensor.begin(model, modbusAddress, &modbusSerial, DEREPin);
 
     // Turn on debugging
-    //sensor.setDebugStream(&Serial);
+    sensor.setDebugStream(&Serial);
 
     // Start up note
     Serial.print("Yosemitech ");

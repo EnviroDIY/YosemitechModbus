@@ -13,7 +13,7 @@ all slaves accept and comply with writing functions broadcast to address 0.)
 // Include the base required libraries
 // ---------------------------------------------------------------------------
 #include <Arduino.h>
-#include <AltSoftSerial.h>  // AltSoftSerial library requires use of pins D5 (Tx) and D6 (Rx) on the Mayfly
+#include <AltSoftSerial.h>  // AltSoftSerial library requires use of pins 5 (Tx) and 6 (Rx) on the Mayfly
 #include <YosemitechModbus.h>
 
 const int USBserialBaud = 9600;
@@ -27,9 +27,9 @@ const int USBserialBaud = 9600;
 yosemitechModel model = Y511;  // The sensor model number
 
 // Define the sensor's modbus address
-byte oldAddress = 0x01;  // The sensor's original modbus address, or SlaveID
+byte oldAddress = 0x03;  // The sensor's original modbus address, or SlaveID
 // Yosemitech ships sensors with a default ID of 0x01.
-byte newAddress = 0x03;
+byte newAddress = 0x01;
 
 // Define pin number variables
 const int PwrPin = 22;  // The pin sending power to the sensor *AND* RS485 adapter
@@ -51,7 +51,7 @@ const int modbusFrameTimeout = 4;  // the time to wait between characters within
 // So the readBytes() command should time out within 3ms
 
 // Construct software serial object for Modbus
-AltSoftSerial modbusSerial; // AltSoftSerial library requires use of pins D5 (Tx) and D6 (Rx) on the Mayfly
+AltSoftSerial modbusSerial; // AltSoftSerial library requires use of pins 5 (Tx) and 6 (Rx) on the Mayfly
 
 // Construct the Yosemitech modbus instance
 yosemitech sensor;
@@ -73,12 +73,12 @@ void setup()
     modbusSerial.setTimeout(modbusFrameTimeout);
 
     Serial.println(F("ChangeSlaveID_AltSoftSerial.ino"));
-
+    
     // Start up the sensor
     sensor.begin(model, oldAddress, &modbusSerial, DEREPin);
 
     // Turn on debugging
-    //sensor.setDebugStream(&Serial);
+    sensor.setDebugStream(&Serial);
 
     // Allow the sensor and converter to warm up
     Serial.println(F("Allowing sensor and adapter to warm up"));
