@@ -15,8 +15,10 @@ env:
 install:
     - pip install -U platformio
     - pio lib install https://github.com/EnviroDIY/SensorModbusMaster.git
+    - pio lib install AltSoftSerial
     - pio upgrade
     - pio update
+    - pio lib update
 
 script:
 - platformio ci --lib="." --board=mayfly
