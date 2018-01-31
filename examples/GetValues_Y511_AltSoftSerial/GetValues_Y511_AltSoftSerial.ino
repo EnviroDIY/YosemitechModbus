@@ -63,7 +63,7 @@ void setup()
     sensor.begin(model, modbusAddress, &modbusSerial, DEREPin);
 
     // Turn on debugging
-    sensor.setDebugStream(&Serial);
+    // sensor.setDebugStream(&Serial);
 
     // Start up note
     Serial.print("Yosemitech ");

@@ -27,9 +27,9 @@ const int USBserialBaud = 9600;
 yosemitechModel model = Y511;  // The sensor model number
 
 // Define the sensor's modbus address
-byte oldAddress = 0x03;  // The sensor's original modbus address, or SlaveID
+byte oldAddress = 0x01;  // The sensor's original modbus address, or SlaveID
 // Yosemitech ships sensors with a default ID of 0x01.
-byte newAddress = 0x01;
+byte newAddress = 0x03;
 
 // Define pin number variables
 const int PwrPin = 22;  // The pin sending power to the sensor *AND* RS485 adapter
@@ -78,7 +78,7 @@ void setup()
     sensor.begin(model, oldAddress, &modbusSerial, DEREPin);
 
     // Turn on debugging
-    sensor.setDebugStream(&Serial);
+    // sensor.setDebugStream(&Serial);
 
     // Allow the sensor and converter to warm up
     Serial.println(F("Allowing sensor and adapter to warm up"));
