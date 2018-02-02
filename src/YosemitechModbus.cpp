@@ -220,6 +220,12 @@ bool yosemitech::stopMeasurement(void)
 // return percent saturation.
 bool yosemitech::getValues(float &parmValue, float &tempValue, float &thirdValue, byte &errorCode)
 {
+    // Set values to -9999 and error flagged before asking for the result
+    parmValue = -9999;
+    tempValue = -9999;
+    thirdValue = -9999;
+    errorCode = 0xFF;  // Error!
+
     switch (_model)
     {
         // Sensors with the error code Y520, Y514 (Conductivity, Chlorophyll)
@@ -230,7 +236,6 @@ bool yosemitech::getValues(float &parmValue, float &tempValue, float &thirdValue
             {
                 tempValue = modbus.float32FromFrame(littleEndian, 3);
                 parmValue = modbus.float32FromFrame(littleEndian, 7);
-                thirdValue = -9999;  // Initialize with an error value
                 errorCode = modbus.byteFromFrame(11);
                 return true;
             }
@@ -332,7 +337,6 @@ bool yosemitech::getValues(float &parmValue, float &tempValue, float &thirdValue
             {
                 parmValue = modbus.float32FromFrame(littleEndian, 3);
                 tempValue = modbus.float32FromFrame(littleEndian, 7);
-                thirdValue = -9999;  // Initialize with an error value
                 errorCode = 0x00;  // No errors
                 return true;
             }
@@ -341,7 +345,6 @@ bool yosemitech::getValues(float &parmValue, float &tempValue, float &thirdValue
     }
 
     // If something fails, we'll get here
-    errorCode = 0xFF;  // Error!
     return false;
 }
 bool yosemitech::getValues(float &parmValue, float &tempValue, float &thirdValue)

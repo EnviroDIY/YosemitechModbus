@@ -16,6 +16,7 @@ Yosemitech modbus sensor.
 #include <AltSoftSerial.h>
 #include <YosemitechModbus.h>
 
+
 // ---------------------------------------------------------------------------
 // Set up the sensor specific information
 //   ie, pin locations, addresses, calibrations and related settings

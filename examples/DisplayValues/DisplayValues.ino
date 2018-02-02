@@ -83,7 +83,7 @@ void setup()
     display.println(sensor.getParameter());
     display.println("Sensor");
     display.display();
-    delay(2000);
+    delay(3000);
 
     // Get the sensor's hardware and software version
     display.clearDisplay();
@@ -99,7 +99,7 @@ void setup()
     display.println("Serial Number:");
     display.print(SN);
     display.display();
-    delay(2000);
+    delay(3000);
 
     // Get the sensor calibration status (pH only)
     if (model == Y532)
@@ -111,7 +111,7 @@ void setup()
         display.print("0x0");
         display.println(status, HEX);
         display.display();
-        delay(2000);
+        delay(3000);
     }
 
     // Get the sensor's current calibration values
@@ -127,7 +127,7 @@ void setup()
         display.print("*raw + ");
         display.println(Bval);
         display.display();
-        delay(2000);
+        delay(3000);
     }
 
     if (model == Y511 || model == Y513 || model == Y514)
@@ -140,7 +140,7 @@ void setup()
         display.print(interval);
         display.println(" minutes");
         display.display();
-        delay(2000);
+        delay(3000);
     }
 
     // Tell the sensor to start taking measurements
@@ -242,11 +242,10 @@ void loop()
     display.println("Temp (C):");
     display.print("    ");
     display.println(tempValue);
-    // display.print(sensor.getParameter());
-    // display.print("(");
+    display.print(sensor.getParameter());
+    display.print("(");
     display.print(sensor.getUnits());
     display.print("): ");
-    //display.println("DO (%):");
     display.print("    ");
     display.println(parmValue);
     if (model == Y532 || model == Y504)

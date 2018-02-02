@@ -226,6 +226,8 @@ void setup()
     modbusSerial.begin(modbusBaud);
     modbusSerial.setTimeout(modbusFrameTimeout);
 
+    Serial.println(F("GetSlaveID_AltSoftSerial.ino"));
+
     // Allow the sensor and converter to warm up
     Serial.println("\n");
     Serial.println(F("Allowing sensor and adapter to warm up"));
