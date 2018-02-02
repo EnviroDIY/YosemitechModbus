@@ -27,7 +27,7 @@ Yosemitech modbus sensor.
 yosemitechModel model = Y504;  // The sensor model number
 
 // Define the sensor's modbus address
-byte modbusAddress = 0x04;  // The sensor's modbus address, or SlaveID
+byte modbusAddress = 0x01;  // The sensor's modbus address, or SlaveID
 // Yosemitech ships sensors with a default ID of 0x01.
 
 // Define pin number variables
@@ -244,9 +244,9 @@ void loop()
     display.println(tempValue);
     // display.print(sensor.getParameter());
     // display.print("(");
-    // display.print(sensor.getUnits());
-    // display.print("): ");
-    display.println("DO (%):");
+    display.print(sensor.getUnits());
+    display.print("): ");
+    //display.println("DO (%):");
     display.print("    ");
     display.println(parmValue);
     if (model == Y532 || model == Y504)
