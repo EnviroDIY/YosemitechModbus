@@ -259,9 +259,9 @@ bool yosemitech::getValues(float &parmValue, float &tempValue, float &thirdValue
         {
             if (modbus.getRegisters(0x03, 0x2600, 4))
             {
+                tempValue = modbus.float32FromFrame(littleEndian, 3);
                 float DOpercent = modbus.float32FromFrame(littleEndian, 7);
                 parmValue = DOpercent * 100;  // Because it returns number not %
-                tempValue = modbus.float32FromFrame(littleEndian, 3);
                 errorCode = 0x00;  // No errors
 
                 // Calculate DO saturation at sea level at a given temp/salinity
@@ -335,8 +335,8 @@ bool yosemitech::getValues(float &parmValue, float &tempValue, float &thirdValue
         {
             if (modbus.getRegisters(0x03, 0x2600, 4))
             {
-                parmValue = modbus.float32FromFrame(littleEndian, 3);
-                tempValue = modbus.float32FromFrame(littleEndian, 7);
+                tempValue = modbus.float32FromFrame(littleEndian, 3);
+                parmValue = modbus.float32FromFrame(littleEndian, 7);
                 errorCode = 0x00;  // No errors
                 return true;
             }
