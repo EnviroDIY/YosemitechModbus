@@ -25,7 +25,7 @@ const int SSRxPin = 10;  // Recieve pin for software serial (Rx on RS485 adapter
 const int SSTxPin = 11;  // Send pin for software serial (Tx on RS485 adapter)
 
 // Define the sensor's modbus parameters
-byte modbusAddress = 0x0B;  // The sensor's modbus address, or SlaveID
+byte modbusAddress = 0x01;  // The sensor's modbus address, or SlaveID
 const int modbusTimeout = 500;  // The time to wait for response after a command (in ms)
 const int modbusBaud = 9600;  // The baudrate for the modbus connection
 const int modbusFrameTimeout = 4;  // the time to wait between characters within a frame (in ms)
