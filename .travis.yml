@@ -15,6 +15,7 @@ env:
 install:
     - pip install -U platformio
     - pio lib install https://github.com/EnviroDIY/SensorModbusMaster.git
+    - pio lib -g install https://github.com/PaulStoffregen/AltSoftSerial.git  # #73, but need the git until Paul S. has a new release
     - pio upgrade
     - pio update
 
