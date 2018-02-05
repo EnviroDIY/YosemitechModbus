@@ -9,6 +9,7 @@
 //                          PUBLIC SENSOR FUNCTIONS
 //----------------------------------------------------------------------------
 
+
 // This function sets up the communication
 // It should be run during the arduino "setup" function.
 // The "stream" device must be initialized and begun prior to running this.
@@ -26,6 +27,7 @@ bool yosemitech::begin(yosemitechModel model, byte modbusSlaveID, Stream *stream
 }
 bool yosemitech::begin(yosemitechModel model, byte modbusSlaveID, Stream &stream, int enablePin)
 {return begin(model, modbusSlaveID, &stream, enablePin);}
+
 
 // This returns a pretty string with the model information
 String yosemitech::getModel(void)
@@ -47,6 +49,7 @@ String yosemitech::getModel(void)
     }
 }
 
+
 // This returns a pretty string with the parameter measured.
 String yosemitech::getParameter(void)
 {
@@ -62,10 +65,11 @@ String yosemitech::getParameter(void)
         case Y520: {return "Conductivity"; break;}
         case Y532: {return "pH"; break;}
         case Y533: {return "ORP"; break;}
-        case Y550: {return "UV254"; break;}
+        case Y550: {return "COD"; break;}
         default:  {return "Unknown"; break;}
     }
 }
+
 
 // This returns a pretty string with the parameter measured.
 String yosemitech::getUnits(void)
@@ -82,10 +86,11 @@ String yosemitech::getUnits(void)
         case Y520: {return "mS/cm"; break;}
         case Y532: {return "pH"; break;}
         case Y533: {return "mV"; break;}
-        case Y550: {return "???"; break;}
+        case Y550: {return "mg/L"; break;}
         default:  {return "Unknown"; break;}
     }
 }
+
 
 // This gets the modbus slave ID.  Not supported by many sensors.
 // The slaveID is in register 0x3000 (12288)
@@ -98,6 +103,7 @@ byte yosemitech::getSlaveID(void)
     else return 0x01;  // This is the default address
 }
 
+
 // This sets a new modbus slave ID
 // The slaveID is in register 0x3000 (12288)
 bool yosemitech::setSlaveID(byte newSlaveID)
@@ -105,6 +111,7 @@ bool yosemitech::setSlaveID(byte newSlaveID)
     byte dataToSend[2] = {newSlaveID, 0x00};
     return modbus.setRegisters(0x3000, 1, dataToSend, true);
 }
+
 
 // This gets the instrument serial number as a String
 // Serial number begins in holding register 0x0900 (2304) and occupies 7 registers (14 characters)
@@ -154,6 +161,7 @@ String yosemitech::getSerialNumber(void)
     return SN;
 }
 
+
 // This gets the hardware and software version of the sensor
 // This data begins in holding register 0x0700 (1792) and continues for 2 registers
 bool yosemitech::getVersion(float &hardwareVersion, float &softwareVersion)
@@ -169,6 +177,7 @@ bool yosemitech::getVersion(float &hardwareVersion, float &softwareVersion)
     }
     else return false;
 }
+
 
 // This tells the optical sensors to begin taking measurements
 bool yosemitech::startMeasurement(void)
@@ -196,15 +205,20 @@ bool yosemitech::startMeasurement(void)
     }
 }
 
+
 // This tells the optical sensors to stop taking measurements
 bool yosemitech::stopMeasurement(void)
 {
-    byte stopMeasurement[8] = {_slaveID, 0x03, 0x2E, 0x00, 0x00, 0x00, 0x00, 0x00};
-                           // _slaveID, Read,  Reg 11776,   0 Regs  ,    CRC
+    // byte stopMeasurement[8] = {_slaveID, 0x03, 0x2E, 0x00, 0x00, 0x00, 0x00, 0x00};
+                               // _slaveID, Read,  Reg 11776,   0 Regs  ,    CRC
+    byte stopMeasurement[8] = {_slaveID, 0x03, 0x2E, 0x00, 0x00, 0x01, 0x00, 0x00};
+                            // _slaveID, Read,  Reg 11776,   1 Reg   ,    CRC
     int respSize = modbus.sendCommand(stopMeasurement, 8);
-    if (respSize == 5 && modbus.responseBuffer[0] == _slaveID) return true;
+    // if (respSize == 5 && modbus.responseBuffer[0] == _slaveID) return true;
+    if (respSize == 7 && modbus.responseBuffer[0] == _slaveID) return true;
     else return false;
 }
+
 
 // This gets values back from the sensor
 // All sensors but pH, return two 32-bit float values beginning in holding register
@@ -228,33 +242,34 @@ bool yosemitech::getValues(float &parmValue, float &tempValue, float &thirdValue
 
     switch (_model)
     {
-        // Sensors with the error code Y520, Y514 (Conductivity, Chlorophyll)
-        case Y520:
-        case Y514:
+        case Y550:   // COD, with turbidity
         {
             if (modbus.getRegisters(0x03, 0x2600, 5))
             {
                 tempValue = modbus.float32FromFrame(littleEndian, 3);
                 parmValue = modbus.float32FromFrame(littleEndian, 7);
                 errorCode = modbus.byteFromFrame(11);
+                thirdValue = modbus.float32FromRegister(0x03,  0x1200, littleEndian);
                 return true;
             }
             break;
         }
-        // Y532 (pH)
+        // Y532 (pH) or Y533 (ORP)
         case Y532:
+        case Y533:
         {
             if (modbus.getRegisters(0x03, 0x2800, 2))
             {
                 parmValue = modbus.float32FromFrame(littleEndian, 3);
                 tempValue = modbus.float32FromRegister(0x03,  0x2400, littleEndian);
-                thirdValue = getPotentialValue();
+                thirdValue = modbus.float32FromRegister(0x03,  0x1200, littleEndian);
                 errorCode = 0x00;  // No errors
                 return true;
             }
             break;
         }
         // Y504 (DO)
+        case Y502:
         case Y504:
         {
             if (modbus.getRegisters(0x03, 0x2600, 4))
@@ -333,11 +348,11 @@ bool yosemitech::getValues(float &parmValue, float &tempValue, float &thirdValue
         // Everybody else
         default:
         {
-            if (modbus.getRegisters(0x03, 0x2600, 4))
+            if (modbus.getRegisters(0x03, 0x2600, 5))
             {
                 tempValue = modbus.float32FromFrame(littleEndian, 3);
                 parmValue = modbus.float32FromFrame(littleEndian, 7);
-                errorCode = 0x00;  // No errors
+                errorCode = modbus.byteFromFrame(11);
                 return true;
             }
             break;
@@ -373,7 +388,6 @@ bool yosemitech::getValues(float &parmValue)
     return getValues(parmValue, errorCode);
 }
 
-
 // This returns the main "parameter" value as a float
 float yosemitech::getValue(void)
 {
@@ -387,6 +401,7 @@ float yosemitech::getValue(byte &errorCode)
     getValues(parmValue, errorCode);
     return parmValue;
 }
+
 
 // This returns the temperatures value from a sensor as a float
 float yosemitech::getTemperatureValue(void)
@@ -412,26 +427,63 @@ float yosemitech::getDOmgLValue(void)
     return getPotentialValue();
 }
 
-// This gets the calibration constants for the sensor
-// K = slope, B = intercept
-// The calibration is applied to all values returned by the sensor as:
-//    value_returned = (value_raw * K) + B
-// This is for all sensors EXCEPT pH
-// The K value begins in register 0x1100 (4352) and the B value two registers later
+
+// This gets the calibration constants for a sensor
+// For MOST sensors, the K value begins in register 0x1100 (4352) and the B value two registers later
+// For pH sensors, the calibration constants begin at register 0x2900 (10496)
+// For ORP sensors, the calibration constants begin at register 0x3400 (10496)
+bool yosemitech::getCalibration(float &K1, float &K2, float &K3,
+                                float &K4, float &K5, float &K6)
+{
+    switch (_model)
+    {
+        case 532:   // pH
+        {
+            if (modbus.getRegisters(0x03, 0x2900, 12))
+            {
+                K1 = modbus.float32FromFrame(littleEndian, 3);
+                K2 = modbus.float32FromFrame(littleEndian, 7);
+                K3 = modbus.float32FromFrame(littleEndian, 11);
+                K4 = modbus.float32FromFrame(littleEndian, 15);
+                K5 = modbus.float32FromFrame(littleEndian, 19);
+                K6 = modbus.float32FromFrame(littleEndian, 23);
+                return true;
+            }
+            else return false;
+            break;
+        }
+        case 533:   // ORP
+        {
+            if (modbus.getRegisters(0x03, 0x3400, 4))
+            {
+                K1 = modbus.float32FromFrame(littleEndian, 3);
+                K2 = modbus.float32FromFrame(littleEndian, 7);
+                return true;
+            }
+            else return false;
+            break;
+        }
+        default:   // other sensors have only 2 values
+        {
+            K3 = -9999;
+            K4 = -9999;
+            K5 = -9999;
+            K6 = -9999;
+            if (modbus.getRegisters(0x03, 0x1100, 4))
+            {
+                K1 = modbus.float32FromFrame(littleEndian, 3);
+                K2 = modbus.float32FromFrame(littleEndian, 7);
+                return true;
+            }
+            else return false;
+            break;
+        }
+    }
+}
 bool yosemitech::getCalibration(float &K, float &B)
 {
-    byte getCalib[8] = {_slaveID, 0x03, 0x11, 0x00, 0x00, 0x04, 0x00, 0x00};
-                     // _slaveID, Read,  Reg 4352 ,   4 Regs  ,    CRC
-    int respSize = modbus.sendCommand(getCalib, 8);
-
-    // Parse the response
-    if (respSize == 13 && modbus.responseBuffer[0] == _slaveID)
-    {
-        K = modbus.float32FromFrame(littleEndian, 3);
-        B = modbus.float32FromFrame(littleEndian, 7);
-        return true;
-    }
-    else return false;
+    float K3, K4, K5, K6;
+    return getCalibration(K, B, K3, K4, K5, K6);
 }
 
 // This sets the calibration constants for the sensor
@@ -447,14 +499,44 @@ bool yosemitech::getCalibration(float &K, float &B)
 //        (x - values from sensor, y = values of standard solutions)
 //    7.  Send the calculated slope (K) and offset (B) to the sensor using
 //        this command.
-// This is for all sensors EXCEPT pH
 // The K value begins in register 0x1100 (4352) and the B value two registers later
 bool yosemitech::setCalibration(float K, float B)
 {
-    bool success = true;
-    success &= modbus.float32ToRegister(4352, K, littleEndian);
-    success &= modbus.float32ToRegister(4354, B, littleEndian);
-    return success;
+    switch (_model)
+    {
+        case 533:  // ORP
+        {
+            bool success = true;
+            success &= modbus.float32ToRegister(0x3400, K, littleEndian);
+            success &= modbus.float32ToRegister(0x3402, B, littleEndian);
+            return success;
+            break;
+        }
+        default:
+        {
+            bool success = true;
+            success &= modbus.float32ToRegister(0x1100, K, littleEndian);
+            success &= modbus.float32ToRegister(0x1102, B, littleEndian);
+            return success;
+            break;
+        }
+    }
+}
+
+// This sets the calibration constants for a pH sensor
+// Factory calibration values for pH are:  K1=6.86, K2=-6.72, K3=0.04, K4=6.86, K5=-6.56, K6=-1.04
+// The calibration constants begin at register 0x2900 (10496)
+bool yosemitech::setCalibration(float K1, float K2, float K3,
+                                float K4, float K5, float K6)
+{
+    byte pHCalibs[24] = {0x00,};
+    modbus.float32ToFrame(K1, littleEndian, pHCalibs, 0);
+    modbus.float32ToFrame(K2, littleEndian, pHCalibs, 4);
+    modbus.float32ToFrame(K3, littleEndian, pHCalibs, 8);
+    modbus.float32ToFrame(K4, littleEndian, pHCalibs, 12);
+    modbus.float32ToFrame(K5, littleEndian, pHCalibs, 16);
+    modbus.float32ToFrame(K6, littleEndian, pHCalibs, 20);
+    return modbus.setRegisters(0x2900, 12, pHCalibs, true);
 }
 
 // This sets the 3 calibration points for a pH sensor
@@ -504,22 +586,6 @@ bool yosemitech::setCapCoefficients(float K0, float K1, float K2, float K3,
     modbus.float32ToFrame(K6, littleEndian, capCoeffs, 24);
     modbus.float32ToFrame(K7, littleEndian, capCoeffs, 28);
     return modbus.setRegisters(9984, 16, capCoeffs, true);
-}
-
-// This sets the calibration constants for a pH sensor
-// Factory calibration values are:  K1=6.86, K2=-6.72, K3=0.04, K4=6.86, K5=-6.56, K6=-1.04
-// The calibration constants begin at register 0x2900 (10496)
-bool yosemitech::setpHCalibration(float K1, float K2, float K3,
-                                  float K4, float K5, float K6)
-{
-    byte pHCalibs[24] = {0x00,};
-    modbus.float32ToFrame(K1, littleEndian, pHCalibs, 0);
-    modbus.float32ToFrame(K2, littleEndian, pHCalibs, 4);
-    modbus.float32ToFrame(K3, littleEndian, pHCalibs, 8);
-    modbus.float32ToFrame(K4, littleEndian, pHCalibs, 12);
-    modbus.float32ToFrame(K5, littleEndian, pHCalibs, 16);
-    modbus.float32ToFrame(K6, littleEndian, pHCalibs, 20);
-    return modbus.setRegisters(10496, 12, pHCalibs, true);
 }
 
 // This immediately activates the cleaning brush for sensors with one.

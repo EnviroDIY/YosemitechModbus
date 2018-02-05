@@ -118,16 +118,17 @@ public:
     float getDOmgLValue(void);
 
     // This gets the calibration constants for the sensor
-    // K = slope, B = intercept
+    // The float variables must be initialized prior to calling this function.
+    // MOST sensors have two calibration coefficients:  K = slope, B = intercept
     // The calibration is applied to all values returned by the sensor as:
     //    value_returned = (value_raw * K) + B
-    // This is for all sensors EXCEPT pH
-    // The float variables for K and B must be
-    // initialized prior to calling this function.
     bool getCalibration(float &K, float &B);
+    // The pH sensor uses SIX calibration coefficients
+    // Factory calibration values for pH are:  K1=6.86, K2=-6.72, K3=0.04, K4=6.86, K5=-6.56, K6=-1.04
+    bool getCalibration(float &K1, float &K2, float &K3, float &K4, float &K5, float &K6);
 
-    // This sets the calibration constants for the sensor
-    // The suggested calibration protocol is:
+    // This sets the calibration constants for a sensor
+    // The suggested calibration protocol for sensors with a 2-coefficient calibration is:
     //    1.  Use this command to set calibration coefficients as K = 1 and B = 0
     //    2.  Put the probe in a solution of known value.
     //    3.  Send the "startMeasurement" command and allow the probe to stabilize.
@@ -139,8 +140,15 @@ public:
     //        (x - values from sensor, y = values of standard solutions)
     //    7.  Send the calculated slope (K) and offset (B) to the sensor using
     //        this command.
-    // This is for all sensors EXCEPT pH
+    // The pH sensor can be calibrated in this fashion, or it can be calibrated
+    // using the steps detailed below for the functions pHCalibrationPoint and pHCalibrationStatus.
     bool setCalibration(float K, float B);
+
+    // This sets the FULL calibration constants for a pH sensor, which requires 6 coefficients
+    // Factory calibration values for pH are:  K1=6.86, K2=-6.72, K3=0.04, K4=6.86, K5=-6.56, K6=-1.04
+    // Use the functions pHCalibrationPoint and pHCalibrationStatus to calibrate
+    // and verify calibrations of these meters
+    bool setCalibration(float K1, float K2, float K3, float K4, float K5, float K6);
 
     // This sets the 3 calibration points for a pH sensor
     // Calibration steps for pH (3 point calibration only):
@@ -164,11 +172,6 @@ public:
     // The values of these coefficients are supplied by the manufacturer.
     bool setCapCoefficients(float K0, float K1, float K2, float K3,
                             float K4, float K5, float K6, float K7);
-
-    // This sets the calibration constants for a pH sensor
-    // Factory calibration values are:  K1=6.86, K2=-6.72, K3=0.04, K4=6.86, K5=-6.56, K6=-1.04
-    bool setpHCalibration(float K1, float K2, float K3,
-                          float K4, float K5, float K6);
 
     // This immediately activates the cleaning brush for sensors with one.
     // NOTE:  The brush also activates as soon as power is applied.
