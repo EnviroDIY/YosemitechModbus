@@ -1,6 +1,6 @@
 {
   "name": "YosemitechModbus",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "keywords": "Yosemitech, Modbus, communication, bus, sensor",
   "description": "Arduino library for communication with Yosemitech sensors via Modbus.",
   "repository":
@@ -33,6 +33,17 @@
             "frameworks": "arduino",
             "platforms": "atmelavr, atmelsam"
         }
-  ]
-
+  ],
+  "examples":
+  [
+    "examples/*/*.ino",
+    "utilities/*/*.ino"
+  ],
+  "export":
+  {
+    "exclude":
+    [
+        "dir/doc/*"
+    ]
+  }
 }
