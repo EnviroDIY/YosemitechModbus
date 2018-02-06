@@ -43,7 +43,8 @@
   {
     "exclude":
     [
-        "dir/doc/*"
+        "doc/*",
+        "sensor_tests/*"
     ]
   }
 }
