@@ -208,8 +208,8 @@ void setup()
 void loop()
 {
     // send the command to get the values
-    float tempValue, parmValue, thirdValue = -9999;
-    sensor.getValues(tempValue, parmValue, thirdValue);
+    float parmValue, tempValue, thirdValue = -9999;
+    sensor.getValues(parmValue, tempValue, thirdValue);
     Serial.print(tempValue);
     Serial.print("      ");
     Serial.print(parmValue);
