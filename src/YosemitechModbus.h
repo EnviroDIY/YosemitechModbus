@@ -21,7 +21,8 @@ typedef enum yosemitechModel
     Y520,  // 4-Electrode Conductivity Sensor http://www.yosemitech.com/en/product-3.html
     Y532,  // pH
     Y533,  // ORP?
-    Y550,   // UV254 Sensor http://www.yosemitech.com/en/product-21.html
+    Y550,  // UV254 Sensor http://www.yosemitech.com/en/product-21.html
+    Y4000, //  Multiparameter Sonde http://www.yosemitech.com/en/product-20.html
     UNKNOWN   //  Use if the sensor model is unknown. Doing this is generally a
               // bad idea, but it can be helpful for doing things like getting
               // the serial number of an unknown model.
@@ -91,12 +92,14 @@ public:
     //            -- Y532 (pH) can return electrical potential
     //            -- Y504 (DO) allows calculation of DO in mg/L, which can be returned
     // 3 values and an error code - As two values, but with error code
+    // 8 values - For Y4000 Sonde, in this order: "DO; Turb; Cond; pH; Temp; ORP; Chl; BGA"
     bool getValues(float &parmValue);
     bool getValues(float &parmValue, byte &errorCode);
     bool getValues(float &parmValue, float &tempValue);
     bool getValues(float &parmValue, float &tempValue, byte &errorCode);
     bool getValues(float &parmValue, float &tempValue, float &thirdValue);
     bool getValues(float &parmValue, float &tempValue, float &thirdValue, byte &errorCode);
+    bool getValues(float &parmValue, float &secondValue, float &thirdValue, float &forthValue, float &tempValue, float &sixthValue, float &seventhValue, float &eighthValue,  byte &errorCode); // For Y4000 Sonde
 
     // This gets the main "parameter" value as a float
     // This is overloaded, so you have the option of getting the error code
@@ -116,6 +119,8 @@ public:
     // This only applies to DO and is calculated in the getValues() equation using
     // the measured temperature and a salinity of 0 and pressure of 760 mmHg (sea level)
     float getDOmgLValue(void);
+
+    // ** NEED a list of getValue functions for the Y4000
 
     // This gets the calibration constants for the sensor
     // The float variables must be initialized prior to calling this function.
