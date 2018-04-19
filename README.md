@@ -17,6 +17,20 @@ Another note:  The sensors seem to be somewhat.. finickey about resolving simila
 #### Power Supply
 All of these sensors require a 5-12V DC power supply and the power supply can be stopped between measurements. Older sensors may require higher voltage power supplies.  Do note that any time the sensor looses power, its internal configurations (such as brushing interval for sensors with wipers) will be reset to their factory values.  The red wire from the sensor should connect to the positive pole of the 5-12V power supply and the black to ground.
 
+**Current Consumption**:
+The current consumption of the Yosemitech sensors is specified to be <50mA, this is not accurate for their sensors which include a wiper brush, for these sensors an inductive spike exists when the brush begins to spin, which draws significantly more current than specified. Below is a table describing the current draws for several different opeating conditions of the Yosemitech 511 Turbidity senor (with brush). All tests were driven by a power supply with a 9v output
+
+| Condition        | Current    |   
+| ------------- |:-------------:| 
+| Brush Starting | <290mA<sup>1</sup>| 
+| Brush Running     | 52mA      |
+| Sensing | 27mA     |
+| Idle | 7mA |
+
+Note <sup>1</sup>: The current on brush start can be seen in the image below, where the yellow line shows current into the sensor with a gain of 10 V/A, and the blue line is the output voltage to the sensor. The spike peak is approximately 290mA, with an exponential decay over the next 10-15ms, while this is short, it is more than enough time to brown out many low current power supplies found in data logger systems, so appropriate percautions must be taken to avoid this problem.
+
+![CurrentSpike](doc/TEK00013.PNG)
+
 #### RS485 communication/connection:
 The sensors need to communicate with the Arduino via a RS485-to-TTL adapter.  The white wire of the Yosemitech sensor will connect to the "B" pin of the adapter and the green wire will connect to "A".  Note that most RS485 adapters require 3.3-5V of power and do NOT provide any power to the sensors.  For adapters that require it, this library does include code to toggle the RE and DE (receive/data enable), though the timing for this is very persnickety.  I recommend an adapter board with built in flow control.  Also, be mindful of the logic level of the TTL output by the adapter.  The MAX485, one of the most popular adapters, has a 5V logic level in the TTL signal.  Up to 247 different devices can be connected in the same RS485 circuit, provided that each sensor has been separately assigned a uniques slave id.
 
