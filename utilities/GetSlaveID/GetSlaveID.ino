@@ -168,6 +168,7 @@ void scanSNs(void)
         // Send the "get serial number" command
         driverEnable();
         modbusSerial.write(getSN, sizeof(getSN)/sizeof(getSN[0]));
+        printFrameHex(getSN, sizeof(getSN)/sizeof(getSN[0]), &Serial);
         modbusSerial.flush();
 
         recieverEnable();
