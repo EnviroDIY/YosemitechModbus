@@ -100,7 +100,7 @@ public:
     bool getValues(float &parmValue, float &tempValue, float &thirdValue);
     bool getValues(float &parmValue, float &tempValue, float &thirdValue, byte &errorCode);
     bool getValues(float &parmValue, float &secondValue, float &thirdValue, float &forthValue, float &tempValue, float &sixthValue, float &seventhValue, float &eighthValue); // For Y4000 Sonde
-
+    bool getValues(float &parmValue, float &secondValue, float &thirdValue, float &forthValue, float &tempValue, float &sixthValue, float &seventhValue, float &eighthValue,  byte &errorCode);
     // This gets the main "parameter" value as a float
     // This is overloaded, so you have the option of getting the error code
     // in another pre-initialized variable, if you want it and the sensor
@@ -119,8 +119,6 @@ public:
     // This only applies to DO and is calculated in the getValues() equation using
     // the measured temperature and a salinity of 0 and pressure of 760 mmHg (sea level)
     float getDOmgLValue(void);
-
-    // ** NEED a list of getValue functions for the Y4000
 
     // This gets the calibration constants for the sensor
     // The float variables must be initialized prior to calling this function.

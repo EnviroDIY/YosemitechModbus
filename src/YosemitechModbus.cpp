@@ -401,7 +401,7 @@ bool yosemitech::getValues(float &parmValue, float &secondValue, float &thirdVal
     // If something fails, we'll get here
     return false;
 }
-bool yosemitech::getValues(float &parmValue, float &secondValue, float &thirdValue, float &forthValue, float &tempValue, float &sixthValue, float &seventhValue, float &eighthValue);
+bool yosemitech::getValues(float &parmValue, float &secondValue, float &thirdValue, float &forthValue, float &tempValue, float &sixthValue, float &seventhValue, float &eighthValue)
 {
     byte errorCode = 0xFF;  // Initialize as if there's an error
     return getValues(parmValue, tempValue, thirdValue, errorCode);
