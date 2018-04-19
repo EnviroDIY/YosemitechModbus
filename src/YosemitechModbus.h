@@ -101,7 +101,7 @@ public:
     bool getValues(float &parmValue, float &tempValue, float &thirdValue, byte &errorCode);
     // 8 values - For Y4000 Sonde, in this order: "DO; Turb; Cond; pH; Temp; ORP; Chl; BGA"
     // 8 values and an error code - As 8 values, but with error code
-    // NOTE:  The 8 value versiosn will return false for anything but a sonde
+    // NOTE:  The 8 value versions will return false for anything but a sonde
     bool getValues(float &firstValue, float &secondValue, float &thirdValue, float &forthValue, float &fifthValue, float &sixthValue, float &seventhValue, float &eighthValue); // For Y4000 Sonde
     bool getValues(float &firstValue, float &secondValue, float &thirdValue, float &forthValue, float &fifthValue, float &sixthValue, float &seventhValue, float &eighthValue,  byte &errorCode);
     // This gets the main "parameter" value as a float
