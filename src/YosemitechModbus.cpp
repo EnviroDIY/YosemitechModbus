@@ -250,35 +250,22 @@ bool yosemitech::stopMeasurement(void)
 // beginning in holding register 0x1200 (4608).  As a convienence, I am also
 // calculating the DO in mg/L from the DO sensor, which otherwise would only
 // return percent saturation.
-bool yosemitech::getValues(float &parmValue, float &secondValue, float &thirdValue, float &forthValue, float &tempValue, float &sixthValue, float &seventhValue, float &eighthValue,  byte &errorCode)
+bool yosemitech::getValues(float &parmValue, float &tempValue, float &thirdValue, byte &errorCode)
 {
     // Set values to -9999 and error flagged before asking for the result
     parmValue = -9999;
     tempValue = -9999;
     thirdValue = -9999;
-    secondValue = -9999;
-    forthValue = -9999;
-    sixthValue = -9999;
-    seventhValue = -9999;
-    eighthValue = -9999;
     errorCode = 0xFF;  // Error!
 
     switch (_model)
     {
         case Y4000:   // Y4000 Multiparameter sonde
         {
-            if (modbus.getRegisters(0x03, 0x2601, 10))
-            {
-                parmValue   = modbus.float32FromFrame(littleEndian, 3);   // DOmgL
-                secondValue = modbus.float32FromFrame(littleEndian, 7);   // Turbidity
-                thirdValue  = modbus.float32FromFrame(littleEndian, 11);  // Conductivity
-                forthValue  = modbus.float32FromFrame(littleEndian, 15);  // pH
-                tempValue   = modbus.float32FromFrame(littleEndian, 19);  // Temp
-                sixthValue  = modbus.float32FromFrame(littleEndian, 23);  // ORP
-                seventhValue = modbus.float32FromFrame(littleEndian, 27); // Chlorophyll
-                eighthValue = modbus.float32FromFrame(littleEndian, 31);  // Blue Green Algae (BGA)
-                return true;
-            }
+            // The sonde returns 8 values at once, we're not going to pick three
+            // of them to return.  We'll just send a false response.  If someone
+            // wants the sonde results, they should give 8 values to put them in.
+            return false;
             break;
         }
         case Y550:   // Y550 COD, with turbidity
@@ -401,41 +388,91 @@ bool yosemitech::getValues(float &parmValue, float &secondValue, float &thirdVal
     // If something fails, we'll get here
     return false;
 }
-bool yosemitech::getValues(float &parmValue, float &secondValue, float &thirdValue, float &forthValue, float &tempValue, float &sixthValue, float &seventhValue, float &eighthValue)
-{
-    byte errorCode = 0xFF;  // Initialize as if there's an error
-    return getValues(parmValue, tempValue, thirdValue, errorCode);
-}
 bool yosemitech::getValues(float &parmValue, float &tempValue, float &thirdValue)
 {
-    float secondValue, forthValue, sixthValue, seventhValue, eighthValue = -9999;  // Initialize with an error value
     byte errorCode = 0xFF;  // Initialize as if there's an error
     return getValues(parmValue, tempValue, thirdValue, errorCode);
 }
 bool yosemitech::getValues(float &parmValue, float &tempValue, byte &errorCode)
 {
-    float thirdValue, secondValue, forthValue, sixthValue, seventhValue, eighthValue = -9999;  // Initialize with an error value
+    float thirdValue = -9999;  // Initialize with an error value
     return getValues(parmValue, tempValue, thirdValue, errorCode);
 }
 bool yosemitech::getValues(float &parmValue, float &tempValue)
 {
-    float thirdValue, secondValue, forthValue, sixthValue, seventhValue, eighthValue = -9999;  // Initialize with an error value
     byte errorCode = 0xFF;  // Initialize as if there's an error
     return getValues(parmValue, tempValue, errorCode);
 }
 bool yosemitech::getValues(float &parmValue, byte &errorCode)
 {
-    float tempValue, secondValue, forthValue, sixthValue, seventhValue, eighthValue = -9999;  // Initialize with an error value
+    float tempValue = -9999;  // Initialize with an error value
     return getValues(parmValue, tempValue, errorCode);
 }
 bool yosemitech::getValues(float &parmValue)
 {
-    float thirdValue, secondValue, forthValue, sixthValue, seventhValue, eighthValue = -9999;  // Initialize with an error value
     byte errorCode = 0xFF;  // Initialize as if there's an error
     return getValues(parmValue, errorCode);
 }
 
+// Get 8 values for the multiparameter sonde, with or without error flag
+bool yosemitech::getValues(float &firstValue, float &secondValue, float &thirdValue,
+                           float &forthValue, float &fifthValue, float &sixthValue,
+                           float &seventhValue, float &eighthValue, byte &errorCode)
+{
+    // Set values to -9999 and error flagged before asking for the result
+    firstValue = -9999;
+    secondValue = -9999;
+    thirdValue = -9999;
+    forthValue = -9999;
+    fifthValue = -9999;
+    sixthValue = -9999;
+    seventhValue = -9999;
+    eighthValue = -9999;
+    errorCode = 0xFF;  // Error!
+
+    switch (_model)
+    {
+        case Y4000:   // Y4000 Multiparameter sonde
+        {
+            // Sonde's 8 values begin in register 260
+            if (modbus.getRegisters(0x03, 0x2601, 10))
+            {
+                firstValue   = modbus.float32FromFrame(littleEndian, 3);   // DOmgL
+                secondValue = modbus.float32FromFrame(littleEndian, 7);   // Turbidity
+                thirdValue  = modbus.float32FromFrame(littleEndian, 11);  // Conductivity
+                forthValue  = modbus.float32FromFrame(littleEndian, 15);  // pH
+                fifthValue   = modbus.float32FromFrame(littleEndian, 19);  // Temp
+                sixthValue  = modbus.float32FromFrame(littleEndian, 23);  // ORP
+                seventhValue = modbus.float32FromFrame(littleEndian, 27); // Chlorophyll
+                eighthValue = modbus.float32FromFrame(littleEndian, 31);  // Blue Green Algae (BGA)
+                // Error code is separately stored in register 0x0800
+                errorCode = modbus.byteFromRegister(0x03, 0x0800, 1);
+                return true;
+            }
+            break;
+        }
+        // Only the sonde can return 8 values!
+        default:
+        {
+            return false;
+            break;
+        }
+    }
+    // If something fails, we'll get here
+    return false;
+}
+bool yosemitech::getValues(float &firstValue, float &secondValue, float &thirdValue,
+                           float &forthValue, float &fifthValue, float &sixthValue,
+                           float &seventhValue, float &eighthValue)
+{
+    byte errorCode = 0xFF;  // Initialize as if there's an error
+    return getValues(firstValue, secondValue, thirdValue, forthValue,
+                     fifthValue, sixthValue, seventhValue, eighthValue, errorCode);
+}
+
+
 // This returns the main "parameter" value as a float
+// NOTE:  This will return -9999 for a sonde!
 float yosemitech::getValue(void)
 {
     float parmValue = -9999;  // Initialize with an error value
@@ -453,25 +490,75 @@ float yosemitech::getValue(byte &errorCode)
 // This returns the temperatures value from a sensor as a float
 float yosemitech::getTemperatureValue(void)
 {
-    float parmValue, tempValue = -9999;  // Initialize with an error value
-    getValues(parmValue, tempValue);
-    return tempValue;
+    switch (_model)
+    {
+        case Y4000:
+        {
+            // Initialize with an error value
+            float firstValue, secondValue, thirdValue, forthValue,
+                  fifthValue, sixthValue, seventhValue, eighthValue = -9999;
+            getValues(firstValue, secondValue, thirdValue, forthValue,
+                      fifthValue, sixthValue, seventhValue, eighthValue);
+            return fifthValue;  // temp is the 5th value returned
+            break;
+        }
+        default:
+        {
+            float parmValue, tempValue = -9999;  // Initialize with an error value
+            getValues(parmValue, tempValue);
+            return tempValue;  // temp is the 2nd value for everything else
+            break;
+        }
+    }
 }
 
 // This returns the raw electrical potential from a pH sensor as a float
 float yosemitech::getPotentialValue(void)
 {
-    float parmValue, tempValue, thirdValue = -9999;  // Initialize with an error value
-    getValues(parmValue, tempValue, thirdValue);
-    return thirdValue;
+    switch(_model)
+    {
+        case Y532:
+        case Y533:
+        {
+            float parmValue, tempValue, thirdValue = -9999;  // Initialize with an error value
+            getValues(parmValue, tempValue, thirdValue);
+            return thirdValue;
+            break;
+        }
+        default:
+        {
+            return -9999;
+            break;
+        }
+    }
 }
+
 
 // This returns DO in mg/L (instead of % saturation) as a float
 // This only applies to DO and is calculated in the getValues() equation using
 // the measured temperature and a salinity of 0 and pressure of 760 mmHg (sea level)
 float yosemitech::getDOmgLValue(void)
 {
-    return getPotentialValue();
+    switch(_model)
+    {
+        case Y502:
+        case Y504:
+        {
+            float parmValue, tempValue, thirdValue = -9999;  // Initialize with an error value
+            getValues(parmValue, tempValue, thirdValue);
+            return thirdValue;
+            break;
+        }
+        case Y4000:
+        {
+            float firstValue, secondValue, thirdValue, forthValue,
+                  fifthValue, sixthValue, seventhValue, eighthValue = -9999;
+            getValues(firstValue, secondValue, thirdValue, forthValue,
+                      fifthValue, sixthValue, seventhValue, eighthValue);
+            return firstValue;  // DO in mg/L is the 1st value returned
+        }
+        default: return -9999;
+    }
 }
 
 
@@ -687,7 +774,7 @@ uint16_t yosemitech::getBrushInterval(void)
     {
         case Y4000:   // Y4000 Multiparameter sonde
         {
-            return modbus.int16FromRegister(0x0E00, 0x3200, littleEndian);
+            return modbus.int16FromRegister(0x03, 0x0E00, littleEndian);
         }
         default:
         {
