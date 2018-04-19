@@ -250,7 +250,7 @@ bool yosemitech::stopMeasurement(void)
 // beginning in holding register 0x1200 (4608).  As a convienence, I am also
 // calculating the DO in mg/L from the DO sensor, which otherwise would only
 // return percent saturation.
-bool yosemitech::getValues(float &parmValue, float &secondValue, float &thirdValue, float &forthValue, float &tempValue, float &sixthValue, float &seventhValue, float &eighthValue,  byte &errorCode);
+bool yosemitech::getValues(float &parmValue, float &secondValue, float &thirdValue, float &forthValue, float &tempValue, float &sixthValue, float &seventhValue, float &eighthValue,  byte &errorCode)
 {
     // Set values to -9999 and error flagged before asking for the result
     parmValue = -9999;
@@ -687,7 +687,7 @@ uint16_t yosemitech::getBrushInterval(void)
     {
         case Y4000:   // Y4000 Multiparameter sonde
         {
-            rreturn modbus.int16FromRegister(0x0E00, 0x3200, littleEndian);
+            return modbus.int16FromRegister(0x0E00, 0x3200, littleEndian);
         }
         default:
         {

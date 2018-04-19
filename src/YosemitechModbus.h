@@ -99,7 +99,7 @@ public:
     bool getValues(float &parmValue, float &tempValue, byte &errorCode);
     bool getValues(float &parmValue, float &tempValue, float &thirdValue);
     bool getValues(float &parmValue, float &tempValue, float &thirdValue, byte &errorCode);
-    bool getValues(float &parmValue, float &secondValue, float &thirdValue, float &forthValue, float &tempValue, float &sixthValue, float &seventhValue, float &eighthValue,  byte &errorCode); // For Y4000 Sonde
+    bool getValues(float &parmValue, float &secondValue, float &thirdValue, float &forthValue, float &tempValue, float &sixthValue, float &seventhValue, float &eighthValue); // For Y4000 Sonde
 
     // This gets the main "parameter" value as a float
     // This is overloaded, so you have the option of getting the error code
