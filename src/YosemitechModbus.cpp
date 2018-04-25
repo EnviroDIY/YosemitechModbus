@@ -67,7 +67,7 @@ String yosemitech::getParameter(void)
         case Y532: {return "pH"; break;}
         case Y533: {return "ORP"; break;}
         case Y550: {return "COD"; break;}
-        case Y4000: {return "DO; Turb; Cond; pH; Temp; ORP; Chl; BGA"; break;}
+        case Y4000: {return "DO,   Turb, Cond,  pH,   Temp, ORP,  Chl,  BGA"; break;}
         default:  {return "Unknown"; break;}
     }
 }
@@ -89,7 +89,7 @@ String yosemitech::getUnits(void)
         case Y532: {return "pH"; break;}
         case Y533: {return "mV"; break;}
         case Y550: {return "mg/L"; break;}
-        case Y4000: {return "mg/L; NTU; mS/cm; pH; °C; mV; µg/L; µg/L"; break;}
+        case Y4000: {return "mg/L, NTU,  mS/cm, pH,   °C,   mV,   µg/L, µg/L"; break;}
         default:  {return "Unknown"; break;}
     }
 }
@@ -126,6 +126,7 @@ String yosemitech::getSerialNumber(void)
     {
         case Y4000:
             SN = modbus.StringFromRegister(0x03, 0x1400, 14); break; // for Y4000 Sonde
+            break;
         default:
             SN = modbus.StringFromRegister(0x03, 0x0900, 14); break; // for all sensors except Y4000
     }
@@ -415,19 +416,19 @@ bool yosemitech::getValues(float &parmValue)
 }
 
 // Get 8 values for the multiparameter sonde, with or without error flag
-bool yosemitech::getValues(float &firstValue, float &secondValue, float &thirdValue,
-                           float &forthValue, float &fifthValue, float &sixthValue,
-                           float &seventhValue, float &eighthValue, byte &errorCode)
+bool yosemitech::getValues(float &DOmgL, float &Turbidity, float &Cond,
+                           float &pH, float &Temp, float &ORP,
+                           float &Chlorophyll, float &BGA, byte &errorCode)
 {
     // Set values to -9999 and error flagged before asking for the result
-    firstValue = -9999;
-    secondValue = -9999;
-    thirdValue = -9999;
-    forthValue = -9999;
-    fifthValue = -9999;
-    sixthValue = -9999;
-    seventhValue = -9999;
-    eighthValue = -9999;
+    DOmgL = -9999;      // firstValue
+    Turbidity = -9999;  // secondValue
+    Cond = -9999;       // thirdValue
+    pH = -9999;         // forthValue
+    Temp = -9999;       // fifthValue
+    ORP = -9999;        // sixthValue
+    Chlorophyll = -9999; // seventhValue
+    BGA = -9999;        // eighthValue
     errorCode = 0xFF;  // Error!
 
     switch (_model)
@@ -437,14 +438,14 @@ bool yosemitech::getValues(float &firstValue, float &secondValue, float &thirdVa
             // Sonde's 8 values begin in register 260
             if (modbus.getRegisters(0x03, 0x2601, 10))
             {
-                firstValue   = modbus.float32FromFrame(littleEndian, 3);   // DOmgL
-                secondValue = modbus.float32FromFrame(littleEndian, 7);   // Turbidity
-                thirdValue  = modbus.float32FromFrame(littleEndian, 11);  // Conductivity
-                forthValue  = modbus.float32FromFrame(littleEndian, 15);  // pH
-                fifthValue   = modbus.float32FromFrame(littleEndian, 19);  // Temp
-                sixthValue  = modbus.float32FromFrame(littleEndian, 23);  // ORP
-                seventhValue = modbus.float32FromFrame(littleEndian, 27); // Chlorophyll
-                eighthValue = modbus.float32FromFrame(littleEndian, 31);  // Blue Green Algae (BGA)
+                DOmgL   = modbus.float32FromFrame(littleEndian, 3);   // DOmgL
+                Turbidity = modbus.float32FromFrame(littleEndian, 7);   // Turbidity
+                Cond  = modbus.float32FromFrame(littleEndian, 11);  // Conductivity
+                pH  = modbus.float32FromFrame(littleEndian, 15);  // pH
+                Temp   = modbus.float32FromFrame(littleEndian, 19);  // Temperature
+                ORP  = modbus.float32FromFrame(littleEndian, 23);  // ORP
+                Chlorophyll = modbus.float32FromFrame(littleEndian, 27); // Chlorophyll
+                BGA = modbus.float32FromFrame(littleEndian, 31);  // Blue Green Algae (BGA)
                 // Error code is separately stored in register 0x0800
                 errorCode = modbus.byteFromRegister(0x03, 0x0800, 1);
                 return true;
@@ -598,6 +599,10 @@ bool yosemitech::getCalibration(float &K1, float &K2, float &K3,
             else return false;
             break;
         }
+        case Y4000:
+        {
+            return false;
+        }
         default:   // other sensors have only 2 values
         {
             K3 = -9999;
@@ -646,6 +651,10 @@ bool yosemitech::setCalibration(float K, float B)
             success &= modbus.float32ToRegister(0x3402, B, littleEndian);
             return success;
             break;
+        }
+        case Y4000:
+        {
+            return false;
         }
         default:
         {
@@ -735,6 +744,7 @@ bool yosemitech::activateBrush(void)
           int respSize = modbus.sendCommand(activateBrush, 9);
           if (respSize == 8 && modbus.responseBuffer[0] == _slaveID) return true;
           else return false;
+          break;
         }
         default:
         {
@@ -757,6 +767,7 @@ bool yosemitech::setBrushInterval(uint16_t intervalMinutes)
         case Y4000:   // Y4000 Multiparameter sonde
         {
             return modbus.uint16ToRegister(0x0E00, intervalMinutes, littleEndian, true);
+            break;
         }
         default:
         {
@@ -775,6 +786,7 @@ uint16_t yosemitech::getBrushInterval(void)
         case Y4000:   // Y4000 Multiparameter sonde
         {
             return modbus.int16FromRegister(0x03, 0x0E00, littleEndian);
+            break;
         }
         default:
         {

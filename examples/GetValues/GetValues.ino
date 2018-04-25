@@ -23,7 +23,7 @@ Yosemitech modbus sensor.
 // ---------------------------------------------------------------------------
 
 // Define the sensor type
-yosemitechModel model = Y511;  // The sensor model number
+yosemitechModel model = Y4000;  // The sensor model number
 
 // Define the sensor's modbus address
 byte modbusAddress = 0x01;  // The sensor's modbus address, or SlaveID
@@ -64,7 +64,7 @@ void setup()
     sensor.begin(model, modbusAddress, &modbusSerial, DEREPin);
 
     // Turn on debugging
-    sensor.setDebugStream(&Serial);
+    // sensor.setDebugStream(&Serial);
 
     // Start up note
     Serial.print("Yosemitech ");
@@ -94,28 +94,36 @@ void setup()
     Serial.print("    Serial Number: ");
     Serial.println(SN);
 
-    // Get the sensor calibration status (pH only)
-    if (model == Y532)
+    // Get the sensor calibration equation / status (pH only)
+    switch(model)
     {
-        Serial.println("Getting sensor calibration status.");
-        byte status = sensor.pHCalibrationStatus();
-        Serial.print("    Status: 0x0");
-        Serial.println(status, HEX);
+        case Y532:          // pH, calibration status
+        {
+            Serial.println("Getting sensor calibration status.");
+            byte status = sensor.pHCalibrationStatus();
+            Serial.print("    Status: 0x0");
+            Serial.println(status, HEX);
+        }
+        case Y4000:
+        {
+            Serial.println("For Y4000, use YosemiTech software to get calibration parameters.");
+            break;
+        }
+        default:  // Get the sensor's current calibration values
+        {
+            Serial.println("Getting sensor calibration equation.");
+            float Kval = 0;
+            float Bval = 0;
+            sensor.getCalibration(Kval, Bval);
+            Serial.print("    Current Calibration Equation: final = ");
+            Serial.print(Kval);
+            Serial.print("*raw + ");
+            Serial.println(Bval);
+        }
     }
 
-    // Get the sensor's current calibration values
-    if (model != Y532)
-    {
-        Serial.println("Getting sensor calibration equation.");
-        float Kval = 0;
-        float Bval = 0;
-        sensor.getCalibration(Kval, Bval);
-        Serial.print("    Current Calibration Equation: final = ");
-        Serial.print(Kval);
-        Serial.print("*raw + ");
-        Serial.println(Bval);
-    }
-
+    // Get/set the sensor brush status (for sensors with brushes).
+    // NOTE: Not implemented for Y4000
     if (model == Y511 || model == Y513 || model == Y514)
     {
         // Check the wiper timing
@@ -167,7 +175,7 @@ void setup()
     }
     Serial.println("\n");
 
-    if (model == Y511 || model == Y513 || model == Y514)
+    if (model == Y511 || model == Y513 || model == Y514 || model == Y4000) // Y4000 activates brush when powered on
     {
         // We'll run the brush once in the middle of this
         Serial.println("Activating brush.");
@@ -175,7 +183,8 @@ void setup()
         if (success) Serial.println("    Brush activated.");
         else Serial.println("    Failed to activate brush!");
     }
-    if (model == Y511 || model == Y513 || model == Y514 || model == Y510)
+
+    if (model == Y511 || model == Y513 || model == Y514 || model == Y510 || model == Y4000)
     {
         Serial.println("Continuing to stabilize..");
         for (int i = 12; i > 0; i--)
@@ -192,14 +201,29 @@ void setup()
         Serial.println("\n");
     }
 
-    Serial.print("Temp(°C)  ");
-    Serial.print(sensor.getParameter());
-    Serial.print("(");
-    Serial.print(sensor.getUnits());
-    Serial.print(")");
-    if (model == Y532 || model == Y504) Serial.print("    Value");
-    //Serial.print("    Millis");
-    Serial.println();
+    switch (model)
+    {
+        case Y4000:
+        {
+            Serial.println(sensor.getParameter());
+            // "DO,   Turb, Cond,  pH,   Temp, ORP,  Chl,  BGA"
+            Serial.println(sensor.getUnits());
+            // "mg/L, NTU,  mS/cm, pH,   °C,   mV,   µg/L, µg/L"
+            break;
+        }
+        default:
+        {
+            Serial.print("Temp(°C)  ");
+            Serial.print(sensor.getParameter());
+            Serial.print("(");
+            Serial.print(sensor.getUnits());
+            Serial.print(")");
+            if (model == Y532 || model == Y504) Serial.print("    Value");
+            //Serial.print("    Millis");
+            Serial.println();
+        }
+    }
+
 }
 
 // ---------------------------------------------------------------------------
@@ -208,19 +232,51 @@ void setup()
 void loop()
 {
     // send the command to get the values
-    float parmValue, tempValue, thirdValue = -9999;
-    sensor.getValues(parmValue, tempValue, thirdValue);
-    Serial.print(tempValue);
-    Serial.print("      ");
-    Serial.print(parmValue);
-    if (model == Y532 || model == Y504)
+    switch (model)
     {
-        Serial.print("      ");
-        Serial.print(thirdValue);
+        case Y4000:
+        {
+            float DOmgL, Turbidity, Cond, pH, Temp, ORP, Chlorophyll, BGA = -9999;
+            byte errorCode = 0xFF;  // Error!
+
+            sensor.getValues(DOmgL, Turbidity, Cond, pH, Temp, ORP, Chlorophyll, BGA);
+
+            Serial.print(DOmgL);
+            Serial.print("  ");
+            Serial.print(Turbidity);
+            Serial.print("  ");
+            Serial.print(Cond);
+            Serial.print("  ");
+            Serial.print(pH);
+            Serial.print("  ");
+            Serial.print(Temp);
+            Serial.print("  ");
+            Serial.print(ORP);
+            Serial.print("  ");
+            Serial.print(Chlorophyll);
+            Serial.print("  ");
+            Serial.print(BGA);
+            Serial.println();
+            break;
+        }
+        default:
+        {
+            float parmValue, tempValue, thirdValue = -9999;
+            sensor.getValues(parmValue, tempValue, thirdValue);
+            Serial.print(tempValue);
+            Serial.print("      ");
+            Serial.print(parmValue);
+            if (model == Y532 || model == Y504)
+            {
+                Serial.print("      ");
+                Serial.print(thirdValue);
+            }
+            // Serial.print("      ");
+            // Serial.print(millis());
+            Serial.println();
+        }
     }
-    // Serial.print("      ");
-    // Serial.print(millis());
-    Serial.println();
+
 
 
     // Delay between readings
