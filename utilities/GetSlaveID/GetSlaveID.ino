@@ -162,7 +162,8 @@ void scanSNs(void)
     int numFound = 0;
     for (uint8_t addrTest = 1; addrTest <= 247; addrTest++)
     {
-        byte getSN[] = {addrTest, 0x03, 0x09, 0x00, 0x00, 0x07, 0x00, 0x00};
+        byte getSN[] = {addrTest, 0x03, 0x09, 0x00, 0x00, 0x07, 0x00, 0x00}; // for all except Y4000 Sonde
+//        byte getSN[] = {addrTest, 0x03, 0x14, 0x00, 0x00, 0x07, 0x00, 0x00}; // for Y4000 Sonde
         insertCRC(getSN, sizeof(getSN)/sizeof(getSN[0]));
 
         // Send the "get serial number" command

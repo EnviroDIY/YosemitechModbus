@@ -21,8 +21,9 @@ typedef enum yosemitechModel
     Y520,  // 4-Electrode Conductivity Sensor http://www.yosemitech.com/en/product-3.html
     Y532,  // pH
     Y533,  // ORP?
-    Y550,   // UV254 Sensor http://www.yosemitech.com/en/product-21.html
-    UNKNOWN   //  Use if the sensor model is unknown. Doing this is generally a
+    Y550,  // UV254 Sensor http://www.yosemitech.com/en/product-21.html
+    Y4000, //  Multiparameter Sonde http://www.yosemitech.com/en/product-20.html
+    UNKNOWN   // Use if the sensor model is unknown. Doing this is generally a
               // bad idea, but it can be helpful for doing things like getting
               // the serial number of an unknown model.
 } yosemitechModel;
@@ -90,14 +91,19 @@ public:
     //            sensors that return can return something else
     //            -- Y532 (pH) can return electrical potential
     //            -- Y504 (DO) allows calculation of DO in mg/L, which can be returned
-    // 3 values and an error code - As two values, but with error code
+    // 3 values and an error code - As three values, but with error code
+    // NOTE:  The one, two, and three value variants will simply return false for a sonde
     bool getValues(float &parmValue);
     bool getValues(float &parmValue, byte &errorCode);
     bool getValues(float &parmValue, float &tempValue);
     bool getValues(float &parmValue, float &tempValue, byte &errorCode);
     bool getValues(float &parmValue, float &tempValue, float &thirdValue);
     bool getValues(float &parmValue, float &tempValue, float &thirdValue, byte &errorCode);
-
+    // 8 values - For Y4000 Sonde, in this order: "DO; Turb; Cond; pH; Temp; ORP; Chl; BGA"
+    // 8 values and an error code - As 8 values, but with error code
+    // NOTE:  The 8 value versions will return false for anything but a sonde
+    bool getValues(float &firstValue, float &secondValue, float &thirdValue, float &forthValue, float &fifthValue, float &sixthValue, float &seventhValue, float &eighthValue); // For Y4000 Sonde
+    bool getValues(float &firstValue, float &secondValue, float &thirdValue, float &forthValue, float &fifthValue, float &sixthValue, float &seventhValue, float &eighthValue,  byte &errorCode);
     // This gets the main "parameter" value as a float
     // This is overloaded, so you have the option of getting the error code
     // in another pre-initialized variable, if you want it and the sensor
