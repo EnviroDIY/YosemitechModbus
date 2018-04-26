@@ -26,7 +26,7 @@ Yosemitech modbus sensor.
 yosemitechModel model = Y4000;  // The sensor model number
 
 // Define the sensor's modbus address
-byte modbusAddress = 0x01;  // The sensor's modbus address, or SlaveID
+byte modbusAddress = 0x05;  // The sensor's modbus address, or SlaveID
 // Yosemitech ships sensors with a default ID of 0x01.
 
 // Define pin number variables
@@ -205,8 +205,10 @@ void setup()
     {
         case Y4000:
         {
+            Serial.print("Time,  ");
             Serial.println(sensor.getParameter());
             // "DO,   Turb, Cond,  pH,   Temp, ORP,  Chl,  BGA"
+            Serial.print("ms,    ");
             Serial.println(sensor.getUnits());
             // "mg/L, NTU,  mS/cm, pH,   °C,   mV,   µg/L, µg/L"
             break;
@@ -241,6 +243,8 @@ void loop()
 
             sensor.getValues(DOmgL, Turbidity, Cond, pH, Temp, ORP, Chlorophyll, BGA);
 
+            Serial.print(millis());
+            Serial.print("  ");
             Serial.print(DOmgL);
             Serial.print("  ");
             Serial.print(Turbidity);
@@ -292,5 +296,5 @@ void loop()
 
     // The temperature sensors can take readings much more quickly.  The same results
     // can be read many times from the registers between the new sensor readings.
-    delay(3000);
+    delay(5000);
 }
