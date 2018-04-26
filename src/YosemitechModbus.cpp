@@ -207,7 +207,7 @@ bool yosemitech::startMeasurement(void)
             else return false;
             break;
         }
-        case Y4000:
+        case Y4000: // Does not require this function. Not described in the manual or sent using the MultiSensor_v1.18 software
         {
             return true;
             break;
@@ -228,14 +228,25 @@ bool yosemitech::startMeasurement(void)
 // This tells the optical sensors to stop taking measurements
 bool yosemitech::stopMeasurement(void)
 {
-    // byte stopMeasurement[8] = {_slaveID, 0x03, 0x2E, 0x00, 0x00, 0x00, 0x00, 0x00};
-                               // _slaveID, Read,  Reg 11776,   0 Regs  ,    CRC
-    byte stopMeasurement[8] = {_slaveID, 0x03, 0x2E, 0x00, 0x00, 0x01, 0x00, 0x00};
-                            // _slaveID, Read,  Reg 11776,   1 Reg   ,    CRC
-    int respSize = modbus.sendCommand(stopMeasurement, 8);
-    // if (respSize == 5 && modbus.responseBuffer[0] == _slaveID) return true;
-    if (respSize == 7 && modbus.responseBuffer[0] == _slaveID) return true;
-    else return false;
+    switch (_model)
+    {
+        case Y4000: // Does not require this function. Not described in the manual or sent using the MultiSensor_v1.18 software
+        {
+            return true;
+            break;
+        }
+        default:
+        {
+            // byte stopMeasurement[8] = {_slaveID, 0x03, 0x2E, 0x00, 0x00, 0x00, 0x00, 0x00};
+                                       // _slaveID, Read,  Reg 11776,   0 Regs  ,    CRC
+            byte stopMeasurement[8] = {_slaveID, 0x03, 0x2E, 0x00, 0x00, 0x01, 0x00, 0x00};
+                                    // _slaveID, Read,  Reg 11776,   1 Reg   ,    CRC
+            int respSize = modbus.sendCommand(stopMeasurement, 8);
+            // if (respSize == 5 && modbus.responseBuffer[0] == _slaveID) return true;
+            if (respSize == 7 && modbus.responseBuffer[0] == _slaveID) return true;
+            else return false;
+        }
+    }
 }
 
 
