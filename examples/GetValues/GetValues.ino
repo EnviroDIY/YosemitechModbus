@@ -23,14 +23,15 @@ Yosemitech modbus sensor.
 // ---------------------------------------------------------------------------
 
 // Define the sensor type
-yosemitechModel model = Y4000;  // The sensor model number
+yosemitechModel model = Y511;  // The sensor model number
 
 // Define the sensor's modbus address
-byte modbusAddress = 0x05;  // The sensor's modbus address, or SlaveID
+byte modbusAddress = 0x03;  // The sensor's modbus address, or SlaveID
 // Yosemitech ships sensors with a default ID of 0x01.
 
 // Define pin number variables
-const int PwrPin = 22;  // The pin sending power to the sensor *AND* RS485 adapter
+const int sensorPwrPin = 10;  // The pin sending power to the sensor
+const int adapterPwrPin = 22;  // The pin sending power to the RS485 adapter
 const int DEREPin = -1;   // The pin controlling Recieve Enable and Driver Enable
                           // on the RS485 adapter, if applicable (else, -1)
                           // Setting HIGH enables the driver (arduino) to send text
@@ -52,12 +53,14 @@ bool success;
 void setup()
 {
 
-    pinMode(PwrPin, OUTPUT);
-    digitalWrite(PwrPin, HIGH);
+    pinMode(sensorPwrPin, OUTPUT);
+    digitalWrite(sensorPwrPin, HIGH);
+    pinMode(adapterPwrPin, OUTPUT);
+    digitalWrite(adapterPwrPin, HIGH);
 
     if (DEREPin > 0) pinMode(DEREPin, OUTPUT);
 
-    Serial.begin(57600);  // Main serial port for debugging via USB Serial Monitor
+    Serial.begin(115200);  // Main serial port for debugging via USB Serial Monitor
     modbusSerial.begin(9600);  // The modbus serial stream - Baud rate MUST be 9600.
 
     // Start up the sensor
@@ -239,7 +242,7 @@ void loop()
         case Y4000:
         {
             float DOmgL, Turbidity, Cond, pH, Temp, ORP, Chlorophyll, BGA = -9999;
-            byte errorCode = 0xFF;  // Error!
+            // byte errorCode = 0xFF;  // Error!
 
             sensor.getValues(DOmgL, Turbidity, Cond, pH, Temp, ORP, Chlorophyll, BGA);
 

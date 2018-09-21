@@ -34,19 +34,19 @@ String yosemitech::getModel(void)
 {
     switch (_model)
     {
-        case Y502: {return "Y502"; break;}
-        case Y504: {return "Y504"; break;}
-        case Y510: {return "Y510"; break;}
-        case Y511: {return "Y511"; break;}
-        case Y513: {return "Y513"; break;}
-        case Y514: {return "Y514"; break;}
-        case Y516: {return "Y516"; break;}
-        case Y520: {return "Y520"; break;}
-        case Y532: {return "Y532"; break;}
-        case Y533: {return "Y533"; break;}
-        case Y550: {return "Y550"; break;}
-        case Y4000: {return "Y4000"; break;}
-        default:  {return "Unknown"; break;}
+        case Y502: {return "Y502";}
+        case Y504: {return "Y504";}
+        case Y510: {return "Y510";}
+        case Y511: {return "Y511";}
+        case Y513: {return "Y513";}
+        case Y514: {return "Y514";}
+        case Y516: {return "Y516";}
+        case Y520: {return "Y520";}
+        case Y532: {return "Y532";}
+        case Y533: {return "Y533";}
+        case Y550: {return "Y550";}
+        case Y4000: {return "Y4000";}
+        default:  {return "Unknown";}
     }
 }
 
@@ -56,19 +56,19 @@ String yosemitech::getParameter(void)
 {
     switch (_model)
     {
-        case Y502: {return "Dissolved Oxygen"; break;}
-        case Y504: {return "Dissolved Oxygen"; break;}
-        case Y510: {return "Turbidity"; break;}
-        case Y511: {return "Turbidity"; break;}
-        case Y513: {return "Blue Green Algae"; break;}
-        case Y514: {return "Chlorophyll"; break;}
-        case Y516: {return "Oil in Water"; break;}
-        case Y520: {return "Conductivity"; break;}
-        case Y532: {return "pH"; break;}
-        case Y533: {return "ORP"; break;}
-        case Y550: {return "COD"; break;}
-        case Y4000: {return "DO,   Turb, Cond,  pH,   Temp, ORP,  Chl,  BGA"; break;}
-        default:  {return "Unknown"; break;}
+        case Y502: {return "Dissolved Oxygen";}
+        case Y504: {return "Dissolved Oxygen";}
+        case Y510: {return "Turbidity";}
+        case Y511: {return "Turbidity";}
+        case Y513: {return "Blue Green Algae";}
+        case Y514: {return "Chlorophyll";}
+        case Y516: {return "Oil in Water";}
+        case Y520: {return "Conductivity";}
+        case Y532: {return "pH";}
+        case Y533: {return "ORP";}
+        case Y550: {return "COD";}
+        case Y4000: {return "DO,   Turb, Cond,  pH,   Temp, ORP,  Chl,  BGA";}
+        default:  {return "Unknown";}
     }
 }
 
@@ -78,19 +78,19 @@ String yosemitech::getUnits(void)
 {
     switch (_model)
     {
-        case Y502: {return "percent"; break;}
-        case Y504: {return "percent"; break;}
-        case Y510: {return "NTU"; break;}
-        case Y511: {return "NTU"; break;}
-        case Y513: {return "µg/L"; break;}
-        case Y514: {return "µg/L"; break;}
-        case Y516: {return "ppb"; break;}
-        case Y520: {return "mS/cm"; break;}
-        case Y532: {return "pH"; break;}
-        case Y533: {return "mV"; break;}
-        case Y550: {return "mg/L"; break;}
-        case Y4000: {return "mg/L, NTU,  mS/cm, pH,   °C,   mV,   µg/L, µg/L"; break;}
-        default:  {return "Unknown"; break;}
+        case Y502: {return "percent";}
+        case Y504: {return "percent";}
+        case Y510: {return "NTU";}
+        case Y511: {return "NTU";}
+        case Y513: {return "µg/L";}
+        case Y514: {return "µg/L";}
+        case Y516: {return "ppb";}
+        case Y520: {return "mS/cm";}
+        case Y532: {return "pH";}
+        case Y533: {return "mV";}
+        case Y550: {return "mg/L";}
+        case Y4000: {return "mg/L, NTU,  mS/cm, pH,   °C,   mV,   µg/L, µg/L";}
+        default:  {return "Unknown";}
     }
 }
 
@@ -126,7 +126,6 @@ String yosemitech::getSerialNumber(void)
     {
         case Y4000:
             SN = modbus.StringFromRegister(0x03, 0x1400, 14); break; // for Y4000 Sonde
-            break;
         default:
             SN = modbus.StringFromRegister(0x03, 0x0900, 14); break; // for all sensors except Y4000
     }
@@ -205,12 +204,10 @@ bool yosemitech::startMeasurement(void)
             int respSize = modbus.sendCommand(startMeasurementW, 9);
             if (respSize == 8 && modbus.responseBuffer[0] == _slaveID) return true;
             else return false;
-            break;
         }
         case Y4000: // Does not require this function. Not described in the manual or sent using the MultiSensor_v1.18 software
         {
             return true;
-            break;
         }
         default:
         {
@@ -219,7 +216,6 @@ bool yosemitech::startMeasurement(void)
             int respSize = modbus.sendCommand(startMeasurementR, 8);
             if (respSize == 5 && modbus.responseBuffer[0] == _slaveID) return true;
             else return false;
-            break;
         }
     }
 }
@@ -233,7 +229,6 @@ bool yosemitech::stopMeasurement(void)
         case Y4000: // Does not require this function. Not described in the manual or sent using the MultiSensor_v1.18 software
         {
             return true;
-            break;
         }
         default:
         {
@@ -278,7 +273,6 @@ bool yosemitech::getValues(float &parmValue, float &tempValue, float &thirdValue
             // of them to return.  We'll just send a false response.  If someone
             // wants the sonde results, they should give 8 values to put them in.
             return false;
-            break;
         }
         case Y550:   // Y550 COD, with turbidity
         {
@@ -464,11 +458,7 @@ bool yosemitech::getValues(float &DOmgL, float &Turbidity, float &Cond,
             break;
         }
         // Only the sonde can return 8 values!
-        default:
-        {
-            return false;
-            break;
-        }
+        default: return false;
     }
     // If something fails, we'll get here
     return false;
@@ -512,14 +502,12 @@ float yosemitech::getTemperatureValue(void)
             getValues(firstValue, secondValue, thirdValue, forthValue,
                       fifthValue, sixthValue, seventhValue, eighthValue);
             return fifthValue;  // temp is the 5th value returned
-            break;
         }
         default:
         {
             float parmValue, tempValue = -9999;  // Initialize with an error value
             getValues(parmValue, tempValue);
             return tempValue;  // temp is the 2nd value for everything else
-            break;
         }
     }
 }
@@ -535,12 +523,10 @@ float yosemitech::getPotentialValue(void)
             float parmValue, tempValue, thirdValue = -9999;  // Initialize with an error value
             getValues(parmValue, tempValue, thirdValue);
             return thirdValue;
-            break;
         }
         default:
         {
             return -9999;
-            break;
         }
     }
 }
@@ -559,7 +545,6 @@ float yosemitech::getDOmgLValue(void)
             float parmValue, tempValue, thirdValue = -9999;  // Initialize with an error value
             getValues(parmValue, tempValue, thirdValue);
             return thirdValue;
-            break;
         }
         case Y4000:
         {
@@ -597,7 +582,6 @@ bool yosemitech::getCalibration(float &K1, float &K2, float &K3,
                 return true;
             }
             else return false;
-            break;
         }
         case Y533:   // ORP
         {
@@ -608,7 +592,6 @@ bool yosemitech::getCalibration(float &K1, float &K2, float &K3,
                 return true;
             }
             else return false;
-            break;
         }
         case Y4000:
         {
@@ -627,7 +610,6 @@ bool yosemitech::getCalibration(float &K1, float &K2, float &K3,
                 return true;
             }
             else return false;
-            break;
         }
     }
 }
@@ -657,11 +639,10 @@ bool yosemitech::setCalibration(float K, float B)
     {
         case Y533:  // ORP
         {
-            bool success = true;
-            success &= modbus.float32ToRegister(0x3400, K, littleEndian);
-            success &= modbus.float32ToRegister(0x3402, B, littleEndian);
-            return success;
-            break;
+            byte calibs[8] = {0x00,};
+            modbus.float32ToFrame(K, littleEndian, calibs, 0);
+            modbus.float32ToFrame(B, littleEndian, calibs, 4);
+            return modbus.setRegisters(0x3400, 4, calibs, true);
         }
         case Y4000:
         {
@@ -669,11 +650,10 @@ bool yosemitech::setCalibration(float K, float B)
         }
         default:
         {
-            bool success = true;
-            success &= modbus.float32ToRegister(0x1100, K, littleEndian);
-            success &= modbus.float32ToRegister(0x1102, B, littleEndian);
-            return success;
-            break;
+            byte calibs[8] = {0x00,};
+            modbus.float32ToFrame(K, littleEndian, calibs, 0);
+            modbus.float32ToFrame(B, littleEndian, calibs, 4);
+            return modbus.setRegisters(0x1100, 4, calibs, true);
         }
     }
 }
@@ -755,7 +735,6 @@ bool yosemitech::activateBrush(void)
           int respSize = modbus.sendCommand(activateBrush, 9);
           if (respSize == 8 && modbus.responseBuffer[0] == _slaveID) return true;
           else return false;
-          break;
         }
         default:
         {
@@ -778,7 +757,6 @@ bool yosemitech::setBrushInterval(uint16_t intervalMinutes)
         case Y4000:   // Y4000 Multiparameter sonde
         {
             return modbus.uint16ToRegister(0x0E00, intervalMinutes, littleEndian, true);
-            break;
         }
         default:
         {
@@ -797,7 +775,6 @@ uint16_t yosemitech::getBrushInterval(void)
         case Y4000:   // Y4000 Multiparameter sonde
         {
             return modbus.int16FromRegister(0x03, 0x0E00, littleEndian);
-            break;
         }
         default:
         {
