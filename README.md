@@ -1,10 +1,12 @@
 # Yosemitech Modbus
 
-A library to use an Arduino as a master to control and communicate with the sensors produced by [Yosemitech](http://www.yosemitech.com/en/) via [Modbus RTU](https://en.wikipedia.org/wiki/Modbus) over [RS-485](https://en.wikipedia.org/wiki/RS-485).  The communication rate is set at 9600 baud/[8-N-1](https://en.wikipedia.org/wiki/8-N-1).  The default slave ID from the factory is 0x01.
+A library to use an Arduino as a master to control and communicate with the sensors produced by [Yosemitech](http://www.yosemitech.com/en/) via [Modbus RTU](https://en.wikipedia.org/wiki/Modbus) over [RS-485](https://en.wikipedia.org/wiki/RS-485).  This library requires the use of the [EnviroDIY/SensorModbusMaster](https://github.com/EnviroDIY/SensorModbusMaster) library.
 
-These sensors only support these modbus commands:
+YosemiTech sensors only support these modbus commands:
 * 3 (0x03, Read holding registers)
 * 16 (0x10, Write multiple registers)
+
+The communication rate is set at 9600 baud/[8-N-1](https://en.wikipedia.org/wiki/8-N-1).  The default slave ID from the factory is 0x01.
 
 The implementation of modbus by these sensors is _not_ fully compliant with the [official modbus standards](http://modbus.org/specs.php).  These are some of the irregularities we have found so far:
 * The sensors do not act on server broadcast messages (that is, write commands sent to address 0x00).
@@ -15,7 +17,7 @@ Another note:  The sensors seem to be somewhat.. finickey about resolving simila
 ## Hardware
 
 #### Power Supply
-All of these sensors require a 5-12V DC power supply and the power supply can be stopped between measurements. Older sensors may require higher voltage power supplies.  Do note that any time the sensor looses power, its internal configurations (such as brushing interval for sensors with wipers) will be reset to their factory values.  The red wire from the sensor should connect to the positive pole of the 5-12V power supply and the black to ground.
+All of these sensors require a 5-12V DC power supply and the power supply can be stopped between measurements. Older sensors may require higher voltage power supplies.  Do note that any time the sensor looses power, some internal configurations (such as brushing interval for sensors with wipers) will be reset to their factory values, whereas other internal configurations (such as calibration coefficiencts) are saved..  The red wire from the sensor should connect to the positive pole of the 5-12V power supply and the black to ground.
 
 **Current Consumption**:
 The current consumption of the Yosemitech sensors is specified to be <50mA, this is not accurate for their sensors which include a wiper brush, for these sensors an inductive spike exists when the brush begins to spin, which draws significantly more current than specified. Below is a table describing the current draws for several different opeating conditions of the Yosemitech 511 Turbidity senor (with brush). All tests were driven by a power supply with a 9v output
@@ -40,15 +42,6 @@ If possible, always connect the RS485 adapter so the TTL signal is going to a Ha
 
 ## Suggested setup with an EnviroDIY Mayfly
 
-![Photo of hardware configuration](https://github.com/EnviroDIY/YosemitechModbus/blob/yosemitech/doc/HardwareConfigPhoto.jpg)
+We suggest using a [Modbus-Mayfly_WingShield](https://github.com/EnviroDIY/SensorModbusMaster/tree/master/hardware/Modbus-Mayfly_WingShield), which combines this  [TTL to RS485 Adapter / 485 to Serial Port UART Level Converter Module (XY-017)](https://www.amazon.com/gp/product/B06XHH6B6R) with a step-up boost regulator and capacitors. Plans to construct one can be found at https://github.com/EnviroDIY/SensorModbusMaster/tree/master/hardware/Modbus-Mayfly_WingShield.
 
-- We used this [SCM TTL to RS485 Adapter / 485 to Serial Port UART Level Converter Module (XY-017)](https://www.amazon.com/gp/product/B01J9C7JNA), sold by many vendors for $3-10
-- We soldered a grove connector to the RS485 adapter so we connect it to the Mayfly's grove ports, but to do this we had to flip the wire configuration of the grove cables (yes, the flipped grove cable can connect in either direction, but I find it a best practice to keep the colors aligned for easy cross-check).
-Note the cable colors:
-    - Green/Yellow = Transmit (A)
-    - White = Receive (B)
-    - Red = Power (VCC)
-    - Black = Ground
-- We have been giving the sensors 5v switched power off an analog grove port on the Mayfly, as you can see in the photo, to keep digital ports open for other sensors.
-    - Be sure that the jumper for the analog grove port is in the 5v position.
-- We merge the RS485 signals from the adapter board with the 5v power via a 4-port grove hub, which allows us to use a grove screw terminal to receive the bare wires from the sensor.
+<img src="https://github.com/EnviroDIY/SensorModbusMaster/blob/master/hardware/Modbus-Mayfly_WingShield/Photos/IMG_6733.JPG"  width="600">
