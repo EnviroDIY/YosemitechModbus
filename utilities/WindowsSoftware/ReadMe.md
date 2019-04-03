@@ -1,7 +1,7 @@
 # YosemiTech Windows Desktop Software
 
 YosemiTech provides with each order a mini CD-ROM disk with their Windows desktop software designed to directly communicate with their sensors. This software is especially useful to test your sensor and:
-- GET sensor info (e.g. modbus address, serial number, software version, calibration coefficients, and brush interval), 
+- GET sensor info (e.g. modbus address, serial number, software version, calibration coefficients, and brush interval),
 - GET measured values,
 - SET sensor info, which is required for calibrating your sensor.
 
@@ -10,10 +10,11 @@ YosemiTech produces two different programs:
 - MultiSensor, to connect to a Y4000 MultiParemter Sonde, with up to six sensors.
 We share the latest versions of each in this directory. Download the folder to you computer and click on the .exe file to run.
 
+### Required USB-to-RS485 Converter Device
 To connect your sensor to this software, you will need a USB-to-RS485 Converter Devices, which Yosemitech sells ($5, shown below) or you can optain separately. Note that the Y4000 Sonde requires 12V of power, so you will need a separate 12V power supply.
 
-| <img src="https://github.com/EnviroDIY/YosemitechModbus/blob/master/doc/Images/USB-RS485-converter-front.JPG"  height="200"> | <img src="https://github.com/EnviroDIY/YosemitechModbus/blob/master/doc/Images/USB-RS485-converter-back.JPG"  height="200"> | 
+| <img src="https://github.com/EnviroDIY/YosemitechModbus/blob/master/doc/Images/USB-RS485-converter-front.JPG"  height="200"> | <img src="https://github.com/EnviroDIY/YosemitechModbus/blob/master/doc/Images/USB-RS485-converter-back.JPG"  height="200"> |
 
-doc/HardwareConfigPhoto.jpg
+### Instructions to use ModbusRunner Software
 
-https://github.com/EnviroDIY/YosemitechModbus/blob/master/doc/Images/USB-RS485-converter-back.JPG
+<img src="https://github.com/EnviroDIY/YosemitechModbus/blob/master/doc/Images/ModbusRunner-v2.4_1-Probe.png"  height="400">
