@@ -15,6 +15,10 @@ To connect your sensor to this software, you will need a USB-to-RS485 Converter 
 
 | <img src="https://github.com/EnviroDIY/YosemitechModbus/blob/master/doc/Images/USB-RS485-converter-front.JPG"  height="200"> | <img src="https://github.com/EnviroDIY/YosemitechModbus/blob/master/doc/Images/USB-RS485-converter-back.JPG"  height="200"> |
 
-### Instructions to use ModbusRunner Software
 
-<img src="https://github.com/EnviroDIY/YosemitechModbus/blob/master/doc/Images/ModbusRunner-v2.4_1-Probe.png"  height="400">
+### Instructions to use ModbusRunner Software
+- Once you have physically connected your sensor to your computer with the USB-to-RS485 Converter, confirm that Windows recognizes it as a COM port, using Windows Device Manager under "Ports (COM & LPT)". It should be listed as something like "USB-Serial CH341A (COM3)".
+  - Note the COM port number. It is usually COM3 by default, but only if you don't already have a device connected as COM3.
+- Manually type in the number of the COM port into ModbusRunner, without a space, exactly as how it is show in the screen-shot below (i.e. `COM3`).
+
+<img src="https://github.com/EnviroDIY/YosemitechModbus/blob/master/doc/Images/ModbusRunner-v2.4_1-Probe.png">
