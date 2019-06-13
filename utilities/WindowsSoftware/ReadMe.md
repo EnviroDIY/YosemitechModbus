@@ -6,8 +6,8 @@ YosemiTech provides with each order a mini CD-ROM disk with their Windows deskto
 - SET sensor info, which is required for calibrating your sensor.
 
 YosemiTech produces two different programs:
-- ModbusRunner, to connect to any single sensor
-- MultiSensor, to connect to a Y4000 MultiParemter Sonde, with up to six sensors.
+- **ModbusRunner**, to connect to any single sensor
+- **MultiSensor**, to connect to a Y4000 MultiParemter Sonde, with up to six sensors.
 We share the latest versions of each in this directory. Download the folder to you computer and click on the .exe file to run.
 
 ### Required USB-to-RS485 Converter Device
