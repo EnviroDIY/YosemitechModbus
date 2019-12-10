@@ -205,6 +205,10 @@ bool yosemitech::startMeasurement(void)
             if (respSize == 8 && modbus.responseBuffer[0] == _slaveID) return true;
             else return false;
         }
+        case Y532: // Does not require this function. Not described in the Y532 Modbus manual. Required to get Y532pH to work in ModularSensors.
+        {
+            return true;
+        }
         case Y4000: // Does not require this function. Not described in the manual or sent using the MultiSensor_v1.18 software
         {
             return true;
