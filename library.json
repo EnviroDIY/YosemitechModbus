@@ -1,6 +1,6 @@
 {
   "name": "YosemitechModbus",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "keywords": "Yosemitech, Modbus, communication, bus, sensor",
   "description": "Arduino library for communication with Yosemitech sensors via Modbus.",
   "repository":
@@ -29,7 +29,7 @@
             "name": "SensorModbusMaster",
             "library id": "1824",
             "url": "https://github.com/EnviroDIY/SensorModbusMaster.git",
-            "version": ">=0.6.2",
+            "version": ">=0.6.7",
             "note": "EnviroDIY SensorModbusMaster - Arduino library for communicating via modbus with the Arduino acting as the modbus master.",
             "authors": [
                 "Sara Damiano"
