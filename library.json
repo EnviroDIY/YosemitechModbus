@@ -1,15 +1,13 @@
 {
   "name": "YosemitechModbus",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "keywords": "Yosemitech, Modbus, communication, bus, sensor",
   "description": "Arduino library for communication with Yosemitech sensors via Modbus.",
-  "repository":
-  {
+  "repository": {
     "type": "git",
     "url": "https://github.com/EnviroDIY/YosemitechModbus.git"
   },
-  "authors":
-  [
+  "authors": [
     {
       "name": "Sara Damiano",
       "email": "sdamiano@stroudcenter.org",
@@ -23,32 +21,20 @@
   "license": "BSD-3-Clause",
   "frameworks": "arduino",
   "platforms": "atmelavr, atmelsam",
-  "dependencies":
-  [
-        {
-            "name": "SensorModbusMaster",
-            "library id": "1824",
-            "url": "https://github.com/EnviroDIY/SensorModbusMaster.git",
-            "version": ">=0.6.7",
-            "note": "EnviroDIY SensorModbusMaster - Arduino library for communicating via modbus with the Arduino acting as the modbus master.",
-            "authors": [
-                "Sara Damiano"
-            ],
-            "frameworks": "arduino",
-            "platforms": "atmelavr, atmelsam"
-        }
+  "dependencies": [
+    {
+      "name": "SensorModbusMaster",
+      "library id": "1824",
+      "url": "https://github.com/EnviroDIY/SensorModbusMaster.git",
+      "version": ">=0.6.8",
+      "note": "EnviroDIY SensorModbusMaster - Arduino library for communicating via modbus with the Arduino acting as the modbus master.",
+      "authors": ["Sara Damiano"],
+      "frameworks": "arduino",
+      "platforms": "atmelavr, atmelsam"
+    }
   ],
-  "examples":
-  [
-    "examples/*/*.ino",
-    "utilities/*/*.ino"
-  ],
-  "export":
-  {
-    "exclude":
-    [
-        "doc/*",
-        "sensor_tests/*"
-    ]
+  "examples": ["examples/*/*.ino", "utilities/*/*.ino"],
+  "export": {
+    "exclude": ["doc/*", "sensor_tests/*"]
   }
 }
