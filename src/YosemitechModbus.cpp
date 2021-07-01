@@ -205,7 +205,10 @@ bool yosemitech::startMeasurement(void)
             if (respSize == 8 && modbus.responseBuffer[0] == _slaveID) return true;
             else return false;
         }
-        case Y532: // Does not require this function. Not described in the Y532 Modbus manual. Required to get Y532pH to work in ModularSensors.
+        // Y532 (pH) or Y533 (ORP) do not require Start/Stop functions. They are not listed in the Y532/Y533 Modbus Manual.
+        // However, Start/Stop functions are required to get these to work in ModularSensors.
+        case Y532:
+        case Y533:
         {
             return true;
         }
@@ -230,6 +233,13 @@ bool yosemitech::stopMeasurement(void)
 {
     switch (_model)
     {
+        // Y532 (pH) or Y533 (ORP) do not require Start/Stop functions. They are not listed in the Y532/Y533 Modbus Manual.
+        // However, Start/Stop functions are required to get these to work in ModularSensors.
+        case Y532:
+        case Y533:
+        {
+            return true;
+        }
         case Y4000: // Does not require this function. Not described in the manual or sent using the MultiSensor_v1.18 software
         {
             return true;
@@ -290,20 +300,36 @@ bool yosemitech::getValues(float &parmValue, float &tempValue, float &thirdValue
             }
             break;
         }
-        // Y532 (pH) or Y533 (ORP)
+        // Y532 (pH)
         case Y532:
-        case Y533:
         {
+            // According to the modbus manual we can get pH & potential starting at
+            // Register 0x2600, but it appears that the manual is not accurate.
             if (modbus.getRegisters(0x03, 0x2800, 2))
             {
                 parmValue = modbus.float32FromFrame(littleEndian, 3);
+                // Get temperature at register 0x2400
                 tempValue = modbus.float32FromRegister(0x03,  0x2400, littleEndian);
+                // Get potential (mV) at register 0x1200
                 thirdValue = modbus.float32FromRegister(0x03,  0x1200, littleEndian);
                 errorCode = 0x00;  // No errors
                 return true;
             }
             break;
         }
+        // //or Y533 (ORP)
+        // case Y533:
+        // {
+        //     if (modbus.getRegisters(0x03, 0x2600, 4))
+        //     {
+        //         parmValue = modbus.float32FromFrame(littleEndian, 3);
+        //         tempValue = modbus.float32FromRegister(0x03,  0x2400, littleEndian);
+        //         thirdValue = modbus.float32FromRegister(0x03,  0x1200, littleEndian);
+        //         errorCode = 0x00;  // No errors
+        //         return true;
+        //     }
+        //     break;
+        // }
         // Y504 (DO)
         case Y502:
         case Y504:

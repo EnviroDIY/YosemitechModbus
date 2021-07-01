@@ -20,7 +20,7 @@ typedef enum yosemitechModel
     Y516,  // Oil in water?
     Y520,  // 4-Electrode Conductivity Sensor http://www.yosemitech.com/en/product-3.html
     Y532,  // pH
-    Y533,  // ORP?
+    Y533,  // ORP
     Y550,  // UV254 Sensor http://www.yosemitech.com/en/product-21.html
     Y4000, //  Multiparameter Sonde http://www.yosemitech.com/en/product-20.html
     UNKNOWN   // Use if the sensor model is unknown. Doing this is generally a
