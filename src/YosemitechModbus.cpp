@@ -317,19 +317,18 @@ bool yosemitech::getValues(float &parmValue, float &tempValue, float &thirdValue
             }
             break;
         }
-        // //or Y533 (ORP)
-        // case Y533:
-        // {
-        //     if (modbus.getRegisters(0x03, 0x2600, 4))
-        //     {
-        //         parmValue = modbus.float32FromFrame(littleEndian, 3);
-        //         tempValue = modbus.float32FromRegister(0x03,  0x2400, littleEndian);
-        //         thirdValue = modbus.float32FromRegister(0x03,  0x1200, littleEndian);
-        //         errorCode = 0x00;  // No errors
-        //         return true;
-        //     }
-        //     break;
-        // }
+        //or Y533 (ORP)
+        case Y533:
+        {
+            if (modbus.getRegisters(0x03, 0x1200, 2))
+            {
+                parmValue = modbus.float32FromFrame(littleEndian, 3);
+                tempValue = modbus.float32FromRegister(0x03,  0x2400, littleEndian);
+                errorCode = 0x00;  // No errors
+                return true;
+            }
+            break;
+        }
         // Y504 (DO)
         case Y502:
         case Y504:
