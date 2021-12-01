@@ -44,7 +44,7 @@ String yosemitech::getModel(void)
         case Y520: {return "Y520";}
         case Y532: {return "Y532";}
         case Y533: {return "Y533";}
-        case Y550: {return "Y550";}
+        case Y551: {return "Y551";}
         case Y4000: {return "Y4000";}
         default:  {return "Unknown";}
     }
@@ -66,7 +66,7 @@ String yosemitech::getParameter(void)
         case Y520: {return "Conductivity";}
         case Y532: {return "pH";}
         case Y533: {return "ORP";}
-        case Y550: {return "COD";}
+        case Y551: {return "COD";}
         case Y4000: {return "DO,   Turb, Cond,  pH,   Temp, ORP,  Chl,  BGA";}
         default:  {return "Unknown";}
     }
@@ -88,7 +88,7 @@ String yosemitech::getUnits(void)
         case Y520: {return "mS/cm";}
         case Y532: {return "pH";}
         case Y533: {return "mV";}
-        case Y550: {return "mg/L";}
+        case Y551: {return "mg/L";}
         case Y4000: {return "mg/L, NTU,  mS/cm, pH,   °C,   mV,   µg/L, µg/L";}
         default:  {return "Unknown";}
     }
@@ -288,7 +288,7 @@ bool yosemitech::getValues(float &parmValue, float &tempValue, float &thirdValue
             // wants the sonde results, they should give 8 values to put them in.
             return false;
         }
-        case Y550:   // Y550 COD, with turbidity
+        case Y551:   // Y551 COD, with turbidity
         {
             if (modbus.getRegisters(0x03, 0x2600, 5))
             {
@@ -406,7 +406,7 @@ bool yosemitech::getValues(float &parmValue, float &tempValue, float &thirdValue
             }
             break;
         }
-        // Everybody else other than Y550 COD; Y532 (pH) or Y533 (ORP); Y502 & Y504 (DO)
+        // Everybody else other than Y551 COD; Y532 (pH) or Y533 (ORP); Y502 & Y504 (DO)
         default:
         {
             if (modbus.getRegisters(0x03, 0x2600, 5))
