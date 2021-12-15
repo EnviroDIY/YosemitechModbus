@@ -86,9 +86,9 @@ String yosemitech::getUnits(void)
         case Y514: {return "µg/L";}
         case Y516: {return "ppb";}
         case Y520: {return "mS/cm";}
-        case Y532: {return "pH";}
+        case Y532: {return "pH, mV";}
         case Y533: {return "mV";}
-        case Y551: {return "mg/L";}
+        case Y551: {return "mg/L, NTU";}
         case Y4000: {return "mg/L, NTU,  mS/cm, pH,   °C,   mV,   µg/L, µg/L";}
         default:  {return "Unknown";}
     }
@@ -150,6 +150,7 @@ String yosemitech::getSerialNumber(void)
         if (modelSS == 29) _model = Y511;  // 29 means self-cleaning turbidity sensor
         if (modelSS == 48) _model = Y514;  // 48 means chlorophyll
         if (modelSS == 43) _model = Y532;  // 43 must mean pH
+        if (modelSS == 47) _model = Y551;  // 47 must mean COD
         if (modelSS == 38) _model = Y4000;  // 38 must mean MultiParameter Sonde
     }
 
@@ -260,10 +261,11 @@ bool yosemitech::stopMeasurement(void)
 
 
 // This gets values back from the sensor
-// All sensors but pH, return two 32-bit float values beginning in holding register
-// 0x2600 (9728), where the parameter value is in the first two register and the
+// Most sensors (other than Y4000 Sonde; Y551 COD; Y532 pH; or Y533 ORP),
+// return two 32-bit float values beginning in holding register 0x2600 (9728),
+// where the parameter value is in the first two register and the
 // temperature in celsius is in the next two registers.  For some sensors
-// (Y520/Conductivity and Y514/Chlorophyll) this followed by an error code.
+// (Y520 Conductivity and Y514 Chlorophyll) this followed by an error code.
 // The pH sensor returns the pH as a 32-bit float beginning in holding register
 // 0x2800 (10240) and the temperature in celsuis as a separate 32-bit float
 // beginning in holding register 0x2400 (9216).  The pH sensor can also return
@@ -406,7 +408,7 @@ bool yosemitech::getValues(float &parmValue, float &tempValue, float &thirdValue
             }
             break;
         }
-        // Everybody else other than Y551 COD; Y532 (pH) or Y533 (ORP); Y502 & Y504 (DO)
+        // Everybody else other than Y4000 Sonde; Y551 COD; Y532 (pH); Y533 (ORP); Y502 & Y504 (DO)
         default:
         {
             if (modbus.getRegisters(0x03, 0x2600, 5))
