@@ -29,7 +29,7 @@ used by the ModularSensors library, similar to:
 // ---------------------------------------------------------------------------
 
 // Define the sensor type
-yosemitechModel model = Y551;  // The sensor model number
+yosemitechModel model = Y560;  // The sensor model number
 
 // Define the sensor's modbus address
 byte modbusAddress = 0x01;  // The sensor's modbus address, or SlaveID
@@ -87,7 +87,7 @@ void setup()
     // Conductivity doesn't respond until 1.15-1.2s
     Serial.println("Waiting for sensor and adapter to be ready.");
 
-    // Warmup time
+    // Warmup time for sensor to respond to modbus commands
     delay(200);
 
     // Get the sensor's hardware and software version
@@ -135,7 +135,7 @@ void setup()
 
     // Get/set the sensor brush status (for sensors with brushes).
     // NOTE: Not implemented for Y4000
-    if (model == Y511 || model == Y513 || model == Y514 || model == Y551)
+    if (model == Y511 || model == Y513 || model == Y514 || model == Y551 || model == Y560)
     {
         // Check the wiper timing
         Serial.println("Getting sensor cleaning interval.");
@@ -157,7 +157,7 @@ void setup()
     if (success) Serial.println("    Measurements started.");
     else Serial.println("    Failed to start measuring!");
 
-    // Skip warm up and brush to test for timing
+    // Skip stabilization and brush cycle to test for timing
 
 
     // Print table headers
@@ -183,6 +183,7 @@ void setup()
             Serial.print(")");
             if (model == Y532 || model == Y504) Serial.print("    Value");
             if (model == Y551) Serial.print("    Turbidity (NTU)");
+            if (model == Y560) Serial.print("    pH");
             Serial.println();
         }
     }
@@ -234,7 +235,7 @@ void loop()
             Serial.print(tempValue);
             Serial.print("      ");
             Serial.print(parmValue);
-            if (model == Y532 || model == Y504 || model == Y551)
+            if (model == Y532 || model == Y504 || model == Y551 || model == Y560)
             {
                 Serial.print("      ");
                 Serial.print(thirdValue);
@@ -252,6 +253,7 @@ void loop()
     //     3 s for conductivity
     //     1 s for DO
     //     2 s for COD
+    //     2 s for Ammonium
 
     // The turbidity and DO sensors appear return new readings about every 1.6 seconds.
     // The pH sensor returns new readings about every 1.8 seconds.
@@ -259,5 +261,5 @@ void loop()
 
     // The temperature sensors can take readings much more quickly.  The same results
     // can be read many times from the registers between the new sensor readings.
-    delay(2000);
+    delay(500);
 }

@@ -23,7 +23,7 @@ Yosemitech modbus sensor.
 // ---------------------------------------------------------------------------
 
 // Define the sensor type
-yosemitechModel model = Y551;  // The sensor model number
+yosemitechModel model = Y560;  // The sensor model number
 
 // Define the sensor's modbus address
 byte modbusAddress = 0x01;  // The sensor's modbus address, or SlaveID
@@ -127,7 +127,7 @@ void setup()
 
     // Get/set the sensor brush status (for sensors with brushes).
     // NOTE: Not implemented for Y4000
-    if (model == Y511 || model == Y513 || model == Y514 || model == Y551)
+    if (model == Y511 || model == Y513 || model == Y514 || model == Y551 || model == Y560)
     {
         // Check the wiper timing
         Serial.println("Getting sensor cleaning interval.");
@@ -154,6 +154,9 @@ void setup()
     //    2 s for whipered chlorophyll
     //    20 s for turbidity
     //    10 s for conductivity
+    //     2 s for COD
+    //    20 s for Ammonium, due to 15 s to complete a brush cycle
+
 
     // On wipered (self-cleaning) models, the brush immediately activates after
     // getting power and takes approximately 10-11 seconds to finish.  No
@@ -178,7 +181,7 @@ void setup()
     }
     Serial.println("\n");
 
-    if (model == Y511 || model == Y513 || model == Y514 || model == Y551 || model == Y4000)
+    if (model == Y511 || model == Y513 || model == Y514 || model == Y551 || model == Y560 || model == Y4000)
         // Y4000 activates brush when powered on
     {
         // We'll run the brush once in the middle of this
@@ -188,7 +191,7 @@ void setup()
         else Serial.println("    Failed to activate brush!");
     }
 
-    if (model == Y511 || model == Y513 || model == Y514 || model == Y551 || model == Y4000 || model == Y510)
+    if (model == Y511 || model == Y513 || model == Y514 || model == Y551 || model == Y560 || model == Y4000 || model == Y510)
     {
         Serial.println("Continuing to stabilize..");
         for (int i = 12; i > 0; i--)
@@ -227,7 +230,7 @@ void setup()
             Serial.print(")");
             if (model == Y532 || model == Y504) Serial.print("    Value");
             if (model == Y551) Serial.print("    Turbidity (NTU)");
-            //Serial.print("    Millis");
+            if (model == Y560) Serial.print("    pH");
             Serial.println();
         }
     }
@@ -276,13 +279,11 @@ void loop()
             Serial.print(tempValue);
             Serial.print("      ");
             Serial.print(parmValue);
-            if (model == Y532 || model == Y504 || model == Y551)
+            if (model == Y532 || model == Y504 || model == Y551 || model == Y560)
             {
                 Serial.print("      ");
                 Serial.print(thirdValue);
             }
-            // Serial.print("      ");
-            // Serial.print(millis());
             Serial.println();
         }
     }
@@ -296,6 +297,7 @@ void loop()
     //     3 s for conductivity
     //     1 s for DO
     //     2 s for COD
+    //     2 s for Ammonium
 
     // The turbidity and DO sensors appear return new readings about every 1.6 seconds.
     // The pH sensor returns new readings about every 1.8 seconds.

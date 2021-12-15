@@ -45,6 +45,7 @@ String yosemitech::getModel(void)
         case Y532: {return "Y532";}
         case Y533: {return "Y533";}
         case Y551: {return "Y551";}
+        case Y560: {return "Y560";}
         case Y4000: {return "Y4000";}
         default:  {return "Unknown";}
     }
@@ -67,6 +68,7 @@ String yosemitech::getParameter(void)
         case Y532: {return "pH";}
         case Y533: {return "ORP";}
         case Y551: {return "COD";}
+        case Y560: {return "Ammonium";}
         case Y4000: {return "DO,   Turb, Cond,  pH,   Temp, ORP,  Chl,  BGA";}
         default:  {return "Unknown";}
     }
@@ -89,6 +91,7 @@ String yosemitech::getUnits(void)
         case Y532: {return "pH, mV";}
         case Y533: {return "mV";}
         case Y551: {return "mg/L, NTU";}
+        case Y560: {return "mg/L";}
         case Y4000: {return "mg/L, NTU,  mS/cm, pH,   °C,   mV,   µg/L, µg/L";}
         default:  {return "Unknown";}
     }
@@ -151,6 +154,7 @@ String yosemitech::getSerialNumber(void)
         if (modelSS == 48) _model = Y514;  // 48 means chlorophyll
         if (modelSS == 43) _model = Y532;  // 43 must mean pH
         if (modelSS == 47) _model = Y551;  // 47 must mean COD
+        if (modelSS == 68) _model = Y560;  // 68 must mean Ammonium
         if (modelSS == 38) _model = Y4000;  // 38 must mean MultiParameter Sonde
     }
 
@@ -206,10 +210,12 @@ bool yosemitech::startMeasurement(void)
             if (respSize == 8 && modbus.responseBuffer[0] == _slaveID) return true;
             else return false;
         }
-        // Y532 (pH) or Y533 (ORP) do not require Start/Stop functions. They are not listed in the Y532/Y533 Modbus Manual.
+        // Y532 (pH), Y533 (ORP), Y560 (Ammonium) ion selective elctrodes do not
+        // require Start/Stop functions, which are not listed in their Modbus Manuals.
         // However, Start/Stop functions are required to get these to work in ModularSensors.
         case Y532:
         case Y533:
+        case Y560:
         {
             return true;
         }
@@ -234,10 +240,12 @@ bool yosemitech::stopMeasurement(void)
 {
     switch (_model)
     {
-        // Y532 (pH) or Y533 (ORP) do not require Start/Stop functions. They are not listed in the Y532/Y533 Modbus Manual.
+        // Y532 (pH), Y533 (ORP), Y560 (Ammonium) ion selective elctrodes do not
+        // require Start/Stop functions, which are not listed in their Modbus Manuals.
         // However, Start/Stop functions are required to get these to work in ModularSensors.
         case Y532:
         case Y533:
+        case Y560:
         {
             return true;
         }
@@ -289,6 +297,24 @@ bool yosemitech::getValues(float &parmValue, float &tempValue, float &thirdValue
             // of them to return.  We'll just send a false response.  If someone
             // wants the sonde results, they should give 8 values to put them in.
             return false;
+        }
+        // Y560 Ammonium
+        case Y560:
+        {
+            // Y560 Ammonium has many parameters, but this will return the
+            // three most important (NH4_N, Temp, pH). Other options are below.
+            if (modbus.getRegisters(0x03, 0x2600, 4))  // default register gives potential & pH
+            {
+                // pH in registers 3-4 of 4 (starting in byte 7 of total response frame)
+                thirdValue = modbus.float32FromFrame(littleEndian, 7);
+                // Get temperature at register 0x2400. 32 bits = 4 bytes = 2 registers
+                tempValue = modbus.float32FromRegister(0x03,  0x2400, littleEndian);
+                // Get NH3_N (mg/L) at register 0x2800
+                parmValue = modbus.float32FromRegister(0x03,  0x2800, littleEndian);
+                errorCode = 0x00;  // No errors
+                return true;
+            }
+            break;
         }
         case Y551:   // Y551 COD, with turbidity
         {

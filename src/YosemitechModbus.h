@@ -39,7 +39,7 @@ typedef enum yosemitechModel
       // http://en.yosemitech.com/aspcms/product/2020-5-8/91.html
     Y551,  // UV254/COD Sensor
       // http://en.yosemitech.com/aspcms/product/2020-5-8/94.html
-    // Y560,  // NH4 Probe
+    Y560,  // NH4 Probe
       // http://en.yosemitech.com/aspcms/product/2020-4-23/61.html
     Y4000, // Multiparameter Sonde
       // http://en.yosemitech.com/aspcms/product/2020-5-8/95.html
@@ -110,6 +110,8 @@ public:
     // 3 values - The parameter, the temperature, and a third value for the
     //            sensors that return can return something else
     //            -- Y532 (pH) can return electrical potential
+    //            -- Y551 (COD) can return turbidity
+    //            -- Y550 (Ammonium) returns NH4_N (mg/L) and pH as primary parameters, but can return more.
     //            -- Y504 (DO) allows calculation of DO in mg/L, which can be returned
     // 3 values and an error code - As three values, but with error code
     // NOTE:  The one, two, and three value variants will simply return false for a sonde
@@ -119,7 +121,13 @@ public:
     bool getValues(float &parmValue, float &tempValue, byte &errorCode);
     bool getValues(float &parmValue, float &tempValue, float &thirdValue);
     bool getValues(float &parmValue, float &tempValue, float &thirdValue, byte &errorCode);
-    // 8 values - For Y4000 Sonde, in this order: "DO; Turb; Cond; pH; Temp; ORP; Chl; BGA"
+    // 8 values - For sondes Y4000 and Y560.
+    //          - Y4000 Sonde returns in this order: "DO; Turb; Cond; pH; Temp; ORP; Chl; BGA"
+    //          - Y560 Ammonium returns these groupings of parameters:
+    //                 - pH, pH_potential (mV)
+    //                 - NH4+_potential (mV), K_potential (mV)
+    //                 - NH4_N, NH4+, K+ (all in mg/L)
+    //                 - Temperature (C)
     // 8 values and an error code - As 8 values, but with error code
     // NOTE:  The 8 value versions will return false for anything but a sonde
     bool getValues(float &firstValue, float &secondValue, float &thirdValue, float &forthValue, float &fifthValue, float &sixthValue, float &seventhValue, float &eighthValue); // For Y4000 Sonde
