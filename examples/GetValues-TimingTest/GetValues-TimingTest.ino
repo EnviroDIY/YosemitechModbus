@@ -11,7 +11,7 @@ Modified from `GetValues.ino` to test optimal timing for the sensor timing setti
 used by the ModularSensors library, similar to:
   #define Y511_WARM_UP_TIME_MS 8000         //
   #define Y511_STABILIZATION_TIME_MS 40000  //
-  #define Y511_MEASUREMENT_TIME_MS 4000     // 
+  #define Y511_MEASUREMENT_TIME_MS 4000     //
 *****************************************************************************/
 
 // ---------------------------------------------------------------------------
@@ -29,10 +29,10 @@ used by the ModularSensors library, similar to:
 // ---------------------------------------------------------------------------
 
 // Define the sensor type
-yosemitechModel model = Y511;  // The sensor model number
+yosemitechModel model = Y560;  // The sensor model number
 
 // Define the sensor's modbus address
-byte modbusAddress = 0x03;  // The sensor's modbus address, or SlaveID
+byte modbusAddress = 0x01;  // The sensor's modbus address, or SlaveID
 // Yosemitech ships sensors with a default ID of 0x01.
 
 // Define pin number variables
@@ -86,7 +86,9 @@ void setup()
     // Turbidity and pH within 500ms
     // Conductivity doesn't respond until 1.15-1.2s
     Serial.println("Waiting for sensor and adapter to be ready.");
-    delay(1500);
+
+    // Warmup time for sensor to respond to modbus commands
+    delay(200);
 
     // Get the sensor's hardware and software version
     Serial.println("Getting sensor version.");
@@ -133,7 +135,7 @@ void setup()
 
     // Get/set the sensor brush status (for sensors with brushes).
     // NOTE: Not implemented for Y4000
-    if (model == Y511 || model == Y513 || model == Y514)
+    if (model == Y511 || model == Y513 || model == Y514 || model == Y551 || model == Y560)
     {
         // Check the wiper timing
         Serial.println("Getting sensor cleaning interval.");
@@ -155,61 +157,10 @@ void setup()
     if (success) Serial.println("    Measurements started.");
     else Serial.println("    Failed to start measuring!");
 
-    // The modbus manuals recommend the following warm-up times between starting
-    // measurements and requesting values :
-    //    2 s for whipered chlorophyll
-    //    20 s for turbidity
-    //    10 s for conductivity
+    // Skip stabilization and brush cycle to test for timing
 
-    // On wipered (self-cleaning) models, the brush immediately activates after
-    // getting power and takes approximately 10-11 seconds to finish.  No
-    // readings should be taken during this time.
 
-    // pH returns values after ~4.5 seconds
-    // Conductivity returns values after about 2.4 seconds, but is not stable
-    // until ~10 seconds.
-    // DO does not return values until ~8 seconds
-    // Turbidity takes ~22 seconds to get stable values.
-    Serial.println("Allowing sensor to stabilize..");
-    for (int i = 10; i > 0; i--)
-    {
-        Serial.print(i);
-        delay (250);
-        Serial.print(".");
-        delay (250);
-        Serial.print(".");
-        delay (250);
-        Serial.print(".");
-        delay (250);
-    }
-    Serial.println("\n");
-
-    if (model == Y511 || model == Y513 || model == Y514 || model == Y4000) // Y4000 activates brush when powered on
-    {
-        // We'll run the brush once in the middle of this
-        Serial.println("Activating brush.");
-        success = sensor.activateBrush();
-        if (success) Serial.println("    Brush activated.");
-        else Serial.println("    Failed to activate brush!");
-    }
-
-    if (model == Y511 || model == Y513 || model == Y514 || model == Y510 || model == Y4000)
-    {
-        Serial.println("Continuing to stabilize..");
-        for (int i = 12; i > 0; i--)
-        {
-            Serial.print(i);
-            delay (250);
-            Serial.print(".");
-            delay (250);
-            Serial.print(".");
-            delay (250);
-            Serial.print(".");
-            delay (250);
-        }
-        Serial.println("\n");
-    }
-
+    // Print table headers
     switch (model)
     {
         case Y4000:
@@ -224,13 +175,15 @@ void setup()
         }
         default:
         {
+            Serial.print("Time(ms)  ");
             Serial.print("Temp(°C)  ");
             Serial.print(sensor.getParameter());
             Serial.print("(");
             Serial.print(sensor.getUnits());
             Serial.print(")");
             if (model == Y532 || model == Y504) Serial.print("    Value");
-            //Serial.print("    Millis");
+            if (model == Y551) Serial.print("    Turbidity (NTU)");
+            if (model == Y560) Serial.print("    pH");
             Serial.println();
         }
     }
@@ -276,16 +229,17 @@ void loop()
         {
             float parmValue, tempValue, thirdValue = -9999;
             sensor.getValues(parmValue, tempValue, thirdValue);
+
+            Serial.print(millis());
+            Serial.print("      ");
             Serial.print(tempValue);
             Serial.print("      ");
             Serial.print(parmValue);
-            if (model == Y532 || model == Y504)
+            if (model == Y532 || model == Y504 || model == Y551 || model == Y560)
             {
                 Serial.print("      ");
                 Serial.print(thirdValue);
             }
-            // Serial.print("      ");
-            // Serial.print(millis());
             Serial.println();
         }
     }
@@ -298,6 +252,8 @@ void loop()
     //     2 s for turbidity
     //     3 s for conductivity
     //     1 s for DO
+    //     2 s for COD
+    //     2 s for Ammonium
 
     // The turbidity and DO sensors appear return new readings about every 1.6 seconds.
     // The pH sensor returns new readings about every 1.8 seconds.
@@ -305,5 +261,5 @@ void loop()
 
     // The temperature sensors can take readings much more quickly.  The same results
     // can be read many times from the registers between the new sensor readings.
-    delay(5000);
+    delay(500);
 }
