@@ -1,6 +1,6 @@
 # Yosemitech Modbus
 
-A library to use an Arduino as a master to control and communicate with the sensors produced by [Yosemitech](http://www.yosemitech.com/en/) via [Modbus RTU](https://en.wikipedia.org/wiki/Modbus) over [RS-485](https://en.wikipedia.org/wiki/RS-485).  This library requires the use of the [EnviroDIY/SensorModbusMaster](https://github.com/EnviroDIY/SensorModbusMaster) library.
+A library to use an Arduino as a master to control and communicate with the sensors produced by [Yosemitech](http://en.yosemitech.com) via [Modbus RTU](https://en.wikipedia.org/wiki/Modbus) over [RS-485](https://en.wikipedia.org/wiki/RS-485).  This library requires the use of the [EnviroDIY/SensorModbusMaster](https://github.com/EnviroDIY/SensorModbusMaster) library.
 
 YosemiTech sensors only support these modbus commands:
 * 3 (0x03, Read holding registers)
@@ -23,8 +23,8 @@ All of these sensors require a 5-12V DC power supply and the power supply can be
 The current consumption of the Yosemitech sensors is specified to be <50mA, this is not accurate for their sensors which include a wiper brush, for these sensors an inductive spike exists when the brush begins to spin, which draws significantly more current than specified. Below is a table describing the current draws for several different opeating conditions of the Yosemitech 511 Turbidity senor (with brush). All tests were driven by a power supply with a 9v output
 
 | Condition        | Current    |   
-| ------------- |:-------------:| 
-| Brush Starting | <290mA<sup>1</sup>| 
+| ------------- |:-------------:|
+| Brush Starting | <290mA<sup>1</sup>|
 | Brush Running     | 52mA      |
 | Sensing | 27mA     |
 | Idle | 7mA |

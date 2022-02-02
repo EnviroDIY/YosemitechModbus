@@ -37,6 +37,8 @@ typedef enum yosemitechModel
       // http://en.yosemitech.com/aspcms/product/2020-6-15/154.html
     Y533,  // ORP
       // http://en.yosemitech.com/aspcms/product/2020-5-8/91.html
+    Y550,  // UV254/COD Sensor, old version no longer sold
+      // http://en.yosemitech.com/aspcms/product/2020-5-8/94.html
     Y551,  // UV254/COD Sensor
       // http://en.yosemitech.com/aspcms/product/2020-5-8/94.html
     Y560,  // NH4 Probe
@@ -111,7 +113,7 @@ public:
     //            sensors that return can return something else
     //            -- Y532 (pH) can return electrical potential
     //            -- Y551 (COD) can return turbidity
-    //            -- Y550 (Ammonium) returns NH4_N (mg/L) and pH as primary parameters, but can return more.
+    //            -- Y560 (Ammonium) returns NH4_N (mg/L) and pH as primary parameters, but can return more.
     //            -- Y504 (DO) allows calculation of DO in mg/L, which can be returned
     // 3 values and an error code - As three values, but with error code
     // NOTE:  The one, two, and three value variants will simply return false for a sonde
