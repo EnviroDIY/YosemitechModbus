@@ -45,6 +45,8 @@ String yosemitech::getModel(void)
         case Y532: {return "Y532";}
         case Y533: {return "Y533";}
         case Y550: {return "Y550";}
+        case Y551: {return "Y551";}
+        case Y560: {return "Y560";}
         case Y4000: {return "Y4000";}
         default:  {return "Unknown";}
     }
@@ -67,6 +69,8 @@ String yosemitech::getParameter(void)
         case Y532: {return "pH";}
         case Y533: {return "ORP";}
         case Y550: {return "COD";}
+        case Y551: {return "COD";}
+        case Y560: {return "Ammonium";}
         case Y4000: {return "DO,   Turb, Cond,  pH,   Temp, ORP,  Chl,  BGA";}
         default:  {return "Unknown";}
     }
@@ -86,9 +90,11 @@ String yosemitech::getUnits(void)
         case Y514: {return "µg/L";}
         case Y516: {return "ppb";}
         case Y520: {return "mS/cm";}
-        case Y532: {return "pH";}
+        case Y532: {return "pH, mV";}
         case Y533: {return "mV";}
-        case Y550: {return "mg/L";}
+        case Y550: {return "mg/L, NTU";}
+        case Y551: {return "mg/L, NTU";}
+        case Y560: {return "mg/L";}
         case Y4000: {return "mg/L, NTU,  mS/cm, pH,   °C,   mV,   µg/L, µg/L";}
         default:  {return "Unknown";}
     }
@@ -150,6 +156,8 @@ String yosemitech::getSerialNumber(void)
         if (modelSS == 29) _model = Y511;  // 29 means self-cleaning turbidity sensor
         if (modelSS == 48) _model = Y514;  // 48 means chlorophyll
         if (modelSS == 43) _model = Y532;  // 43 must mean pH
+        if (modelSS == 47) _model = Y551;  // 47 must mean COD
+        if (modelSS == 68) _model = Y560;  // 68 must mean Ammonium
         if (modelSS == 38) _model = Y4000;  // 38 must mean MultiParameter Sonde
     }
 
@@ -205,7 +213,12 @@ bool yosemitech::startMeasurement(void)
             if (respSize == 8 && modbus.responseBuffer[0] == _slaveID) return true;
             else return false;
         }
-        case Y532: // Does not require this function. Not described in the Y532 Modbus manual. Required to get Y532pH to work in ModularSensors.
+        // Y532 (pH), Y533 (ORP), Y560 (Ammonium) ion selective elctrodes do not
+        // require Start/Stop functions, which are not listed in their Modbus Manuals.
+        // However, Start/Stop functions are required to get these to work in ModularSensors.
+        case Y532:
+        case Y533:
+        case Y560:
         {
             return true;
         }
@@ -230,6 +243,15 @@ bool yosemitech::stopMeasurement(void)
 {
     switch (_model)
     {
+        // Y532 (pH), Y533 (ORP), Y560 (Ammonium) ion selective elctrodes do not
+        // require Start/Stop functions, which are not listed in their Modbus Manuals.
+        // However, Start/Stop functions are required to get these to work in ModularSensors.
+        case Y532:
+        case Y533:
+        case Y560:
+        {
+            return true;
+        }
         case Y4000: // Does not require this function. Not described in the manual or sent using the MultiSensor_v1.18 software
         {
             return true;
@@ -250,10 +272,11 @@ bool yosemitech::stopMeasurement(void)
 
 
 // This gets values back from the sensor
-// All sensors but pH, return two 32-bit float values beginning in holding register
-// 0x2600 (9728), where the parameter value is in the first two register and the
+// Most sensors (other than Y4000 Sonde; Y551 COD; Y532 pH; or Y533 ORP),
+// return two 32-bit float values beginning in holding register 0x2600 (9728),
+// where the parameter value is in the first two register and the
 // temperature in celsius is in the next two registers.  For some sensors
-// (Y520/Conductivity and Y514/Chlorophyll) this followed by an error code.
+// (Y520 Conductivity and Y514 Chlorophyll) this followed by an error code.
 // The pH sensor returns the pH as a 32-bit float beginning in holding register
 // 0x2800 (10240) and the temperature in celsuis as a separate 32-bit float
 // beginning in holding register 0x2400 (9216).  The pH sensor can also return
@@ -278,7 +301,26 @@ bool yosemitech::getValues(float &parmValue, float &tempValue, float &thirdValue
             // wants the sonde results, they should give 8 values to put them in.
             return false;
         }
-        case Y550:   // Y550 COD, with turbidity
+        // Y560 Ammonium
+        case Y560:
+        {
+            // Y560 Ammonium has many parameters, but this will return the
+            // three most important (NH4_N, Temp, pH). Other options are below.
+            if (modbus.getRegisters(0x03, 0x2600, 4))  // default register gives potential & pH
+            {
+                // pH in registers 3-4 of 4 (starting in byte 7 of total response frame)
+                thirdValue = modbus.float32FromFrame(littleEndian, 7);
+                // Get temperature at register 0x2400. 32 bits = 4 bytes = 2 registers
+                tempValue = modbus.float32FromRegister(0x03,  0x2400, littleEndian);
+                // Get NH3_N (mg/L) at register 0x2800
+                parmValue = modbus.float32FromRegister(0x03,  0x2800, littleEndian);
+                errorCode = 0x00;  // No errors
+                return true;
+            }
+            break;
+        }
+        case Y550:   // Y550 COD, old vesion (not tested)
+        case Y551:   // Y551 COD, with turbidity
         {
             if (modbus.getRegisters(0x03, 0x2600, 5))
             {
@@ -290,15 +332,30 @@ bool yosemitech::getValues(float &parmValue, float &tempValue, float &thirdValue
             }
             break;
         }
-        // Y532 (pH) or Y533 (ORP)
+        // Y532 (pH)
         case Y532:
-        case Y533:
         {
+            // According to the modbus manual we can get pH & potential starting at
+            // Register 0x2600, but it appears that the manual is not accurate.
             if (modbus.getRegisters(0x03, 0x2800, 2))
             {
                 parmValue = modbus.float32FromFrame(littleEndian, 3);
+                // Get temperature at register 0x2400
                 tempValue = modbus.float32FromRegister(0x03,  0x2400, littleEndian);
+                // Get potential (mV) at register 0x1200
                 thirdValue = modbus.float32FromRegister(0x03,  0x1200, littleEndian);
+                errorCode = 0x00;  // No errors
+                return true;
+            }
+            break;
+        }
+        //or Y533 (ORP)
+        case Y533:
+        {
+            if (modbus.getRegisters(0x03, 0x1200, 2))
+            {
+                parmValue = modbus.float32FromFrame(littleEndian, 3);
+                tempValue = modbus.float32FromRegister(0x03,  0x2400, littleEndian);
                 errorCode = 0x00;  // No errors
                 return true;
             }
@@ -381,7 +438,7 @@ bool yosemitech::getValues(float &parmValue, float &tempValue, float &thirdValue
             }
             break;
         }
-        // Everybody else other than Y550 COD; Y532 (pH) or Y533 (ORP); Y502 & Y504 (DO)
+        // Everybody else other than Y4000 Sonde; Y551 COD; Y532 (pH); Y533 (ORP); Y502 & Y504 (DO)
         default:
         {
             if (modbus.getRegisters(0x03, 0x2600, 5))
