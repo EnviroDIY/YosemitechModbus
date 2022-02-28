@@ -38,6 +38,6 @@
   ],
   "examples": ["examples/*/*.ino", "utilities/*/*.ino"],
   "export": {
-    "exclude": ["doc/*", "sensor_tests/*"]
+    "exclude": ["doc/*", "sensor_tests/*","continuous_integration/*"]
   }
 }

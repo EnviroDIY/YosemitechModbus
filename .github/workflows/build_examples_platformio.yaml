@@ -52,6 +52,7 @@ jobs:
         if: steps.cache_libraries.outputs.cache-hit != 'true'
         run: |
           pio lib -g install envirodiy/SensorModbusMaster
+          pio lib -g install https://github.com/PaulStoffregen/AltSoftSerial.git
 
       # Install YosemitechModbus at the Global level for PlatformIO
       # Force install to get the right version

@@ -66,6 +66,7 @@ jobs:
           arduino-cli --config-file continuous_integration/arduino_cli.yaml core list
           arduino-cli --config-file continuous_integration/arduino_cli.yaml lib update-index
           arduino-cli --config-file continuous_integration/arduino_cli.yaml lib install SensorModbusMaster
+          arduino-cli --config-file continuous_integration/arduino_cli.yaml lib install --git-url https://github.com/PaulStoffregen/AltSoftSerial.git
           arduino-cli --config-file continuous_integration/arduino_cli.yaml lib update-index
           arduino-cli --config-file continuous_integration/arduino_cli.yaml core list
 
