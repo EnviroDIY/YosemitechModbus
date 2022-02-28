@@ -11,11 +11,16 @@ Yosemitech modbus sensor.
 // ---------------------------------------------------------------------------
 // Include the base required libraries
 // ---------------------------------------------------------------------------
+#if defined ESP8266
+#include <ESP8266WiFi.h>
+#include <SoftwareSerial.h>
+#endif
 #include <Arduino.h>
-// #include <SoftwareSerial.h>
+#if defined __AVR__
+#include <SoftwareSerial.h>
 #include <AltSoftSerial.h>
+#endif
 #include <YosemitechModbus.h>
-
 
 // ---------------------------------------------------------------------------
 // Set up the sensor specific information
@@ -23,10 +28,10 @@ Yosemitech modbus sensor.
 // ---------------------------------------------------------------------------
 
 // Define the sensor type
-yosemitechModel model = Y511;  // The sensor model number
+yosemitechModel model = Y532;  // The sensor model number
 
 // Define the sensor's modbus address
-byte modbusAddress = 0x03;  // The sensor's modbus address, or SlaveID
+byte modbusAddress = 0x32;  // The sensor's modbus address, or SlaveID
 // Yosemitech ships sensors with a default ID of 0x01.
 
 // Define pin number variables
@@ -36,12 +41,16 @@ const int DEREPin = -1;   // The pin controlling Recieve Enable and Driver Enabl
                           // on the RS485 adapter, if applicable (else, -1)
                           // Setting HIGH enables the driver (arduino) to send text
                           // Setting LOW enables the receiver (sensor) to send text
-// const int SSRxPin = 10;  // Recieve pin for software serial (Rx on RS485 adapter)
-// const int SSTxPin = 11;  // Send pin for software serial (Tx on RS485 adapter)
+const int SSRxPin = 13;  // Receive pin for software serial (Rx on RS485 adapter)
+const int SSTxPin = 14;  // Send pin for software serial (Tx on RS485 adapter)
 
 // Construct software serial object for Modbus
+#if defined __AVR__
 // SoftwareSerial modbusSerial(SSRxPin, SSTxPin);
 AltSoftSerial modbusSerial;
+#elif defined ESP8266
+SoftwareSerial modbusSerial;
+#endif
 
 // Construct the Yosemitech modbus instance
 yosemitech sensor;
@@ -50,24 +59,34 @@ bool success;
 // ---------------------------------------------------------------------------
 // Main setup function
 // ---------------------------------------------------------------------------
-void setup()
-{
+void setup() {
+    if (sensorPwrPin > 0)    {
+        pinMode(sensorPwrPin, OUTPUT);
+        digitalWrite(sensorPwrPin, HIGH);
+    }
+    if (adapterPwrPin > 0)    {
+        pinMode(adapterPwrPin, OUTPUT);
+        digitalWrite(adapterPwrPin, HIGH);
+    }
 
-    pinMode(sensorPwrPin, OUTPUT);
-    digitalWrite(sensorPwrPin, HIGH);
-    pinMode(adapterPwrPin, OUTPUT);
-    digitalWrite(adapterPwrPin, HIGH);
+    if (DEREPin > 0)    {
+        pinMode(DEREPin, OUTPUT);
+    }
 
     if (DEREPin > 0) pinMode(DEREPin, OUTPUT);
 
-    Serial.begin(115200);  // Main serial port for debugging via USB Serial Monitor
+    Serial.begin(115200); // Main serial port for debugging via USB Serial Monitor
+#if defined ESP8266
+    modbusSerial.begin(9600, SWSERIAL_8N1, SSRxPin, SSTxPin, false, 256); // The modbus serial stream - Baud rate MUST be 9600.
+#else
     modbusSerial.begin(9600);  // The modbus serial stream - Baud rate MUST be 9600.
+#endif
 
     // Start up the sensor
     sensor.begin(model, modbusAddress, &modbusSerial, DEREPin);
 
     // Turn on debugging
-    // sensor.setDebugStream(&Serial);
+    sensor.setDebugStream(&Serial);
 
     // Start up note
     Serial.print("Yosemitech ");
