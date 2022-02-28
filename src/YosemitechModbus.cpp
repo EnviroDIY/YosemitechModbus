@@ -332,7 +332,7 @@ bool yosemitech::getValues(float &parmValue, float &tempValue, float &thirdValue
                      float A2 = 249.6339;
                      float A3 = 143.3483;
                      float A4 = - 21.8492;
-                     float Bl = - 0.033096;
+                     float B1 = - 0.033096;
                      float B2 =   0.014259;
                      float B3 = - 0.001700;
 
@@ -340,14 +340,14 @@ bool yosemitech::getValues(float &parmValue, float &tempValue, float &thirdValue
                 float Tkelvin = 273.15 + tempValue; //  celsius to kelvin
                 float salinity = 0.0;  // assume 0 for pure water
                 float lnDO = A1 + A2*(100/Tkelvin) + A3*log(Tkelvin/100) + A4*(Tkelvin/100)
-                             + salinity*(Bl + B2*(Tkelvin/100) + B3*(Tkelvin/100)*(Tkelvin/100));
+                             + salinity*(B1 + B2*(Tkelvin/100) + B3*(Tkelvin/100)*(Tkelvin/100));
                  float DO_saturation_SL_mlL = exp(lnDO);
 
                 //  Multiply by the constant 1.4276 to
                 //  convert to milligrams per liter (mg/L).
                  float DO_saturation_SL_mgL = DO_saturation_SL_mlL*1.4276;
 
-                //  Calculate the vapor pressur of water at sea level at a given
+                //  Calculate the vapor pressure of water at sea level at a given
                 //  temperature from the empirical equation derived from the
                 //  Handbook of Chemistry and Physics
                 //  (Chemical Rubber Company, Cleveland, Ohio, 1964)
