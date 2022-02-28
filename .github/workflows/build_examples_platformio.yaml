@@ -53,6 +53,7 @@ jobs:
         run: |
           pio lib -g install envirodiy/SensorModbusMaster
           pio lib -g install https://github.com/PaulStoffregen/AltSoftSerial.git
+          pio lib -g install https://github.com/switchdoclabs/SDL_Arduino_SSD1306.git
 
       # Install YosemitechModbus at the Global level for PlatformIO
       # Force install to get the right version
