@@ -58,7 +58,7 @@ jobs:
       - name: Install the testing version of Yosemitech Modbus for PlatformIO
         run: |
           pio lib -g install -f ${{ env.LIBRARY_INSTALL_SOURCE }}
-          pio lib show EnviroDIY_YosemitechModbus
+          pio lib show YosemitechModbus
 
       - name: Run PlatformIO
         env:
@@ -71,4 +71,4 @@ jobs:
       # NOTE:  Don't uninstall for PlatformIO because the library manager will clean up the
       # dependencies leaving nothing for the cache
       # - name: Uninstall testing version of Yosemitech Modbus before caching
-      #   run: pio lib -g uninstall EnviroDIY_YosemitechModbus
+      #   run: pio lib -g uninstall YosemitechModbus
