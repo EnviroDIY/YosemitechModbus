@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ***
 
-## [0.3.1] 2022-02-28
+## [0.3.1] 2022-03-01
 
 ### Changed
 - Modified example to demonstrate use with Espressif processor
