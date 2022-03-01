@@ -50,6 +50,9 @@ const int SSTxPin = 14;  // Send pin for software serial (Tx on RS485 adapter)
 AltSoftSerial modbusSerial;
 #elif defined ESP8266
 SoftwareSerial modbusSerial;
+#elif defined(NRF52832_FEATHER) || defined(ARDUINO_NRF52840_FEATHER)
+#include <Adafruit_TinyUSB.h>
+HardwareSerial& modbusSerial = Serial1;
 #elif !defined(NO_GLOBAL_SERIAL1)
 HardwareSerial& modbusSerial = Serial1;
 #else
