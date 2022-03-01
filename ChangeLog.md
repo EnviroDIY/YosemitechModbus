@@ -19,6 +19,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ***
 
+## [0.3.2] 2022-03-01
+Version bump only for reindexing by PlatformIO and Arduino library managers.
+
+***
+
 ## [0.3.1] 2022-03-01
 
 ### Changed
