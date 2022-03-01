@@ -50,8 +50,10 @@ const int SSTxPin = 14;  // Send pin for software serial (Tx on RS485 adapter)
 AltSoftSerial modbusSerial;
 #elif defined ESP8266
 SoftwareSerial modbusSerial;
-#else
+#elif !defined(NO_GLOBAL_SERIAL1)
 HardwareSerial& modbusSerial = Serial1;
+#else
+HardwareSerial& modbusSerial = Serial;
 #endif
 
 // Construct the Yosemitech modbus instance

@@ -41,10 +41,10 @@ jobs:
         id: cache_libraries
         with:
           path: ~/.platformio
-          # if nothing in the dependencies.json file has changed, then it will
+          # if nothing in the library.json file has changed, then it will
           # be a "cache hit" and we can restore libraries from cache and not
           # download them.  If it has changed we have to re-download.
-          key: ${{ hashFiles('./library.json') }}
+          key: ${{ hashFiles('**/library.json') }}
 
       # Install the dependencies for PlatformIO
       - name: Install the PlatformIO dependencies at global level

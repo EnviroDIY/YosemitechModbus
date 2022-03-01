@@ -46,10 +46,10 @@ jobs:
         id: cache_arduino
         with:
           path: home/arduino
-          # if nothing in the dependencies.json file has changed, then it will
+          # if nothing in the library.properties file has changed, then it will
           # be a "cache hit" and we can restore libraries from cache and not
           # download them.  If it has changed we have to re-download.
-          key: ${{ hashFiles('./library.json') }}
+          key: ${{ hashFiles('**/library.properties') }}
 
       # Install cores and library dependencies for the Arduino CLI, iff no cache
       - name: Install the Arduino libraries
