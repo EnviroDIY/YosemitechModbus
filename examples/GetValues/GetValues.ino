@@ -28,7 +28,7 @@ Yosemitech modbus sensor.
 // ---------------------------------------------------------------------------
 
 // Define the sensor type
-yosemitechModel model = Y560;  // The sensor model number
+yosemitechModel model = Y700;  // The sensor model number
 
 // Define the sensor's modbus address
 byte modbusAddress = 0x01;  // The sensor's modbus address, or SlaveID
@@ -220,7 +220,7 @@ void setup() {
     if (model == Y511 || model == Y513 || model == Y514 || model == Y551 || model == Y560 || model == Y4000 || model == Y510)
     {
         Serial.println("Continuing to stabilize..");
-        for (int i = 12; i > 0; i--)
+        for (int i = 15; i > 0; i--)
         {
             Serial.print(i);
             delay (250);

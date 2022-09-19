@@ -47,6 +47,7 @@ String yosemitech::getModel(void)
         case Y550: {return "Y550";}
         case Y551: {return "Y551";}
         case Y560: {return "Y560";}
+        case Y700: {return "Y700";}
         case Y4000: {return "Y4000";}
         default:  {return "Unknown";}
     }
@@ -71,6 +72,7 @@ String yosemitech::getParameter(void)
         case Y550: {return "COD";}
         case Y551: {return "COD";}
         case Y560: {return "Ammonium";}
+        case Y700: {return "Water Depth";}
         case Y4000: {return "DO,   Turb, Cond,  pH,   Temp, ORP,  Chl,  BGA";}
         default:  {return "Unknown";}
     }
@@ -95,6 +97,7 @@ String yosemitech::getUnits(void)
         case Y550: {return "mg/L, NTU";}
         case Y551: {return "mg/L, NTU";}
         case Y560: {return "mg/L";}
+        case Y700: {return "mm";}        
         case Y4000: {return "mg/L, NTU,  mS/cm, pH,   °C,   mV,   µg/L, µg/L";}
         default:  {return "Unknown";}
     }
@@ -136,8 +139,8 @@ String yosemitech::getSerialNumber(void)
             SN = modbus.StringFromRegister(0x03, 0x0900, 14); break; // for all sensors except Y4000
     }
 
-    // Strip out the initial ')' that seems to come with some responses
-    if (SN.startsWith(")"))
+    // Strip out the initial ')' or '$' that seems to come with some responses
+    if (SN.startsWith(")") || SN.startsWith("$"))
     {
         SN = SN.substring(1);
     }
@@ -158,6 +161,7 @@ String yosemitech::getSerialNumber(void)
         if (modelSS == 43) _model = Y532;  // 43 must mean pH
         if (modelSS == 47) _model = Y551;  // 47 must mean COD
         if (modelSS == 68) _model = Y560;  // 68 must mean Ammonium
+        if (modelSS == 24) _model = Y700;  // 24 must mean Pressure/Depth
         if (modelSS == 38) _model = Y4000;  // 38 must mean MultiParameter Sonde
     }
 
@@ -213,12 +217,14 @@ bool yosemitech::startMeasurement(void)
             if (respSize == 8 && modbus.responseBuffer[0] == _slaveID) return true;
             else return false;
         }
-        // Y532 (pH), Y533 (ORP), Y560 (Ammonium) ion selective elctrodes do not
-        // require Start/Stop functions, which are not listed in their Modbus Manuals.
+        // Y532 (pH), Y533 (ORP), Y560 (Ammonium) ion selective elctrodes, and
+        // Y700 (Pressure/Depth) sensors do not require Start/Stop functions. 
+        // These commands are not in their Modbus Manuals.
         // However, Start/Stop functions are required to get these to work in ModularSensors.
         case Y532:
         case Y533:
         case Y560:
+        case Y700:
         {
             return true;
         }
@@ -243,12 +249,14 @@ bool yosemitech::stopMeasurement(void)
 {
     switch (_model)
     {
-        // Y532 (pH), Y533 (ORP), Y560 (Ammonium) ion selective elctrodes do not
-        // require Start/Stop functions, which are not listed in their Modbus Manuals.
+        // Y532 (pH), Y533 (ORP), Y560 (Ammonium) ion selective elctrodes, and
+        // Y700 (Pressure/Depth) sensors do not require Start/Stop functions. 
+        // These commands are not in their Modbus Manuals.
         // However, Start/Stop functions are required to get these to work in ModularSensors.
         case Y532:
         case Y533:
         case Y560:
+        case Y700:
         {
             return true;
         }
@@ -434,6 +442,19 @@ bool yosemitech::getValues(float &parmValue, float &tempValue, float &thirdValue
                 float DOmgL = DO_saturation_press_mgL*DOpercent;
                 thirdValue = DOmgL;
 
+                return true;
+            }
+            break;
+        }
+        // Y700 Pressure/Depth
+        case Y700:
+        {
+            if (modbus.getRegisters(0x03, 0x2600, 6))
+            {
+                parmValue = modbus.float32FromFrame(littleEndian, 7);
+                errorCode = modbus.byteFromFrame(11);
+                // Get temperature at register 0x2400, after Frame is read
+                tempValue = modbus.float32FromRegister(0x03,  0x2400, littleEndian);
                 return true;
             }
             break;
