@@ -11,16 +11,23 @@ Yosemitech modbus sensor.
 // ---------------------------------------------------------------------------
 // Include the base required libraries
 // ---------------------------------------------------------------------------
+
+#include <Arduino.h>
+#include <YosemitechModbus.h>
+
+#if defined __AVR__
+#include <AltSoftSerial.h>
+// #include <SoftwareSerial.h>
+#endif
+
 #if defined ESP8266
 #include <ESP8266WiFi.h>
 #include <SoftwareSerial.h>
 #endif
-#include <Arduino.h>
-#if defined __AVR__
-#include <SoftwareSerial.h>
-#include <AltSoftSerial.h>
-#endif
-#include <YosemitechModbus.h>
+
+// Turn on debugging outputs (i.e. raw Modbus requests & responsds) by uncommenting next line
+// #define DEBUG
+
 
 // ---------------------------------------------------------------------------
 // Set up the sensor specific information
@@ -28,14 +35,16 @@ Yosemitech modbus sensor.
 // ---------------------------------------------------------------------------
 
 // Define the sensor type
-yosemitechModel model = Y700;  // The sensor model number
+yosemitechModel model = Y4000;  // The sensor model number
 
 // Define the sensor's modbus address
-byte modbusAddress = 0x01;  // The sensor's modbus address, or SlaveID
+byte modbusAddress = 0x05;  // The sensor's modbus address, or SlaveID
 // Yosemitech ships sensors with a default ID of 0x01.
 
+const int32_t serialBaud = 115200;  // Baud rate for serial monitor
+
 // Define pin number variables
-const int sensorPwrPin = 10;  // The pin sending power to the sensor
+const int sensorPwrPin = 11;  // The pin sending power to the sensor
 const int adapterPwrPin = 22;  // The pin sending power to the RS485 adapter
 const int DEREPin = -1;   // The pin controlling Recieve Enable and Driver Enable
                           // on the RS485 adapter, if applicable (else, -1)
@@ -46,17 +55,17 @@ const int SSTxPin = 14;  // Send pin for software serial (Tx on RS485 adapter)
 
 // Construct software serial object for Modbus
 #if defined __AVR__
-// SoftwareSerial modbusSerial(SSRxPin, SSTxPin);
-AltSoftSerial modbusSerial;
+    // SoftwareSerial modbusSerial(SSRxPin, SSTxPin);
+    AltSoftSerial modbusSerial;
 #elif defined ESP8266
-SoftwareSerial modbusSerial;
+    SoftwareSerial modbusSerial;
 #elif defined(NRF52832_FEATHER) || defined(ARDUINO_NRF52840_FEATHER)
-#include <Adafruit_TinyUSB.h>
-HardwareSerial& modbusSerial = Serial1;
+    #include <Adafruit_TinyUSB.h>
+    HardwareSerial& modbusSerial = Serial1;
 #elif !defined(NO_GLOBAL_SERIAL1)
-HardwareSerial& modbusSerial = Serial1;
+    HardwareSerial& modbusSerial = Serial1;
 #else
-HardwareSerial& modbusSerial = Serial;
+    HardwareSerial& modbusSerial = Serial;
 #endif
 
 // Construct the Yosemitech modbus instance
@@ -82,18 +91,22 @@ void setup() {
 
     if (DEREPin > 0) pinMode(DEREPin, OUTPUT);
 
-    Serial.begin(115200); // Main serial port for debugging via USB Serial Monitor
-#if defined ESP8266
-    modbusSerial.begin(9600, SWSERIAL_8N1, SSRxPin, SSTxPin, false, 256); // The modbus serial stream - Baud rate MUST be 9600.
-#else
-    modbusSerial.begin(9600);  // The modbus serial stream - Baud rate MUST be 9600.
-#endif
+    Serial.begin(serialBaud); // Main serial port for debugging via USB Serial Monitor
+
+    // Setup Modbus serial stream
+    #if defined ESP8266
+        modbusSerial.begin(9600, SWSERIAL_8N1, SSRxPin, SSTxPin, false, 256); // The modbus serial stream - Baud rate MUST be 9600.
+    #else
+        modbusSerial.begin(9600);  // The modbus serial stream - Baud rate MUST be 9600.
+    #endif
 
     // Start up the sensor
     sensor.begin(model, modbusAddress, &modbusSerial, DEREPin);
 
     // Turn on debugging
-    sensor.setDebugStream(&Serial);
+    #ifdef DEBUG
+        sensor.setDebugStream(&Serial);
+    #endif
 
     // Start up note
     Serial.print("Yosemitech ");

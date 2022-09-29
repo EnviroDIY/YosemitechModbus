@@ -157,6 +157,7 @@ String yosemitech::getSerialNumber(void)
         if (modelSS == 9) _model = Y520;  // 09 means conductivity sensor
         if (modelSS == 10) _model = Y510;  // 10 means turbidity sensor
         if (modelSS == 29) _model = Y511;  // 29 means self-cleaning turbidity sensor
+        if (modelSS == 61) _model = Y513;  // 61 means Blue Green Algae (BGA)
         if (modelSS == 48) _model = Y514;  // 48 means chlorophyll
         if (modelSS == 43) _model = Y532;  // 43 must mean pH
         if (modelSS == 47) _model = Y551;  // 47 must mean COD
@@ -502,7 +503,9 @@ bool yosemitech::getValues(float &parmValue)
     return getValues(parmValue, errorCode);
 }
 
-// Get 8 values for the multiparameter sonde, with or without error flag
+// Get 8 values for the Y4000 multiparameter sonde, with or without error flag
+// Note that only 6 sensors can be connected at a time,
+// so only 7 values (including temperature) will be returned.
 bool yosemitech::getValues(float &DOmgL, float &Turbidity, float &Cond,
                            float &pH, float &Temp, float &ORP,
                            float &Chlorophyll, float &BGA, byte &errorCode)
@@ -523,7 +526,7 @@ bool yosemitech::getValues(float &DOmgL, float &Turbidity, float &Cond,
         case Y4000:   // Y4000 Multiparameter sonde
         {
             // Sonde's 8 values begin in register 260
-            if (modbus.getRegisters(0x03, 0x2601, 10))
+            if (modbus.getRegisters(0x03, 0x2601, 16))  // Modbus manual has error!
             {
                 DOmgL   = modbus.float32FromFrame(littleEndian, 3);   // DOmgL
                 Turbidity = modbus.float32FromFrame(littleEndian, 7);   // Turbidity
