@@ -112,8 +112,9 @@ byte yosemitech::getSlaveID(void)
     byte command[8] = {0xFF, 0x03, 0x30, 0x00, 0x00, 0x01, 0x9E, 0xD4};
     int respSize = modbus.sendCommand(command, 8);
 
-    if (respSize == 7) return modbus.responseBuffer[3];
-    else return 0x01;  // This is the default address
+    // if (respSize == 7) return modbus.responseBuffer[3];
+    // else return 0x01;  // This is the default address
+    return modbus.responseBuffer[3];
 }
 
 

@@ -35,10 +35,10 @@ Yosemitech modbus sensor.
 // ---------------------------------------------------------------------------
 
 // Define the sensor type
-yosemitechModel model = Y4000;  // The sensor model number
+yosemitechModel model = Y551;  // The sensor model number
 
 // Define the sensor's modbus address
-byte modbusAddress = 0x05;  // The sensor's modbus address, or SlaveID
+byte modbusAddress = 0x01;  // The sensor's modbus address, or SlaveID
 // Yosemitech ships sensors with a default ID of 0x01.
 
 const int32_t serialBaud = 115200;  // Baud rate for serial monitor
@@ -71,6 +71,19 @@ const int SSTxPin = 14;  // Send pin for software serial (Tx on RS485 adapter)
 // Construct the Yosemitech modbus instance
 yosemitech sensor;
 bool success;
+
+// ---------------------------------------------------------------------------
+// Working Function
+// ---------------------------------------------------------------------------
+
+// A function for pretty-printing the Modbuss Address, from ModularSensors
+String sensorLocation(byte _modbusAddress) {
+    String sensorLocation = F("0x");
+    if (_modbusAddress < 0x10) sensorLocation += "0";
+    sensorLocation += String(_modbusAddress, HEX);
+    return sensorLocation;
+}
+
 
 // ---------------------------------------------------------------------------
 // Main setup function
@@ -109,17 +122,43 @@ void setup() {
     #endif
 
     // Start up note
-    Serial.print("Yosemitech ");
+    Serial.print("\nYosemitech ");
     Serial.print(sensor.getModel());
     Serial.print(" sensor for ");
     Serial.println(sensor.getParameter());
+    Serial.println();
 
     // Allow the sensor and converter to warm up
     // DO responds within 275-300ms;
     // Turbidity and pH within 500ms
     // Conductivity doesn't respond until 1.15-1.2s
-    Serial.println("Waiting for sensor and adapter to be ready.");
+    Serial.println("Waiting for sensor and adapter to be ready.\n");
     delay(1500);
+
+    // Confirm Modbus Address 
+    Serial.println("Selected modbus address:");
+    Serial.print("    integer: ");
+    Serial.print(modbusAddress, DEC);
+    Serial.print(", hexidecimal: ");
+    Serial.println(sensorLocation(modbusAddress));
+
+    Serial.println("Discovered modbus address.");
+    Serial.print("    integer: ");
+    byte id = sensor.getSlaveID();
+    Serial.print(id, DEC);
+    Serial.print(", hexidecimal: ");
+    // Serial.print(id, HEX);
+    Serial.println(sensorLocation(id));
+
+    if (id != modbusAddress){
+        Serial.print("Updating sensor modbus address to: ");
+        modbusAddress = id;
+        Serial.println(sensorLocation(modbusAddress));
+        Serial.println();
+        // Restart the sensor
+        sensor.begin(model, modbusAddress, &modbusSerial, DEREPin);
+        delay(1500);
+    };
 
     // Get the sensor's hardware and software version
     Serial.println("Getting sensor version.");
@@ -183,7 +222,7 @@ void setup() {
     }
 
     // Tell the sensor to start taking measurements
-    Serial.println("Starting sensor measurements");
+    Serial.println("\nStarting sensor measurements");
     success = sensor.startMeasurement();
     if (success) Serial.println("    Measurements started.");
     else Serial.println("    Failed to start measuring!");
@@ -252,7 +291,7 @@ void setup() {
     {
         case Y4000:
         {
-            Serial.print("Time,  ");
+            Serial.print("Time(ms) ");
             Serial.println(sensor.getParameter());
             // "DO,   Turb, Cond,  pH,   Temp, ORP,  Chl,  BGA"
             Serial.print("ms,    ");
@@ -262,6 +301,7 @@ void setup() {
         }
         default:
         {
+            Serial.print("Time(ms) ");
             Serial.print("Temp(°C)  ");
             Serial.print(sensor.getParameter());
             Serial.print("(");
@@ -292,7 +332,7 @@ void loop()
             sensor.getValues(DOmgL, Turbidity, Cond, pH, Temp, ORP, Chlorophyll, BGA);
 
             Serial.print(millis());
-            Serial.print("  ");
+            Serial.print("    ");
             Serial.print(DOmgL);
             Serial.print("  ");
             Serial.print(Turbidity);
@@ -315,6 +355,9 @@ void loop()
         {
             float parmValue, tempValue, thirdValue = -9999;
             sensor.getValues(parmValue, tempValue, thirdValue);
+            
+            Serial.print(millis());
+            Serial.print("    ");
             Serial.print(tempValue);
             Serial.print("      ");
             Serial.print(parmValue);
