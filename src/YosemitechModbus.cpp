@@ -72,7 +72,7 @@ String yosemitech::getParameter(void)
         case Y550: {return "COD";}
         case Y551: {return "COD";}
         case Y560: {return "Ammonium";}
-        case Y700: {return "Water Depth";}
+        case Y700: {return "Pressure";}
         case Y4000: {return "DO,   Turb, Cond,  pH,   Temp, ORP,  Chl,  BGA";}
         default:  {return "Unknown";}
     }
@@ -97,7 +97,7 @@ String yosemitech::getUnits(void)
         case Y550: {return "mg/L, NTU";}
         case Y551: {return "mg/L, NTU";}
         case Y560: {return "mg/L";}
-        case Y700: {return "mm";}        
+        case Y700: {return "mm H2O";}        
         case Y4000: {return "mg/L, NTU,  mS/cm, pH,   °C,   mV,   µg/L, µg/L";}
         default:  {return "Unknown";}
     }

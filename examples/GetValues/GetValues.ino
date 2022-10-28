@@ -34,7 +34,7 @@ Yosemitech modbus sensor.
 //  Sensor Settings
 // ==========================================================================
 // Define the sensor type
-yosemitechModel model = Y4000;  // The sensor model number
+yosemitechModel model = Y700;  // The sensor model number
 
 // Define the sensor's modbus address, or SlaveID
 // NOTE: YosemiTech Windows software presents SlaveID as an integer (decimal),
@@ -56,7 +56,7 @@ byte modbusAddress = 0x01;  // Yosemitech ships sensors with a default ID of 0x0
         // Ammonium takes 15 s
     // No readings should be taken during this time.
 
-#define STABILIZATION_TIME 40000  // milliseconds for readings to stablize.
+#define STABILIZATION_TIME 4000  // milliseconds for readings to stablize.
     // The modbus manuals recommend the following stabilization times between starting
     // measurements and requesting values (times include brushing time):
         //  2 s for whipered chlorophyll
@@ -70,8 +70,9 @@ byte modbusAddress = 0x01;  // Yosemitech ships sensors with a default ID of 0x0
     // until ~10 seconds.
     // DO does not return values until ~8 seconds
     // Turbidity takes ~22 seconds to get stable values.
+    // Y700 Water Level takes 4 s to get stability <1 mm, but 12 s for <0.1 mm
 
-#define MEASUREMENT_TIME 4000  // milliseconds to complete a measurement.
+#define MEASUREMENT_TIME 1000  // milliseconds to complete a measurement.
     // Modbus manuals recommend the following re-measure times:
     //     2 s for chlorophyll
     //     2 s for turbidity
@@ -207,20 +208,20 @@ void setup() {
         delay(1500);
     };
 
+    // Get the sensor serial number
+    Serial.println("\nGetting sensor serial number.");
+    String SN = sensor.getSerialNumber();
+    Serial.print("    Serial Number: ");
+    Serial.println(SN);
+    
     // Get the sensor's hardware and software version
-    Serial.println("Getting sensor version.");
+    Serial.println("Getting sensor version numbers.");
     float hardwareV, softwareV;
     sensor.getVersion(hardwareV, softwareV);
     Serial.print("    Current Hardware Version: ");
     Serial.println(hardwareV);
     Serial.print("    Current Software Version: ");
     Serial.println(softwareV);
-
-    // Get the sensor serial number
-    Serial.println("Getting sensor serial number.");
-    String SN = sensor.getSerialNumber();
-    Serial.print("    Serial Number: ");
-    Serial.println(SN);
 
     // Get the sensor calibration equation / status (pH only)
     switch(model)
@@ -248,6 +249,7 @@ void setup() {
             Serial.print("*raw + ");
             Serial.println(Bval);
         }
+        Serial.println();
     }
 
     // Get/set the sensor brush status (for sensors with brushes).
@@ -391,14 +393,14 @@ void loop()
             sensor.getValues(parmValue, tempValue, thirdValue);
             
             Serial.print(millis());
-            Serial.print("    ");
-            Serial.print(tempValue);
-            Serial.print("      ");
-            Serial.print(parmValue);
+            Serial.print("     ");
+            Serial.print(tempValue, 4);
+            Serial.print("   ");
+            Serial.print(parmValue, 4);
             if (model == Y532 || model == Y504 || model == Y551 || model == Y560)
             {
-                Serial.print("      ");
-                Serial.print(thirdValue);
+                Serial.print("          ");
+                Serial.print(thirdValue, 4);
             }
             Serial.println();
         }
