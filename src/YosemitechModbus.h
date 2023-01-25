@@ -43,6 +43,8 @@ typedef enum yosemitechModel
       // http://en.yosemitech.com/aspcms/product/2020-5-8/94.html
     Y560,  // NH4 Probe
       // http://en.yosemitech.com/aspcms/product/2020-4-23/61.html
+    Y700,  // Water Pressure/Depth Sensor
+      // Prototype developed for Clean Water Services
     Y4000, // Multiparameter Sonde
       // http://en.yosemitech.com/aspcms/product/2020-5-8/95.html
     UNKNOWN   // Use if the sensor model is unknown. Doing this is generally a

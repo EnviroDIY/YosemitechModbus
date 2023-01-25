@@ -16,6 +16,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 ### Fixed
+
+***
+
+## [0.4.0] 2022-10-27
+Add Y700 Water Level; fix Y4000 Sonde; restore calibrators.
+
+### Changed
+- Restored calibrator spreadsheets, which is partial reversal of commit f4b0de0, because we developed the offline calibrator spreadsheets to help the community calibrate YosemiTech sensors.
+
+### Added
+- Support for Y700 Pressure/Depth sensor #29
+- Minor improvements to `GetValues.ino` example.
+
+### Fixed
+- Fixed issue with Y4000 not outputing Chl & BGA readings #13
 - Specified python version for GitHub actions (used by PlatformIO)
 
 ***
@@ -37,7 +52,7 @@ Version bump only for reindexing by PlatformIO and Arduino library managers.
 
 
 ## [0.3.0] 2021-12-15
-Add Y551 COD and Y560 Ammonium sensor support Latest
+Add Y551 COD and Y560 Ammonium sensor support
 
 ### Added
 - Added support for the Y551 COD Sensor, which makes a UV254 light absorption and translates it to estimates of Chemical Oxygen Demand (COD) (or Total Organic Carbon (TOC)) and Turbidity.
