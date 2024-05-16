@@ -97,7 +97,7 @@ String yosemitech::getUnits(void)
         case Y550: {return "mg/L, NTU";}
         case Y551: {return "mg/L, NTU";}
         case Y560: {return "mg/L";}
-        case Y700: {return "mm H2O";}        
+        case Y700: {return "mm H2O";}
         case Y4000: {return "mg/L, NTU,  mS/cm, pH,   °C,   mV,   µg/L, µg/L";}
         default:  {return "Unknown";}
     }
@@ -110,8 +110,8 @@ String yosemitech::getUnits(void)
 byte yosemitech::getSlaveID(void)
 {
     byte command[8] = {0xFF, 0x03, 0x30, 0x00, 0x00, 0x01, 0x9E, 0xD4};
-    int respSize = modbus.sendCommand(command, 8);
-
+    modbus.sendCommand(command, 8);
+    // int respSize = modbus.sendCommand(command, 8);
     // if (respSize == 7) return modbus.responseBuffer[3];
     // else return 0x01;  // This is the default address
     return modbus.responseBuffer[3];
@@ -220,7 +220,7 @@ bool yosemitech::startMeasurement(void)
             else return false;
         }
         // Y532 (pH), Y533 (ORP), Y560 (Ammonium) ion selective elctrodes, and
-        // Y700 (Pressure/Depth) sensors do not require Start/Stop functions. 
+        // Y700 (Pressure/Depth) sensors do not require Start/Stop functions.
         // These commands are not in their Modbus Manuals.
         // However, Start/Stop functions are required to get these to work in ModularSensors.
         case Y532:
@@ -252,7 +252,7 @@ bool yosemitech::stopMeasurement(void)
     switch (_model)
     {
         // Y532 (pH), Y533 (ORP), Y560 (Ammonium) ion selective elctrodes, and
-        // Y700 (Pressure/Depth) sensors do not require Start/Stop functions. 
+        // Y700 (Pressure/Depth) sensors do not require Start/Stop functions.
         // These commands are not in their Modbus Manuals.
         // However, Start/Stop functions are required to get these to work in ModularSensors.
         case Y532:

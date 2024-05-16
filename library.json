@@ -1,6 +1,6 @@
 {
   "name": "YosemitechModbus",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "keywords": "Yosemitech, Modbus, communication, bus, sensor",
   "description": "Arduino library for communication with Yosemitech sensors via Modbus.",
   "repository": {
@@ -20,10 +20,7 @@
   ],
   "license": "BSD-3-Clause",
   "frameworks": "arduino",
-  "platforms": [
-      "atmelavr",
-      "atmelsam"
-  ],
+  "platforms": ["atmelavr", "atmelsam"],
   "dependencies": [
     {
       "name": "SensorModbusMaster",
@@ -38,6 +35,6 @@
   ],
   "examples": ["examples/*/*.ino", "utilities/*/*.ino"],
   "export": {
-    "exclude": ["doc/*", "sensor_tests/*","continuous_integration/*"]
+    "exclude": ["doc/*", "sensor_tests/*", "continuous_integration/*"]
   }
 }

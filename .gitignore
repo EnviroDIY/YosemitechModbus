@@ -97,3 +97,4 @@ lib/readme.txt
 
 # VS Code
 .vscode
+compile_commands.json
