@@ -1,4 +1,7 @@
-#!/bin/sh
+#!/bin/bash
+
+# Makes the bash script print out every command before it is executed, except echo
+trap '[[ $BASH_COMMAND != echo* ]] && echo $BASH_COMMAND' DEBUG
 
 # Exit with nonzero exit code if anything fails
 set -e
@@ -18,17 +21,17 @@ unzip -o home/arduino/downloads/YosemitechModbus.zip -d home/arduino/downloads/ 
 echo "\n\e[32mEnsuring no old directories exist\e[0m"
 rm -r -f home/arduino/user/libraries/YosemitechModbus
 
-echo "\n\e[32mCreating a new directory for the testing version of Yosemitech Modbus\e[0m"
+echo "\n\e[32mCreating a new directory for the testing version of YosemitechModbus\e[0m"
 mkdir -p home/arduino/user/libraries/YosemitechModbus
 
 echo "\n\e[32mMoving the unzipped library to the new directory\e[0m"
 if [ -z "${GITHUB_HEAD_REF}" ]; then
-echo "\n\e[36mExpected unzipped directory name (from commit SHA): home/arduino/downloads/YosemitechModbus-${GITHUB_SHA}\e[0m"
-mv home/arduino/downloads/YosemitechModbus-${GITHUB_SHA}/* home/arduino/user/libraries/YosemitechModbus
+    echo "\n\e[36mExpected unzipped directory name (from commit SHA): home/arduino/downloads/YosemitechModbus-${GITHUB_SHA}\e[0m"
+    mv home/arduino/downloads/YosemitechModbus-${GITHUB_SHA}/* home/arduino/user/libraries/YosemitechModbus
 else
-INTERNAL_ZIP_NAME=$(echo "${GITHUB_HEAD_REF}" | sed -e 's/\//-/g')
-echo "\n\e[36mExpected unzipped directory name (from head of ${GITHUB_HEAD_REF}): home/arduino/downloads/YosemitechModbus-${SAVED_ZIP_NAME}\e[0m"
-mv home/arduino/downloads/YosemitechModbus-${INTERNAL_ZIP_NAME}/* home/arduino/user/libraries/YosemitechModbus
+    INTERNAL_ZIP_NAME=$(echo "${GITHUB_HEAD_REF}" | sed -e 's/\//-/g')
+    echo "\n\e[36mExpected unzipped directory name (from head of ${GITHUB_HEAD_REF}): home/arduino/downloads/YosemitechModbus-${SAVED_ZIP_NAME}\e[0m"
+    mv home/arduino/downloads/YosemitechModbus-${INTERNAL_ZIP_NAME}/* home/arduino/user/libraries/YosemitechModbus
 fi
 
 echo "\n\e[32mUpdating the library index\e[0m"

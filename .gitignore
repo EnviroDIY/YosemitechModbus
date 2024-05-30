@@ -98,3 +98,13 @@ lib/readme.txt
 # VS Code
 .vscode
 compile_commands.json
+.history
+pioScripts
+runDoxygen.bat
+output_doxygen.log
+output_doxygen_run.log
+output_mcss_run.log
+output_mcss.log
+docs/output_copyFunctions.log
+docs/output_documentExamples.log
+docs/output_fixSectionsInXml.log
