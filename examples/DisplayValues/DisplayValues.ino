@@ -1,12 +1,16 @@
-/*****************************************************************************
-GetValues.ino
-
-This prints basic meta-data about a sensor to the first serial port and then
-begins taking measurements from the sensor.
-
-The sensor model and address can easily be modified to use this sketch with any
-Yosemitech modbus sensor.
-*****************************************************************************/
+/** =========================================================================
+ * @file GetValues.ino
+ * @author Sara Geleskie Damiano <sdamiano@stroudcenter.org>
+ * @copyright Stroud Water Research Center
+ * This example is published under the BSD-3 license.
+ *
+ * @brief This polls the sensor for some of its setup information, and then polls the
+ * sensor every several seconds for values, and displays the values on an SSD1306 128x64
+ * LCD board.
+ *
+ * The sensor model and address can easily be modified to use this sketch with any
+ * Yosemitech modbus sensor.
+ * ======================================================================= */
 
 // ---------------------------------------------------------------------------
 // Include the base required libraries

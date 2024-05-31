@@ -1,6 +1,12 @@
-/*
- *YosemitechModbus.cpp
-*/
+/**
+ * @file YosemitechModbus.cpp
+ * @copyright Stroud Water Research Center
+ * Part of the EnviroDIY YosemitechModbus library for Arduino.
+ * This library is published under the BSD-3 license.
+ * @author Sara Geleskie Damiano <sdamiano@stroudcenter.org>
+ *
+ * @brief Contains the YosemitechModbus class definitions.
+ */
 
 #include "YosemitechModbus.h"
 

@@ -1,10 +1,11 @@
-### YosemiTech Calibration Protocols & Spreadsheets
+# YosemiTech Calibration Protocols & Spreadsheets<!-- {#page_calibration} -->
 
-#### WORK IN PROGRESS
+This is a **work in progress**.
 
-#### Cleaning pH electrode
+## Cleaning pH electrode<!-- {#calibration_cleaning} -->
 
 For environmental deployments, we suggest would suggest this order:
+
 - Wipe, brush, and rinse with DI water to physically remove all biofilms.
 - Rinse with Methanol
 - Soak overnight in lab detergent, preferably with an enzyme to also remove proteins. Rinse with DI water.
@@ -12,5 +13,4 @@ For environmental deployments, we suggest would suggest this order:
 - Calibrate sensor.
 Any of these steps can be skipped, based on the type of fouling and how easily the sensor recalibrates.
 
-For for more detailed information on each of these steps, see https://www.coleparmer.com/tech-article/how-to-store-clean-and-recondition-ph-electrodes 
-
+For for more detailed information on each of these steps, see <https://www.coleparmer.com/tech-article/how-to-store-clean-and-recondition-ph-electrodes>

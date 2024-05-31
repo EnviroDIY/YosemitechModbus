@@ -52,6 +52,9 @@ Temporary Items
 # PyCharm
 .idea/
 
+# Python
+__pycache__/
+
 # Atom / PlatformIO
 .pio
 .pioenvs
@@ -60,7 +63,7 @@ Temporary Items
 .gcc-flags.json
 lib/readme.txt
 /platformio.ini
-.history
+tests/*
 
 # Prerequisites
 *.d
@@ -95,12 +98,15 @@ lib/readme.txt
 *.out
 *.app
 
-# VS Code
+# VSCode
 .vscode
-compile_commands.json
 .history
+compile_commands.json
+
+# Other Stuff
 pioScripts
 runDoxygen.bat
+generateKeywords.bat
 output_doxygen.log
 output_doxygen_run.log
 output_mcss_run.log
@@ -108,3 +114,5 @@ output_mcss.log
 docs/output_copyFunctions.log
 docs/output_documentExamples.log
 docs/output_fixSectionsInXml.log
+continuous_integration/output_check_component_inclusion.log
+sync.ffs_db
