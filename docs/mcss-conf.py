@@ -10,17 +10,15 @@ LINKS_NAVBAR1 = [
             ('<a href="change_log.html">ChangeLog</a>',),
         ],
     ),
-    (
-        "The Main Class",
-        "classyosemitech",
-        [],
-    ),
+    ('<a href="classyosemitech.html">The yosemitech Class</a>',[]),
     (
         "Examples",
         "page_the_examples",
         [
             ('<a href="example_get_values.html">Reading Sensor Values</a>',),
-            ('<a href="example_display_values.html">Displaying Values to a Screen</a>',),
+            (
+                '<a href="example_display_values.html">Displaying Values to a Screen</a>',
+            ),
         ],
     ),
 ]

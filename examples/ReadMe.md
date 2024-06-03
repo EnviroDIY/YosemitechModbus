@@ -20,12 +20,12 @@ ___
 
 This polls the sensor for some of its setup information, and then polls the sensor every several seconds for values, which it displays on a serial port monitor.
 
-- [Instructions for the get values](https://envirodiy.github.io/YosemitechModbus/example_get_values.html)
+- [Instructions for the get values example](https://envirodiy.github.io/YosemitechModbus/example_get_values.html)
 - [The get values example on GitHub](https://github.com/EnviroDIY/YosemitechModbus/tree/master/examples/GetValues)
 
 ## Displaying Sensor Values<!-- {#examples_display_values} -->
 
 Near identical to GetValues except the values are intended to display on an SSD1306 128x64 LCD board.
 
-- [Instructions for the display values](https://envirodiy.github.io/YosemitechModbus/example_display_values.html)
+- [Instructions for the display values example](https://envirodiy.github.io/YosemitechModbus/example_display_values.html)
 - [The display values example on GitHub](https://github.com/EnviroDIY/YosemitechModbus/tree/master/examples/DisplayValues)

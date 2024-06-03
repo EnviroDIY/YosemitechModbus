@@ -81,7 +81,7 @@ class yosemitech {
      * @param enablePin A pin on the Arduino processor to use to send an enable signal
      * to an RS485 to TTL adapter. Use a negative number if this does not apply.
      * Optional with a default value of -1.
-     * @return True if the starting communication was successful, false if not.
+     * @return *bool* True if the starting communication was successful, false if not.
      */
     bool begin(yosemitechModel model, byte modbusSlaveID, Stream* stream,
                int enablePin = -1);
@@ -97,10 +97,16 @@ class yosemitech {
      * @param enablePin A pin on the Arduino processor to use to send an enable signal
      * to an RS485 to TTL adapter. Use a negative number if this does not apply.
      * Optional with a default value of -1.
-     * @return True if the starting communication was successful, false if not.
+     * @return *bool* True if the starting communication was successful, false if not.
      */
     bool begin(yosemitechModel model, byte modbusSlaveID, Stream& stream,
                int enablePin = -1);
+
+    /**
+     * @anchor metadata_fxns
+     * @name Functions to get and set sensor addresses and metadata
+     */
+    /**@{*/
 
     /**
      * @brief Returns a pretty string with the model information
@@ -147,7 +153,7 @@ class yosemitech {
      * @brief Sets a new modbus slave ID
      *
      * @param newSlaveID The new slave ID for the Yosemitech sensor
-     * @return True if the slave ID was successfully set, false if not.
+     * @return *bool* True if the slave ID was successfully set, false if not.
      */
     bool setSlaveID(byte newSlaveID);
 
@@ -174,24 +180,32 @@ class yosemitech {
      * hardware version.
      * @param softwareVersion A reference to a float object to be modified with the
      * software version.
-     * @return True if the hardware and software versions were successfully updated,
+     * @return *bool* True if the hardware and software versions were successfully updated,
      * false if not.
      */
     bool getVersion(float& hardwareVersion, float& softwareVersion);
+    /**@}*/
+
+    /**
+     * @anchor measurement_fxns
+     * @name Functions to start and stop measurements
+     */
+    /**@{*/
 
     /**
      * @brief Tells the optical sensors to begin taking measurements
      *
-     * @return True if the measurements were successfully started, false if not.
+     * @return *bool* True if the measurements were successfully started, false if not.
      */
     bool startMeasurement(void);
 
     /**
      * @brief Tells the optical sensors to stop taking measurements
      *
-     * @return True if the measurements were successfully started, false if not.
+     * @return *bool* True if the measurements were successfully started, false if not.
      */
     bool stopMeasurement(void);
+    /**@}*/
 
     /**
      * @anchor value_fetching
