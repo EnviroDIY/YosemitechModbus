@@ -29,3 +29,6 @@ Near identical to GetValues except the values are intended to display on an SSD1
 
 - [Instructions for the display values example](https://envirodiy.github.io/YosemitechModbus/example_display_values.html)
 - [The display values example on GitHub](https://github.com/EnviroDIY/YosemitechModbus/tree/master/examples/DisplayValues)
+
+[//]: # ( @m_innerpage{example_get_values} )
+[//]: # ( @m_innerpage{example_display_values} )

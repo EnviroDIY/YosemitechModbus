@@ -1,14 +1,17 @@
 /** =========================================================================
- * @file GetValues.ino
+ * @example{lineno} GetValues.ino
  * @author Sara Geleskie Damiano <sdamiano@stroudcenter.org>
  * @copyright Stroud Water Research Center
- * This example is published under the BSD-3 license.
+ * @license This example is published under the BSD-3 license.
  *
  * @brief This prints basic meta-data about a sensor to the first serial port and then
  * begins taking measurements from the sensor.
  *
  * The sensor model and address can easily be modified to use this sketch with any
  * Yosemitech modbus sensor.
+ *
+ * @m_examplenavigation{example_get_values,}
+ * @m_footernavigation
  * ======================================================================= */
 
 // ---------------------------------------------------------------------------
