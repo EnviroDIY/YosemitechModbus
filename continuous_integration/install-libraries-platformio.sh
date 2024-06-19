@@ -7,8 +7,9 @@ trap '[[ $BASH_COMMAND != echo* ]] && echo $BASH_COMMAND' DEBUG
 set -e
 
 echo "::group::Installing Libraries"
-echo "\e[32m\nCurrently installed packages:\e[0m"
-pio pkg list -g -v
+echo "\e[32m\nCurrently installed libraries:\e[0m"
+pio pkg list -g -v --only-libraries
+echo "::endgroup::"
 
 echo "\e[32mInstalling envirodiy/SensorModbusMaster\e[0m"
 pio pkg install -g --library envirodiy/SensorModbusMaster
@@ -16,7 +17,7 @@ pio pkg install -g --library envirodiy/SensorModbusMaster
 echo "\e[32mInstalling https://github.com/PaulStoffregen/AltSoftSerial.git\e[0m"
 pio pkg install -g --library https://github.com/PaulStoffregen/AltSoftSerial.git
 
-echo "::group::Current globally installed packages"
+echo "::group::Current globally installed libraries"
 echo "\e[32m\nCurrently installed packages:\e[0m"
-pio pkg list -g -v
+pio pkg list -g -v --only-libraries
 echo "::endgroup::"

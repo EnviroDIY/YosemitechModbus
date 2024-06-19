@@ -21,9 +21,9 @@
 #include <Arduino.h>
 #include <YosemitechModbus.h>
 
-#if defined __AVR__
-#include <AltSoftSerial.h>
-// #include <SoftwareSerial.h>
+// Construct software serial object for Modbus
+#if defined(ARDUINO_AVR_UNO)
+#include <SoftwareSerial.h>
 #endif
 
 #if defined ESP8266
@@ -112,9 +112,9 @@ const int SSRxPin = 13;  // Receive pin for software serial (Rx on RS485 adapter
 const int SSTxPin = 14;  // Send pin for software serial (Tx on RS485 adapter)
 
 // Construct software serial object for Modbus
-#if defined __AVR__
-                         // SoftwareSerial modbusSerial(SSRxPin, SSTxPin);
-AltSoftSerial modbusSerial;
+#if defined(ARDUINO_AVR_UNO)
+SoftwareSerial modbusSerial(SSRxPin, SSTxPin);
+// AltSoftSerial modbusSerial;
 #elif defined ESP8266
 SoftwareSerial modbusSerial;
 #elif defined(NRF52832_FEATHER) || defined(ARDUINO_NRF52840_FEATHER)
