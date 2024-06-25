@@ -182,34 +182,34 @@ void setup() {
 #endif
 
     // Start up note
-    Serial.print("\nYosemitech ");
+    Serial.print(F("\nYosemitech "));
     Serial.print(sensor.getModel());
-    Serial.print(" sensor for ");
+    Serial.print(F(" sensor for "));
     Serial.println(sensor.getParameter());
 
     // Allow the sensor and converter to warm up
-    Serial.println("\nWaiting for sensor and adapter to be ready.");
-    Serial.print("    Warm up time (ms): ");
+    Serial.println(F("\nWaiting for sensor and adapter to be ready."));
+    Serial.print(F("    Warm up time (ms): "));
     Serial.println(WARM_UP_TIME);
     delay(WARM_UP_TIME);
 
     // Confirm Modbus Address
-    Serial.println("\nSelected modbus address:");
-    Serial.print("    integer: ");
+    Serial.println(F("\nSelected modbus address:"));
+    Serial.print(F("    integer: "));
     Serial.print(modbusAddress, DEC);
-    Serial.print(", hexidecimal: ");
+    Serial.print(F(", hexidecimal: "));
     Serial.println(sensorLocation(modbusAddress));
 
-    Serial.println("Discovered modbus address.");
-    Serial.print("    integer: ");
+    Serial.println(F("Discovered modbus address."));
+    Serial.print(F("    integer: "));
     byte id = sensor.getSlaveID();
     Serial.print(id, DEC);
-    Serial.print(", hexidecimal: ");
+    Serial.print(F(", hexidecimal: "));
     // Serial.print(id, HEX);
     Serial.println(sensorLocation(id));
 
     if (id != modbusAddress) {
-        Serial.print("Updating sensor modbus address to: ");
+        Serial.print(F("Updating sensor modbus address to: "));
         modbusAddress = id;
         Serial.println(sensorLocation(modbusAddress));
         Serial.println();
@@ -219,27 +219,27 @@ void setup() {
     };
 
     // Get the sensor serial number
-    Serial.println("\nGetting sensor serial number.");
+    Serial.println(F("\nGetting sensor serial number."));
     String SN = sensor.getSerialNumber();
-    Serial.print("    Serial Number: ");
+    Serial.print(F("    Serial Number: "));
     Serial.println(SN);
 
     // Get the sensor's hardware and software version
-    Serial.println("Getting sensor version numbers.");
+    Serial.println(F("Getting sensor version numbers."));
     float hardwareV, softwareV;
     sensor.getVersion(hardwareV, softwareV);
-    Serial.print("    Current Hardware Version: ");
+    Serial.print(F("    Current Hardware Version: "));
     Serial.println(hardwareV);
-    Serial.print("    Current Software Version: ");
+    Serial.print(F("    Current Software Version: "));
     Serial.println(softwareV);
 
     // Get the sensor calibration equation / status (pH only)
     switch (model) {
         case Y532:  // pH, calibration status
         {
-            Serial.println("Getting sensor calibration status.");
+            Serial.println(F("Getting sensor calibration status."));
             byte status = sensor.pHCalibrationStatus();
-            Serial.print("    Status: 0x0");
+            Serial.print(F("    Status: 0x0"));
             Serial.println(status, HEX);
             break;
         }
@@ -250,13 +250,13 @@ void setup() {
         }
         default:  // Get the sensor's current calibration values
         {
-            Serial.println("Getting sensor calibration equation.");
+            Serial.println(F("Getting sensor calibration equation."));
             float Kval = 0;
             float Bval = 0;
             sensor.getCalibration(Kval, Bval);
-            Serial.print("    Current Calibration Equation: final = ");
+            Serial.print(F("    Current Calibration Equation: final = "));
             Serial.print(Kval);
-            Serial.print("*raw + ");
+            Serial.print(F("*raw + "));
             Serial.println(Bval);
         }
             Serial.println();
@@ -267,19 +267,19 @@ void setup() {
     if (model == Y511 || model == Y513 || model == Y514 || model == Y551 ||
         model == Y560) {
         // Check the wiper timing
-        Serial.println("\nGetting sensor cleaning interval.");
+        Serial.println(F("\nGetting sensor cleaning interval."));
         uint16_t interval = sensor.getBrushInterval();
-        Serial.print("    Sensor auto-cleaning interval: ");
+        Serial.print(F("    Sensor auto-cleaning interval: "));
         Serial.print(interval);
-        Serial.println(" minutes");
+        Serial.println(F(" minutes"));
 
         // Reset the wiper interval to 30 minutes, the default
-        Serial.println("Resetting cleaning interval to 30 minutes.");
+        Serial.println(F("Resetting cleaning interval to 30 minutes."));
         success = sensor.setBrushInterval(30);
         if (success)
-            Serial.println("    Reset.");
+            Serial.println(F("    Reset."));
         else
-            Serial.println("    Set interval failed!");
+            Serial.println(F("    Set interval failed!"));
     }
 
     // Activate the brush, for sensors that have a brush.
@@ -288,79 +288,79 @@ void setup() {
     // Y4000 activates brush when powered on
     {
         // We'll run the brush once in the middle of this
-        Serial.println("Activating brush.");
+        Serial.println(F("Activating brush."));
         success = sensor.activateBrush();
         if (success)
-            Serial.println("    Brush activated.");
+            Serial.println(F("    Brush activated."));
         else
-            Serial.println("    Failed to activate brush!");
+            Serial.println(F("    Failed to activate brush!"));
     }
     // Additional stabilization time for sensors that have a brush to complete a brush
     // cycle.
     if (model == Y511 || model == Y513 || model == Y514 || model == Y551 ||
         model == Y560 || model == Y4000 || model == Y510) {
-        Serial.println("Waiting to complete brushing cycle..");
-        Serial.print("    Brush time (ms): ");
+        Serial.println(F("Waiting to complete brushing cycle.."));
+        Serial.print(F("    Brush time (ms): "));
         Serial.println(BRUSH_TIME);
         for (int i = (BRUSH_TIME + 500) / 1000; i > 0; i--) { // +500 to round up
             Serial.print(i);
             delay(250);
-            Serial.print(".");
+            Serial.print(F("."));
             delay(250);
-            Serial.print(".");
+            Serial.print(F("."));
             delay(250);
-            Serial.print(".");
+            Serial.print(F("."));
             delay(250);
         }
-        Serial.println("\n");
+        Serial.println(F("\n"));
     }
 
     // Tell the sensor to start taking measurements
-    Serial.println("Starting sensor measurements");
+    Serial.println(F("Starting sensor measurements"));
     success = sensor.startMeasurement();
     if (success) {
-        Serial.println("    Measurements started.");
+        Serial.println(F("    Measurements started."));
     } else {
-        Serial.println("    Failed to start measuring!");
+        Serial.println(F("    Failed to start measuring!"));
     }
 
-    Serial.println("Waiting for sensor to stabilize..");
-    Serial.print("    Stabilization time (ms): ");
+    Serial.println(F("Waiting for sensor to stabilize.."));
+    Serial.print(F("    Stabilization time (ms): "));
     Serial.println(STABILIZATION_TIME);
     for (int i = (STABILIZATION_TIME + 500) / 1000; i > 0; i--)  // +500 to round up
     {
         Serial.print(i);
         delay(250);
-        Serial.print(".");
+        Serial.print(F("."));
         delay(250);
-        Serial.print(".");
+        Serial.print(F("."));
         delay(250);
-        Serial.print(".");
+        Serial.print(F("."));
         delay(250);
     }
-    Serial.println("\n");
+    Serial.println(F("\n"));
 
     // Print table headers
     switch (model) {
         case Y4000: {
-            Serial.print("Time(ms) ");
+            Serial.print(F("Time(ms) "));
             Serial.println(sensor.getParameter());
             // "DO,   Turb, Cond,  pH,   Temp, ORP,  Chl,  BGA"
-            Serial.print("ms       ");
+            Serial.print(F("ms       "));
             Serial.println(sensor.getUnits());
             // "mg/L, NTU,  mS/cm, pH,   °C,   mV,   µg/L, µg/L"
             break;
         }
         default: {
-            Serial.print("Time(ms) ");
-            Serial.print("Temp(°C)  ");
+            Serial.print(F("Time(ms) "));
+            Serial.print(F("Temp(°C)  "));
             Serial.print(sensor.getParameter());
-            Serial.print("(");
+            Serial.print(F("("));
             Serial.print(sensor.getUnits());
-            Serial.print(")");
-            if (model == Y532 || model == Y504) { Serial.print("    Value"); }
-            if (model == Y551) { Serial.print("    Turbidity (NTU)"); }
-            if (model == Y560) { Serial.print("    pH"); }
+            Serial.print(F(")"));
+            if (model == Y532 || model == Y504) { Serial.print(F("    Value")); }
+            if (model == Y551) { Serial.print(F("    Turbidity (NTU)")); }
+            if (model == Y560) { Serial.print(F("    pH")); }
             Serial.println();
         }
     }
@@ -379,21 +379,21 @@ void loop() {
             sensor.getValues(DOmgL, Turbidity, Cond, pH, Temp, ORP, Chlorophyll, BGA);
 
             Serial.print(millis());
-            Serial.print("    ");
+            Serial.print(F("    "));
             Serial.print(DOmgL, 4);
-            Serial.print("  ");
+            Serial.print(F("  "));
             Serial.print(Turbidity, 4);
-            Serial.print("  ");
+            Serial.print(F("  "));
             Serial.print(Cond, 4);
-            Serial.print("  ");
+            Serial.print(F("  "));
             Serial.print(pH, 4);
-            Serial.print("  ");
+            Serial.print(F("  "));
             Serial.print(Temp, 4);
-            Serial.print("  ");
+            Serial.print(F("  "));
             Serial.print(ORP, 4);
-            Serial.print("  ");
+            Serial.print(F("  "));
             Serial.print(Chlorophyll, 4);
-            Serial.print("  ");
+            Serial.print(F("  "));
             Serial.print(BGA, 4);
             Serial.println();
             break;
@@ -403,12 +403,12 @@ void loop() {
             sensor.getValues(parmValue, tempValue, thirdValue);
 
             Serial.print(millis());
-            Serial.print("     ");
+            Serial.print(F("     "));
             Serial.print(tempValue, 4);
-            Serial.print("   ");
+            Serial.print(F("   "));
             Serial.print(parmValue, 4);
             if (model == Y532 || model == Y504 || model == Y551 || model == Y560) {
-                Serial.print("          ");
+                Serial.print(F("          "));
                 Serial.print(thirdValue, 4);
             }
             Serial.println();
