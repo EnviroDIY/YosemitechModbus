@@ -11,10 +11,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
-- Applied clang format.
 
 ### Added
+
+### Removed
+
+### Fixed
+
+***
+
+## [0.4.2]
+
+### Changed
+
+- Applied clang format.
+- Modified example to apply to more processors.
+
+### Added
+
 - Added Doxygen documentation
+- Switched to reusable workflows for CI
+- Added example_dependencies.json with explicit list of dependencies need to run the examples.
 
 ### Removed
 
@@ -161,3 +178,20 @@ Newest Modbus Manuals
 ## [0.1.6] 2018-02-02
 
 Initial release
+
+[Unreleased]: https://github.com/EnviroDIY/YosemitechModbus/compare/v0.4.2...HEAD
+[0.4.2]: https://github.com/EnviroDIY/YosemitechModbus/releases/tag/v0.4.2
+[0.4.1]: https://github.com/EnviroDIY/YosemitechModbus/releases/tag/v0.4.1
+[0.4.0]: https://github.com/EnviroDIY/YosemitechModbus/releases/tag/v0.4.0
+[0.3.2]: https://github.com/EnviroDIY/YosemitechModbus/releases/tag/v0.3.2
+[0.3.1]: https://github.com/EnviroDIY/YosemitechModbus/releases/tag/v0.3.1
+[0.3.0]: https://github.com/EnviroDIY/YosemitechModbus/releases/tag/v0.3.0
+[0.2.4]: https://github.com/EnviroDIY/YosemitechModbus/releases/tag/v0.2.4
+[0.2.3]: https://github.com/EnviroDIY/YosemitechModbus/releases/tag/v0.2.3
+[0.2.2]: https://github.com/EnviroDIY/YosemitechModbus/releases/tag/v0.2.2
+[0.2.1]: https://github.com/EnviroDIY/YosemitechModbus/releases/tag/v0.2.1
+[0.2.0]: https://github.com/EnviroDIY/YosemitechModbus/releases/tag/v0.2.0
+[0.1.9]: https://github.com/EnviroDIY/YosemitechModbus/releases/tag/v0.1.9
+[0.1.6]: https://github.com/EnviroDIY/YosemitechModbus/releases/tag/v0.1.6
+
+[//]: # ( @m_footernavigation )
