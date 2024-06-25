@@ -17,19 +17,8 @@
 // ---------------------------------------------------------------------------
 // Include the base required libraries
 // ---------------------------------------------------------------------------
-
 #include <Arduino.h>
 #include <YosemitechModbus.h>
-
-// Construct software serial object for Modbus
-#if defined(ARDUINO_AVR_UNO)
-#include <SoftwareSerial.h>
-#endif
-
-#if defined ESP8266
-#include <ESP8266WiFi.h>
-#include <SoftwareSerial.h>
-#endif
 
 // Turn on debugging outputs (i.e. raw Modbus requests & responsds)
 // by uncommenting next line (i.e. `#define DEBUG`)
@@ -107,22 +96,35 @@ const int DEREPin       = -1;  // The pin controlling Recieve Enable and Driver 
                                // on the RS485 adapter, if applicable (else, -1)
                                // Setting HIGH enables the driver (arduino) to send text
                                // Setting LOW enables the receiver (sensor) to send text
-// Pins for `SoftwareSerial` only. Not for `AltSoftSerial`, which uses fixed pins.
-const int SSRxPin = 13;  // Receive pin for software serial (Rx on RS485 adapter)
-const int SSTxPin = 14;  // Send pin for software serial (Tx on RS485 adapter)
 
-// Construct software serial object for Modbus
-#if defined(ARDUINO_AVR_UNO)
+// Construct a Serial object for Modbus
+#if defined(ARDUINO_AVR_UNO) || defined(ARDUINO_AVR_FEATHER328P)
+// The Uno only has 1 hardware serial port, which is dedicated to comunication with the
+// computer. If using an Uno, you will be restricted to using AltSofSerial or
+// SoftwareSerial
+#include <SoftwareSerial.h>
+const int SSRxPin = 10;  // Receive pin for software serial (Rx on RS485 adapter)
+const int SSTxPin = 11;  // Send pin for software serial (Tx on RS485 adapter)
+#pragma message("Using Software Serial for the Uno on pins 10 and 11")
 SoftwareSerial modbusSerial(SSRxPin, SSTxPin);
 // AltSoftSerial modbusSerial;
 #elif defined ESP8266
+#pragma message("Using Software Serial for the ESP8266")
+#include <SoftwareSerial.h>
 SoftwareSerial modbusSerial;
 #elif defined(NRF52832_FEATHER) || defined(ARDUINO_NRF52840_FEATHER)
+#pragma message("Using TinyUSB for the NRF52")
 #include <Adafruit_TinyUSB.h>
 HardwareSerial& modbusSerial = Serial1;
-#elif !defined(NO_GLOBAL_SERIAL1)
+#elif !defined(NO_GLOBAL_SERIAL1) && !defined(STM32_CORE_VERSION)
+// This is just a assigning another name to the same port, for convienence
+// Unless it is unavailable, always prefer hardware serial.
+#pragma message("Using HarwareSerial / Serial1")
 HardwareSerial& modbusSerial = Serial1;
 #else
+// This is just a assigning another name to the same port, for convienence
+// Unless it is unavailable, always prefer hardware serial.
+#pragma message("Using HarwareSerial / Serial")
 HardwareSerial& modbusSerial = Serial;
 #endif
 
@@ -158,19 +160,20 @@ void setup() {
 
     if (DEREPin > 0) { pinMode(DEREPin, OUTPUT); }
 
-    if (DEREPin > 0) { pinMode(DEREPin, OUTPUT); }
+    // Turn on the "main" serial port for debugging via USB Serial Monitor
+    Serial.begin(serialBaud);
 
-    Serial.begin(serialBaud);  // Main serial port for debugging via USB Serial Monitor
-
-// Setup Modbus serial stream
-#if defined ESP8266
-    modbusSerial.begin(9600, SWSERIAL_8N1, SSRxPin, SSTxPin, false,
-                       256);  // The modbus serial stream - Baud rate MUST be 9600.
+    // Turn on your modbus serial port
+    // The modbus serial stream - Baud rate MUST be 9600 and the configuration 8N1
+#if defined(ESP8266)
+    const int SSRxPin = 13;  // Receive pin for software serial (Rx on RS485 adapter)
+    const int SSTxPin = 14;  // Send pin for software serial (Tx on RS485 adapter)
+    modbusSerial.begin(9600, SWSERIAL_8N1, SSRxPin, SSTxPin, false);
 #else
-    modbusSerial.begin(9600);  // The modbus serial stream - Baud rate MUST be 9600.
+    modbusSerial.begin(9600);
 #endif
 
-    // Start up the sensor
+    // Start up the Yosemitech sensor
     sensor.begin(model, modbusAddress, &modbusSerial, DEREPin);
 
 // Turn on debugging
@@ -238,10 +241,11 @@ void setup() {
             byte status = sensor.pHCalibrationStatus();
             Serial.print("    Status: 0x0");
             Serial.println(status, HEX);
+            break;
         }
         case Y4000: {
-            Serial.println(
-                "For Y4000, use YosemiTech software to get calibration parameters.");
+            Serial.println("For Y4000, use YosemiTech software to get "
+                           "calibration parameters.");
             break;
         }
         default:  // Get the sensor's current calibration values
@@ -298,8 +302,7 @@ void setup() {
         Serial.println("Waiting to complete brushing cycle..");
         Serial.print("    Brush time (ms): ");
         Serial.println(BRUSH_TIME);
-        for (int i = (BRUSH_TIME + 500) / 1000; i > 0; i--)  // +500 to round up
-        {
+        for (int i = (BRUSH_TIME + 500) / 1000; i > 0; i--) { // +500 to round up
             Serial.print(i);
             delay(250);
             Serial.print(".");
@@ -336,7 +339,6 @@ void setup() {
         delay(250);
     }
     Serial.println("\n");
-
 
     // Print table headers
     switch (model) {
