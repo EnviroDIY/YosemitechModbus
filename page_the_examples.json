@@ -1,0 +1,79 @@
+{
+  "version": "1.11.0",
+  "compound": {
+    "kind": "page",
+    "id": "page_the_examples",
+    "name": "Examples using the Yosemitech Modbus Library",
+    "url_base": "page_the_examples",
+    "url": "page_the_examples.html",
+    "include": null,
+    "has_template_details": false,
+    "templates": null,
+    "brief": "",
+    "description": "<p><a name=\"md_examples_2_read_me\"></a> These example programs demonstrate how to use the Yosemitech Modbus library.</p><hr/><section id=\"examples_get_values\"><h2>Getting Sensor Values</h2><p>This polls the sensor for some of its setup information, and then polls the sensor every several seconds for values, which it displays on a serial port monitor.</p><ul><li><a href=\"https://envirodiy.github.io/YosemitechModbus/example_get_values.html\">Instructions for the get values example</a></li><li><a href=\"https://github.com/EnviroDIY/YosemitechModbus/tree/master/examples/GetValues\">The get values example on GitHub</a></li></ul></section><section id=\"examples_display_values\"><h2>Displaying Sensor Values</h2><p>Near identical to GetValues except the values are intended to display on an SSD1306 128x64 LCD board.</p><ul><li><a href=\"https://envirodiy.github.io/YosemitechModbus/example_display_values.html\">Instructions for the display values example</a></li><li><a href=\"https://github.com/EnviroDIY/YosemitechModbus/tree/master/examples/DisplayValues\">The display values example on GitHub</a></li></ul></section>",
+    "sections": [
+      [
+        "examples_get_values",
+        "Getting Sensor Values",
+        []
+      ],
+      [
+        "examples_display_values",
+        "Displaying Sensor Values",
+        []
+      ]
+    ],
+    "deprecated": null,
+    "since": null,
+    "example_navigation": null,
+    "footer_navigation": null,
+    "modules": [],
+    "dirs": [],
+    "files": [],
+    "namespaces": [],
+    "classes": [],
+    "base_classes": [],
+    "derived_classes": [],
+    "enums": [],
+    "typedefs": [],
+    "funcs": [],
+    "vars": [],
+    "defines": [],
+    "public_types": [],
+    "public_static_funcs": [],
+    "typeless_funcs": [],
+    "public_funcs": [],
+    "signals": [],
+    "public_slots": [],
+    "public_static_vars": [],
+    "public_vars": [],
+    "protected_types": [],
+    "protected_static_funcs": [],
+    "protected_funcs": [],
+    "protected_slots": [],
+    "protected_static_vars": [],
+    "protected_vars": [],
+    "private_funcs": [],
+    "private_slots": [],
+    "related": [],
+    "friend_funcs": [],
+    "groups": [],
+    "has_enum_details": false,
+    "has_typedef_details": false,
+    "has_func_details": false,
+    "has_var_details": false,
+    "has_define_details": false,
+    "breadcrumb": [
+      [
+        "Examples using the Yosemitech Modbus Library",
+        "page_the_examples.html"
+      ]
+    ],
+    "breadcrumbGroup": [
+      [
+        "Examples using the Yosemitech Modbus Library",
+        "page_the_examples.html"
+      ]
+    ]
+  }
+}

@@ -1,0 +1,262 @@
+{
+  "version": "1.11.0",
+  "compound": {
+    "kind": "file",
+    "id": "_yosemitech_modbus_8h",
+    "name": "YosemitechModbus.h",
+    "url_base": "_yosemitech_modbus_8h",
+    "url": "_yosemitech_modbus_8h.html",
+    "include": null,
+    "has_template_details": false,
+    "templates": null,
+    "brief": "Contains the YosemitechModbus class declarations.",
+    "description": "<aside class=\"m-note m-default\"><h4>Copyright</h4><p>Stroud Water Research Center Part of the EnviroDIY YosemitechModbus library for Arduino.</p></aside><aside class=\"m-note m-default\"><h4>License</h4><p>This library is published under the BSD-3 license.</p></aside><aside class=\"m-note m-default\"><h4>Author</h4><p>Sara Geleskie Damiano <a href=\"mailto:sdamiano@stroudcenter.org\">sdamiano@stroudcenter.org</a></p></aside>",
+    "sections": "",
+    "deprecated": null,
+    "since": null,
+    "example_navigation": null,
+    "footer_navigation": null,
+    "modules": [],
+    "dirs": [],
+    "files": [],
+    "namespaces": [],
+    "classes": [
+      {
+        "kind": "class",
+        "url": "classyosemitech.html",
+        "name": "yosemitech",
+        "brief": "The class for communication with Yosemitech sensors via modbus.",
+        "deprecated": null,
+        "since": null,
+        "templates": null
+      }
+    ],
+    "base_classes": [],
+    "derived_classes": [],
+    "enums": [
+      {
+        "base_url": "_yosemitech_modbus_8h.html",
+        "id": "a517840e9a91335c992f33b700dc42ba2",
+        "include": null,
+        "has_details": true,
+        "type": "",
+        "name": "yosemitechModel",
+        "brief": "The various Yosemitech sensors.",
+        "description": "",
+        "deprecated": null,
+        "since": null,
+        "is_protected": false,
+        "is_strong": false,
+        "values": [
+          {
+            "id": "a517840e9a91335c992f33b700dc42ba2a15da8ce4327188c01ba28d169faa5a2f",
+            "name": "Y502",
+            "initializer": "= 0",
+            "brief": "<a href=\"http://en.yosemitech.com/aspcms/product/2020-5-8/72.html\">Online Optical Dissolved Oxygen Sensor</a>",
+            "description": "",
+            "deprecated": null,
+            "since": null
+          },
+          {
+            "id": "a517840e9a91335c992f33b700dc42ba2afe0d01ad5648d95c2de78c91db39999c",
+            "name": "Y504",
+            "initializer": "",
+            "brief": "<a href=\"http://en.yosemitech.com/aspcms/product/2021-3-1/161.html\">Optical Dissolved Oxygen Sensor</a>",
+            "description": "",
+            "deprecated": null,
+            "since": null
+          },
+          {
+            "id": "a517840e9a91335c992f33b700dc42ba2a649ace532e43839bc830afba9a4f5964",
+            "name": "Y510",
+            "initializer": "",
+            "brief": "<a href=\"http://en.yosemitech.com/aspcms/product/2020-5-8/76.html\">Turbidity Sensor</a>",
+            "description": "",
+            "deprecated": null,
+            "since": null
+          },
+          {
+            "id": "a517840e9a91335c992f33b700dc42ba2acaa99680626d8bc104fbfd851adca166",
+            "name": "Y511",
+            "initializer": "",
+            "brief": "<a href=\"http://en.yosemitech.com/aspcms/product/2020-5-8/76.html\">Turbidity Sensor with wiper</a>",
+            "description": "",
+            "deprecated": null,
+            "since": null
+          },
+          {
+            "id": "a517840e9a91335c992f33b700dc42ba2ac2e0af5dd575bb3eaa9bb9a4ff03b6f5",
+            "name": "Y513",
+            "initializer": "",
+            "brief": "<a href=\"http://en.yosemitech.com/aspcms/product/2020-5-8/82.html\">Blue Green Algae sensor with Wiper</a>",
+            "description": "",
+            "deprecated": null,
+            "since": null
+          },
+          {
+            "id": "a517840e9a91335c992f33b700dc42ba2af2dc7239efbeeaa314a99b38bf2ac637",
+            "name": "Y514",
+            "initializer": "",
+            "brief": "<a href=\"http://en.yosemitech.com/aspcms/product/2020-4-23/39.html\">Chlorophyll Sensor with Wiper</a>",
+            "description": "",
+            "deprecated": null,
+            "since": null
+          },
+          {
+            "id": "a517840e9a91335c992f33b700dc42ba2a71b1c2b6a2d7060a466ef99dbc51dc06",
+            "name": "Y516",
+            "initializer": "",
+            "brief": "<a href=\"http://en.yosemitech.com/aspcms/product/2020-5-8/69.html\">Oil in water (Crude Oil)</a>",
+            "description": "",
+            "deprecated": null,
+            "since": null
+          },
+          {
+            "id": "a517840e9a91335c992f33b700dc42ba2a97b11067b34dbdf9c1ee9aacdaa47e0d",
+            "name": "Y520",
+            "initializer": "",
+            "brief": "<a href=\"http://en.yosemitech.com/aspcms/product/2020-4-23/58.html\">4-Electrode Conductivity Sensor</a>",
+            "description": "",
+            "deprecated": null,
+            "since": null
+          },
+          {
+            "id": "a517840e9a91335c992f33b700dc42ba2a9d493f3eb6d9c2834f1d3b1dc29e8e75",
+            "name": "Y532",
+            "initializer": "",
+            "brief": "<a href=\"http://en.yosemitech.com/aspcms/product/2020-6-15/154.html\">pH</a>",
+            "description": "",
+            "deprecated": null,
+            "since": null
+          },
+          {
+            "id": "a517840e9a91335c992f33b700dc42ba2a9d82f2c2636a953e78fbaa72e239264d",
+            "name": "Y533",
+            "initializer": "",
+            "brief": "<a href=\"http://en.yosemitech.com/aspcms/product/2020-5-8/91.html\">ORP</a>",
+            "description": "",
+            "deprecated": null,
+            "since": null
+          },
+          {
+            "id": "a517840e9a91335c992f33b700dc42ba2ace69642cbcafba913e5e278bce124882",
+            "name": "Y550",
+            "initializer": "",
+            "brief": "<a href=\"http://en.yosemitech.com/aspcms/product/2020-5-8/94.html\">UV254/COD Sensor, old version no longer sold</a>",
+            "description": "",
+            "deprecated": null,
+            "since": null
+          },
+          {
+            "id": "a517840e9a91335c992f33b700dc42ba2a036682e15622ff1c8e655fdf13eab84d",
+            "name": "Y551",
+            "initializer": "",
+            "brief": "<a href=\"http://en.yosemitech.com/aspcms/product/2020-5-8/94.html\">UV254/COD Sensor</a>",
+            "description": "",
+            "deprecated": null,
+            "since": null
+          },
+          {
+            "id": "a517840e9a91335c992f33b700dc42ba2af5b1fd2222d12aa81df84c3628f8637c",
+            "name": "Y560",
+            "initializer": "",
+            "brief": "<a href=\"http://en.yosemitech.com/aspcms/product/2020-4-23/61.html\">NH4 Probe</a>",
+            "description": "",
+            "deprecated": null,
+            "since": null
+          },
+          {
+            "id": "a517840e9a91335c992f33b700dc42ba2a912d6fb37fd53aff82e39b5d7d4feb5b",
+            "name": "Y700",
+            "initializer": "",
+            "brief": "Water Pressure/Depth Sensor Prototype developed for Clean Water Services.",
+            "description": "",
+            "deprecated": null,
+            "since": null
+          },
+          {
+            "id": "a517840e9a91335c992f33b700dc42ba2a2ca6fa4fb6ad62ddfb6bc2ee2b1103af",
+            "name": "Y4000",
+            "initializer": "",
+            "brief": "<a href=\"http://en.yosemitech.com/aspcms/product/2020-5-8/95.html\">Multiparameter Sonde</a>",
+            "description": "",
+            "deprecated": null,
+            "since": null
+          },
+          {
+            "id": "a517840e9a91335c992f33b700dc42ba2a6ce26a62afab55d7606ad4e92428b30c",
+            "name": "UNKNOWN",
+            "initializer": "",
+            "brief": "Use if the sensor model is unknown. Doing this is generally a bad idea, but it can be helpful for doing things like getting the serial number of an unknown model.",
+            "description": "",
+            "deprecated": null,
+            "since": null
+          }
+        ],
+        "has_value_details": true
+      }
+    ],
+    "typedefs": [
+      {
+        "base_url": "_yosemitech_modbus_8h.html",
+        "id": "ac76dda216fee911a868b42d2643419ff",
+        "include": null,
+        "has_details": false,
+        "is_using": false,
+        "type": "enum <a href=\"_yosemitech_modbus_8h.html#a517840e9a91335c992f33b700dc42ba2\" class=\"m-doc\">yosemitechModel</a>",
+        "args": "",
+        "name": "yosemitechModel",
+        "brief": "The various Yosemitech sensors.",
+        "description": "",
+        "deprecated": null,
+        "since": null,
+        "is_protected": false,
+        "has_template_details": false,
+        "templates": null
+      }
+    ],
+    "funcs": [],
+    "vars": [],
+    "defines": [],
+    "public_types": [],
+    "public_static_funcs": [],
+    "typeless_funcs": [],
+    "public_funcs": [],
+    "signals": [],
+    "public_slots": [],
+    "public_static_vars": [],
+    "public_vars": [],
+    "protected_types": [],
+    "protected_static_funcs": [],
+    "protected_funcs": [],
+    "protected_slots": [],
+    "protected_static_vars": [],
+    "protected_vars": [],
+    "private_funcs": [],
+    "private_slots": [],
+    "related": [],
+    "friend_funcs": [],
+    "groups": [],
+    "has_enum_details": true,
+    "has_typedef_details": false,
+    "has_func_details": false,
+    "has_var_details": false,
+    "has_define_details": false,
+    "breadcrumb": [
+      [
+        "src",
+        "dir_68267d1309a1af8e8297ef4c3efbcdba.html"
+      ],
+      [
+        "YosemitechModbus.h",
+        "_yosemitech_modbus_8h.html"
+      ]
+    ],
+    "breadcrumbGroup": [
+      [
+        "YosemitechModbus.h",
+        "_yosemitech_modbus_8h.html"
+      ]
+    ]
+  }
+}

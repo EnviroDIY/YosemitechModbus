@@ -1,0 +1,3008 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8" />
+  <title>yosemitech class | YosemitechModbus0.4.2</title>
+  <link rel="stylesheet" href="m-EnviroDIY+documentation.compiled.css" />
+
+<style id="wp-emoji-styles-inline-css" type="text/css">
+  img.wp-smiley,
+  img.emoji {
+    display: inline !important;
+    border: none !important;
+    box-shadow: none !important;
+    height: 1em !important;
+    width: 1em !important;
+    margin: 0 0.07em !important;
+    vertical-align: -0.1em !important;
+    background: none !important;
+    padding: 0 !important;
+  }
+</style>
+<link
+  rel="stylesheet"
+  id="gp-parent-style-css"
+  href="https://www.envirodiy.org/wp-content/themes/socialize/style.css?ver=6.5.4"
+  type="text/css"
+  media="all"
+/>
+<link
+  rel="stylesheet"
+  id="redux-extendify-styles-css"
+  href="https://www.envirodiy.org/wp-content/themes/socialize/lib/framework/redux/assets/css/extendify-utilities.css?ver=4.4.11"
+  type="text/css"
+  media="all"
+/>
+<style id="ghostpool-style-inline-css" type="text/css">
+  #gp-main-header {
+    min-height: 80px;
+  }
+  .gp-desktop-scrolling #gp-main-header {
+    min-height: 80px;
+  }
+  .gp-header-standard #gp-logo {
+    padding: 19px 0;
+  }
+  .gp-desktop-scrolling.gp-header-standard #gp-logo {
+    padding: 12.5px 0;
+  }
+  .gp-header-standard #gp-primary-main-nav .menu > li > a {
+    padding: 30.5px 0;
+  }
+  .gp-header-standard #gp-cart-button,
+  .gp-header-standard #gp-search-button,
+  .gp-header-standard #gp-profile-button {
+    padding: 31px 0;
+  }
+  .gp-desktop-scrolling.gp-header-standard #gp-primary-main-nav .menu > li > a {
+    padding: 30.5px 0;
+  }
+  .gp-desktop-scrolling.gp-header-standard #gp-cart-button,
+  .gp-desktop-scrolling.gp-header-standard #gp-search-button,
+  .gp-desktop-scrolling.gp-header-standard #gp-profile-button {
+    padding: 31px 0;
+  }
+  .gp-nav .menu > .gp-standard-menu > .sub-menu > li:hover > a {
+    color: #fff;
+  }
+  .gp-theme li:hover .gp-primary-dropdown-icon {
+    color: #fff;
+  }
+  .gp-theme .sub-menu li:hover .gp-secondary-dropdown-icon {
+    color: #fff;
+  }
+  .gp-header-centered #gp-cart-button,
+  .gp-header-centered #gp-search-button,
+  .gp-header-centered #gp-profile-button {
+    line-height: 18px;
+  }
+  .gp-header-standard #gp-secondary-main-nav .menu > li > a {
+    padding: 31.5px 0;
+  }
+  .gp-desktop-scrolling.gp-header-standard #gp-secondary-main-nav .menu > li > a {
+    padding: 31.5px 0;
+  }
+  .gp-header-centered #gp-secondary-main-nav .menu > li > a {
+    line-height: 16px;
+  }
+  .gp-active {
+    color: #000;
+  }
+  .gp-theme .widget.buddypress div.item-options a.selected:hover {
+    color: #0579bd !important;
+  }
+  .gp-theme #buddypress .activity-list .activity-content blockquote a {
+    color: #0579bd;
+  }
+  .gp-theme #buddypress .activity-list .activity-content blockquote a:hover {
+    color: #000;
+  }
+  @media only screen and (max-width: 1082px) {
+    .gp-header-standard #gp-primary-main-nav .menu > li > a {
+      padding: 30.5px 0;
+    }
+    .gp-desktop-scrolling.gp-header-standard #gp-primary-main-nav .menu > li > a {
+      padding: 30.5px 0;
+    }
+    .gp-header-standard #gp-cart-button,
+    .gp-header-standard #gp-search-button,
+    .gp-header-standard #gp-profile-button {
+      padding: 31px 0;
+    }
+    .gp-desktop-scrolling.gp-header-standard #gp-cart-button,
+    .gp-desktop-scrolling.gp-header-standard #gp-search-button,
+    .gp-desktop-scrolling.gp-header-standard #gp-profile-button {
+      padding: 31px 0;
+    }
+    .gp-header-standard #gp-secondary-main-nav .menu > li > a {
+      padding: 31.5px 0;
+    }
+    .gp-desktop-scrolling.gp-header-standard #gp-secondary-main-nav .menu > li > a {
+      padding: 31.5px 0;
+    }
+  }
+  @media only screen and (max-width: 1023px) {
+    .gp-responsive #gp-main-header {
+      min-height: 80px;
+    }
+    .gp-responsive #gp-logo {
+      padding: 26px 0;
+    }
+    .gp-responsive #gp-mobile-nav-button,
+    .gp-responsive #gp-cart-button,
+    .gp-responsive #gp-search-button,
+    .gp-responsive #gp-profile-button {
+      padding: 31px 0;
+    }
+  }
+</style>
+<link
+  rel="stylesheet"
+  id="fontawesome-css"
+  href="https://www.envirodiy.org/wp-content/themes/socialize/lib/fonts/font-awesome/css/font-awesome.min.css?ver=6.5.4"
+  type="text/css"
+  media="all"
+/>
+<link
+  rel="preload"
+  as="style"
+  href="https://fonts.googleapis.com/css?family=Roboto:300,400,500%7CRoboto%20Slab:400&#038;subset=latin&#038;display=swap&#038;ver=6.5.4"
+/>
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css?family=Roboto:300,400,500%7CRoboto%20Slab:400&#038;subset=latin&#038;display=swap&#038;ver=6.5.4"
+  media="print"
+  onload="this.media='all'"
+/>
+<noscript
+  ><link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css?family=Roboto:300,400,500%7CRoboto%20Slab:400&#038;subset=latin&#038;display=swap&#038;ver=6.5.4"
+/></noscript>
+
+<style type="text/css" id="wp-custom-css">
+  /* Print Styles */
+  @media print {
+    @page {
+      margin: 10mm 0;
+    }
+    body {
+      background: white;
+      color: black;
+      background-image: none;
+      margin: 0 !important;
+      padding: 0;
+    }
+
+    body:not(.gp-full-page-page-header) .gp-page-header.gp-has-text:before,
+    body:not(.gp-full-page-page-header)
+      .gp-page-header.gp-has-teaser-video.gp-has-text
+      .gp-video-header:before {
+      background-image: none !important;
+    }
+    /* End print styles */
+
+    #gp-main-header,
+    #gp-small-header,
+    #gp-header-area,
+    #gp-footer,
+    #gp-sidebar-right,
+    #swrc-post-navigation,
+    .hkb-subheader,
+    .hkb-feedback,
+    .hkb-mainpage__sidebar,
+    .print-page {
+      display: none;
+    }
+    .hkb-mainpage-wrapper {
+      padding: 0 !important;
+      background-image: none !important;
+    }
+    a#gp-to-top,
+    span#toTopHover {
+      display: none;
+    }
+    a[href]:after {
+      content: ' (' attr(href) ')';
+    }
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-size: 1.25em;
+      page-break-after: avoid;
+      page-break-inside: avoid;
+    }
+    .hkb-article__content h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-size: 1.25em;
+      page-break-after: avoid;
+      page-break-inside: avoid;
+    }
+    table {
+      page-break-before: avoid;
+      page-break-inside: avoid;
+      page-break-after: avoid;
+    }
+    img {
+      page-break-inside: avoid;
+      visibility: visible;
+      float: none;
+    }
+    blockquote,
+    table,
+    pre {
+      page-break-inside: avoid;
+    }
+    ul,
+    ol,
+    dl {
+      page-break-before: avoid;
+    }
+  }
+
+  /*Gutenberg styles*/
+  /*Buttons*/
+  a.wp-block-button__link {
+    background-color: #538122;
+    border-radius: 5px;
+    text-decoration: none !important;
+  }
+  .wp-block-button__link:hover {
+    background: #365516 !important;
+    color: #ffffff !important;
+  }
+  figcaption {
+    font-style: italic;
+  }
+  /*End Gutenberg styles*/
+  #gp-content a,
+  .gp-sidebar a {
+    font-weight: 400;
+    text-decoration: underline;
+  }
+  /*BuddyPress styles*/
+  /*Make activity feed content darker*/
+  #buddypress .activity-list .activity-content .activity-inner p {
+    color: #000000;
+  }
+  /*Hide activity filter on activity page*/
+  #activity-filter-select.last {
+    display: none !important;
+  }
+  /*Hide disabled BuddyPress status updates on profile page, activity page*/
+  #latest-update {
+    display: none;
+  }
+  .item-title .update {
+    display: none;
+  }
+  /*Prevent display of comment/favorite links in activity stream. Because the comments do not get applied to posts or forum topics, they just confuse users*/
+  .gp-theme #buddypress .activity-list div.activity-meta a.button,
+  .gp-theme #buddypress .activity .acomment-options a,
+  .gp-theme #buddypress .activity-list li.load-newest a,
+  .widget.buddypress div.item-options a.selected {
+    color: #26a9e0;
+    display: none;
+  }
+  /*End BuddyPress styles*/
+  /* Style print link */
+  .pdfprnt-buttons > a > span {
+    margin: 15px 0;
+    padding-left: 0;
+    text-decoration: underline;
+  }
+  /*Change caption text color and size*/
+  .wp-caption-text {
+    color: #333;
+    font-size: 14px;
+  }
+  /*Collapse table borders */
+  #gp-content table {
+    border-collapse: collapse;
+  }
+  /*Add borders to Tableizer tables */
+  .tableizer table,
+  th,
+  td {
+    border: 1px solid #333;
+  }
+  /*Nested list styles*/
+  #gp-content,
+  .hkb-article ol ol li {
+    list-style-type: lower-alpha;
+  }
+  #gp-content,
+  .hkb-article ol ol ol li {
+    list-style-type: lower-roman;
+  }
+  #gp-content,
+  .hkb-article ul ul li {
+    list-style-type: circle !important;
+  }
+  /* Add border */
+  tr:last-child td {
+    border-width: 1px;
+  }
+  /*bbPress*/
+  /* Make forum title and description larger, remove link underlining */
+  div.bbp-forum-content {
+    font-size: 22px;
+    line-height: 28px;
+  }
+  div.bbp-forum-content p {
+    font-size: 16px;
+    line-height: 22px;
+  }
+  #bbpress-forums a.bbp-forum-title {
+    text-decoration: none;
+  }
+  .widgettitle {
+    border-bottom: 3px solid #92d050 !important;
+  }
+  .bbp-author-name {
+    font-size: 14px;
+  }
+  /*End bbpress styles*/
+  #gp-copyright-text,
+  #gp-copyright-text a:link,
+  #gp-copyright-text a:visited {
+    color: #fff;
+    font-weight: 400;
+  }
+  /*WooCommerce styles*/
+  bdi {
+    color: #538122;
+    font-weight: 500;
+  }
+  a.button.product_type_simple {
+    display: none;
+  }
+  p.stock.out-of-stock {
+    color: red;
+    font-weight: 500;
+  }
+  .products li * {
+    text-decoration: none !important;
+  }
+  div.gp-entry-cats {
+    color: #333333;
+  }
+  span.woocommerce-Price-amount.amount {
+    text-decoration: none !important;
+  }
+  /* Hide additional information tab */
+  div.woocommerce-tabs {
+    display: none !important;
+  }
+  /*End WooCommerce styles*/
+  /*The Events Calendar*/
+  #tribe-events-content a {
+    color: #0579bd;
+  }
+  #tribe-events-content .wp-block-button__link {
+    color: #ffffff;
+  }
+  #gp-sidebar-right
+    > div
+    > div.tribe-common.tribe-events.tribe-events-view.tribe-events-view--widget-events-list.tribe-events-widget {
+    background-color: #fff;
+    padding: 15px;
+  }
+  #gp-sidebar-right
+    > div
+    > div.tribe-common.tribe-events.tribe-events-view.tribe-events-view--widget-events-list.tribe-events-widget
+    > div
+    > header {
+    text-transform: uppercase;
+    color: #000;
+    border-bottom: 3px solid #92d050;
+  }
+  #gp-sidebar-right
+    > div
+    > div.tribe-common.tribe-events.tribe-events-view.tribe-events-view--widget-events-list.tribe-events-widget
+    > div
+    > header
+    > h3 {
+    font-family: Roboto !important;
+    font-size: 14px !important;
+    font-weight: 500;
+    padding-bottom: 11px;
+  }
+  #gp-sidebar-right
+    > div
+    > div.tribe-common.tribe-events.tribe-events-view.tribe-events-view--widget-events-list.tribe-events-widget
+    > div
+    > div.tribe-events-widget-events-list__view-more.tribe-common-b1.tribe-common-b2--min-medium
+    > a {
+    color: #26a9e0;
+  }
+  /*Hero Knowledge Base styles*/
+  #hkb .hkb-fullwcontainer {
+    max-width: var(--hkb-main-container-width);
+    margin: 0 auto;
+    padding: 20px 20px;
+    left: 0 !important;
+    right: 0 !important;
+  }
+  h1.hkb-article__title {
+    font-weight: 300 !important;
+    margin: 0 0 0.5em !important;
+  }
+  .hkb-categoryheader__title {
+    font-weight: 300 !important;
+    font-size: 40px !important;
+  }
+  .hkb-articlepreview__title a {
+    font-weight: 300 !important;
+    font-size: 28px !important;
+    text-decoration: underline !important;
+    color: #0579bd !important;
+    font-size: 28px !important;
+  }
+  #hkb a {
+    text-decoration: underline;
+    font-weight: 400;
+  }
+  a.hkb_widget_exit__btn {
+    background-color: #538122 !important;
+    border-radius: 5px;
+    text-decoration: none !important;
+  }
+  a.hkb_widget_exit__btn:hover {
+    background: #365516 !important;
+    color: #ffffff !important;
+  }
+  /* End Heroic KB styles */
+  #swrc-post-navigation a {
+    font-size: small;
+  }
+  p.last-updated {
+    font-size: 12px;
+    font-style: italic;
+  }
+  aside#gp-sidebar-right.gp-sidebar p.last-updated {
+    display: none;
+  }
+  #gp-content p.last-updated {
+    display: none;
+  }
+  #gp-content ul {
+    margin: 0 0 0 20px !important;
+  }
+</style>
+<style id="socialize-dynamic-css" title="dynamic-css" class="redux-options-output">
+  #footer-image img {
+    margin-top: 10px;
+    margin-right: 0px;
+    margin-bottom: 10px;
+    margin-left: 0px;
+  }
+  body {
+    background-color: #f1f1f1;
+  }
+  body:not(.gp-full-page-page-header) #gp-page-wrapper,
+  body:not(.gp-full-page-page-header) #gp-small-header .gp-container,
+  .gp-homepage .widgettitle.gp-fancy-title:before {
+    background-color: #e8e8e8;
+  }
+  body:not(.gp-full-page-page-header) #gp-small-header .gp-left-triangle {
+    border-left-color: #e8e8e8;
+  }
+  body:not(.gp-full-page-page-header) #gp-small-header .gp-right-triangle {
+    border-bottom-color: #e8e8e8;
+  }
+  #gp-content {
+    background-color: #ffffff;
+  }
+  body {
+    font-family: Roboto, 'Arial Black', Gadget, sans-serif;
+    line-height: 28px;
+    font-weight: 300;
+    font-style: normal;
+    color: #000;
+    font-size: 16px;
+  }
+  a {
+    color: #0579bd;
+  }
+  a:hover {
+    color: #000;
+  }
+  h1 {
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+    line-height: 40px;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 36px;
+  }
+  h2 {
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+    line-height: 32px;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 28px;
+  }
+  h3,
+  #tab-description h2,
+  .woocommerce #comments h2,
+  .woocommerce #reviews h3,
+  .woocommerce .related h2,
+  .woocommerce-checkout .woocommerce h2,
+  .woocommerce-checkout .woocommerce h3 {
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+    line-height: 28px;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 24px;
+  }
+  h4 {
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+    line-height: 30px;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 20px;
+  }
+  h5 {
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+    line-height: 26px;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 18px;
+  }
+  h6 {
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+    line-height: 24px;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 16px;
+  }
+  .gp-entry-meta .gp-post-meta-row-1,
+  .gp-homepage #gp-content .gp-vc-element-3,
+  .gp-homepage #gp-content .gp-vc-element-4,
+  .gp-homepage #gp-content .gp-vc-element-5,
+  .gp-homepage #gp-content .gp-vc-element-6,
+  #comments .commentlist li .comment_container,
+  .gp-loop-divider:before,
+  .gp-recent-comments ul li,
+  .gp-search {
+    border-top: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+  }
+  .gp-entry-video-wrapper .gp-entry-meta .gp-post-meta-row-1,
+  .gp-footer-widget .gp-recent-comments ul li {
+    border-top: 1px solid #50504b;
+    border-bottom: 1px solid #50504b;
+  }
+  #gp-main-header {
+    background-color: #222222;
+  }
+  .gp-desktop-scrolling #gp-main-header {
+    background-color: #222222;
+  }
+  #gp-primary-main-nav .menu > li,
+  #gp-primary-main-nav .menu > li > a {
+    font-family: Roboto;
+    text-transform: none;
+    line-height: 16px;
+    font-weight: 400;
+    font-style: normal;
+    color: #ababab;
+    font-size: 16px;
+  }
+  #gp-primary-main-nav .menu > li:hover > a,
+  #gp-primary-main-nav .menu > li > a {
+    color: #fff;
+  }
+  #gp-primary-main-nav .menu > li:hover > a:hover,
+  #gp-primary-main-nav .menu > li > a:hover {
+    color: #fff;
+  }
+  #gp-primary-main-nav .menu > li > a:hover,
+  #gp-primary-main-nav .menu > li:hover > a {
+    border-top: 3px solid #fff;
+  }
+  #gp-secondary-main-nav .menu > li,
+  #gp-secondary-main-nav .menu > li > a {
+    font-family: Roboto;
+    text-transform: none;
+    line-height: 14px;
+    font-weight: 400;
+    font-style: normal;
+    color: #fff;
+    font-size: 14px;
+  }
+  #gp-secondary-main-nav .menu > li:hover > a,
+  #gp-secondary-main-nav .menu > li > a {
+    color: #fff;
+  }
+  #gp-secondary-main-nav .menu > li:hover > a:hover,
+  #gp-secondary-main-nav .menu > li > a:hover {
+    color: #fff;
+  }
+  #gp-secondary-main-nav .menu > li > a:hover,
+  #gp-secondary-main-nav .menu > li:hover > a {
+    border-top: 3px solid #fff;
+  }
+  #gp-search-button,
+  #gp-cart-button {
+    color: #fff;
+  }
+  #gp-search-button:hover,
+  #gp-cart-button:hover {
+    color: #fff;
+  }
+  .gp-nav .sub-menu,
+  .gp-nav .menu li .gp-menu-tabs li:hover,
+  .gp-nav .menu li .gp-menu-tabs li.gp-selected,
+  #gp-search-box {
+    background-color: #fff;
+  }
+  .gp-nav .menu > .gp-standard-menu > .sub-menu > li a:hover,
+  .gp-nav .menu > .gp-standard-menu > .sub-menu > li:hover > a {
+    background-color: #353535;
+  }
+  .gp-nav .gp-standard-menu .sub-menu li,
+  .gp-nav .gp-standard-menu .sub-menu li a,
+  .gp-nav li.gp-megamenu .sub-menu li,
+  .gp-nav .gp-megamenu .sub-menu li a {
+    font-family: Roboto;
+    font-weight: 400;
+    font-style: normal;
+    color: #000;
+    font-size: 14px;
+  }
+  .gp-nav .menu > .gp-standard-menu > .sub-menu > li a {
+    color: #000;
+  }
+  .gp-nav .menu > .gp-standard-menu > .sub-menu > li a:hover {
+    color: #fff;
+  }
+  .gp-nav .sub-menu li,
+  #gp-dropdowncart .total,
+  #gp-dropdowncart .buttons {
+    border-top: 1px solid #e0e0e0;
+  }
+  .gp-nav .gp-megamenu > .sub-menu > li > a,
+  .gp-nav .gp-megamenu > .sub-menu > li > span {
+    color: #000000;
+  }
+  .gp-nav li.gp-megamenu a {
+    color: #000;
+  }
+  .gp-nav li.gp-megamenu a:hover {
+    color: #e93100;
+  }
+  .gp-primary-dropdown-icon {
+    color: #fff;
+  }
+  .gp-primary-dropdown-icon:hover {
+    color: #fff;
+  }
+  .gp-secondary-dropdown-icon {
+    color: #000;
+  }
+  .gp-secondary-dropdown-icon:hover {
+    color: #fff;
+  }
+  .gp-menu-tabs {
+    background-color: #353535;
+  }
+  .gp-nav .menu li .gp-menu-tabs li {
+    color: #ffffff;
+  }
+  .gp-nav .menu li .gp-menu-tabs li:hover,
+  .gp-nav .menu li .gp-menu-tabs li.gp-selected {
+    color: #e93100;
+  }
+  #gp-small-header #gp-top-nav {
+    background-color: #26a9e0;
+  }
+  #gp-small-header .menu > li,
+  #gp-small-header .menu > li > a {
+    color: #ffffff;
+  }
+  #gp-small-header .menu > li:hover,
+  #gp-small-header .menu > li > a:hover {
+    color: #e0e0e0;
+  }
+  #gp-mobile-nav-button,
+  #gp-profile-button,
+  #gp-mobile-nav-close-button {
+    color: #ffffff;
+  }
+  #gp-mobile-nav {
+    background-color: #fff;
+  }
+  #gp-mobile-nav-close-button {
+    background-color: #0579bd;
+  }
+  #gp-mobile-nav li {
+    color: #000000;
+  }
+  #gp-mobile-nav .menu li span,
+  #gp-mobile-nav .menu li a {
+    color: #000;
+  }
+  #gp-mobile-nav .menu li span:hover,
+  #gp-mobile-nav .menu li a:hover {
+    color: #000;
+  }
+  #gp-mobile-nav li a:hover {
+    background-color: #f1f1f1;
+  }
+  #gp-mobile-nav li {
+    border-top: 1px solid #e0e0e0;
+  }
+  #gp-mobile-nav .gp-megamenu > .sub-menu > li > a {
+    color: #000000;
+  }
+  .gp-large-page-header .gp-page-header,
+  .gp-fullwidth-page-header .gp-page-header,
+  #gp-full-page-bg {
+    background-color: #353535;
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+    background-position: center center;
+    background-size: cover;
+  }
+  .gp-page-header h1,
+  .gp-page-header h2 {
+    font-family: Roboto;
+    line-height: 90px;
+    font-weight: normal;
+    font-style: normal;
+    color: #fff;
+    font-size: 80px;
+  }
+  .gp-page-header .gp-container {
+    height: 250px;
+  }
+  .gp-entry-title,
+  .woocommerce .page-title,
+  .woocommerce div.product .entry-title.product_title {
+    font-family: Roboto;
+    line-height: 46px;
+    font-weight: 300;
+    font-style: normal;
+    color: #000;
+    font-size: 40px;
+  }
+  .gp-subtitle {
+    font-family: Roboto;
+    line-height: 32px;
+    font-weight: 300;
+    font-style: normal;
+    color: #0579bd;
+    font-size: 20px;
+  }
+  #gp-post-links a,
+  .gp-pagination-arrows a.prev,
+  .gp-pagination-arrows a.next,
+  .gp-carousel-wrapper .flex-direction-nav a {
+    color: #aaa;
+  }
+  #gp-post-links a:hover,
+  .gp-pagination-arrows a.prev:hover,
+  .gp-pagination-arrows a.next:hover,
+  .gp-carousel-wrapper .flex-direction-nav a:hover {
+    color: #333;
+  }
+  .gp-entry-meta,
+  .gp-meta-comments a {
+    color: #aaaaaa;
+  }
+  .gp-entry-cats,
+  .gp-entry-cats a,
+  .gp-entry-cats a:hover {
+    color: #ffffff;
+  }
+  .gp-entry-cats {
+    background-color: #92d050;
+  }
+  .gp-entry-tags a,
+  .gp-entry-tags a:hover {
+    color: #ffffff;
+  }
+  .gp-entry-tags a {
+    background-color: #353535;
+  }
+  .gp-author-info,
+  #gp-post-navigation #gp-share-icons {
+    background-color: #353535;
+  }
+  .gp-author-info,
+  .gp-author-info a,
+  #gp-post-navigation #gp-share-icons h3 {
+    line-height: 24px;
+    color: #fff;
+    font-size: 14px;
+  }
+  .gp-author-info a {
+    color: #b1b1b1;
+  }
+  .gp-author-info a:hover {
+    color: #fff;
+  }
+  .gp-entry-video-wrapper {
+    background-color: #353535;
+  }
+  .gp-entry-video-wrapper .gp-entry-title {
+    color: #ffffff;
+  }
+  .gp-entry-video-wrapper .gp-video-description {
+    color: #777777;
+  }
+  blockquote {
+    background-color: #0579bd;
+  }
+  blockquote,
+  blockquote a,
+  blockquote a:hover {
+    font-family: 'Roboto Slab';
+    line-height: 38px;
+    font-weight: 400;
+    font-style: normal;
+    color: #fff;
+    font-size: 24px;
+  }
+  .gp-loop-title {
+    line-height: 22px;
+    font-weight: 400;
+    font-size: 19px;
+  }
+  .gp-blog-large .gp-loop-title {
+    line-height: 46px;
+    font-weight: 200;
+    font-size: 40px;
+  }
+  .gp-loop-title a,
+  .bboss_search_item .entry-title a {
+    color: #000;
+  }
+  .gp-loop-title a:hover,
+  .bboss_search_item .entry-title a:hover {
+    color: #0579bd;
+  }
+  .gp-loop-text,
+  .gp-login-wrapper p {
+    color: #545454;
+  }
+  .gp-loop-meta,
+  .gp-loop-meta a,
+  #gp-breadcrumbs,
+  #gp-breadcrumbs a,
+  .woocommerce .woocommerce-breadcrumb a,
+  .woocommerce .woocommerce-breadcrumb,
+  .comment-text time,
+  div.bbp-breadcrumb,
+  div.bbp-breadcrumb a,
+  .gp-statistics-wrapper .gp-stat-title,
+  .widget_display_replies ul li div,
+  .widget_display_topics ul li div {
+    color: #545454;
+  }
+  .gp-loop-cats,
+  .gp-loop-cats a,
+  .gp-loop-cats a:hover {
+    color: #545454;
+  }
+  .gp-loop-tags,
+  .gp-loop-tags a,
+  .gp-loop-tags a:hover {
+    color: #0579bd;
+  }
+  .gp-blog-masonry section,
+  section.sticky {
+    background-color: #f8f8f8;
+  }
+  ul.page-numbers .page-numbers {
+    background-color: #538122;
+  }
+  ul.page-numbers .page-numbers:hover,
+  ul.page-numbers .page-numbers.current,
+  ul.page-numbers > span.page-numbers {
+    background-color: #353535;
+  }
+  ul.page-numbers .page-numbers {
+    color: #ffffff;
+  }
+  .widgettitle,
+  .widget-title,
+  .wp-block-search__label {
+    font-family: Roboto;
+    line-height: 18px;
+    font-weight: 500;
+    font-style: normal;
+    color: #000;
+    font-size: 14px;
+  }
+  .widgettitle a,
+  .widget-title a,
+  .wp-block-search__label {
+    color: #0579bd;
+  }
+  .widgettitle a:hover,
+  .widget-title a:hover,
+  .wp-block-search__label:hover {
+    color: #000;
+  }
+  .gp-sidebar .widgettitle,
+  .widgettitle.gp-standard-title,
+  .gp-sidebar .widget-title,
+  .gp-sidebar .wp-block-search__label {
+    border-bottom: 3px solid #538122;
+  }
+  .widget,
+  .gp-vc-element,
+  .widgettitle.gp-fancy-title .gp-widget-title,
+  .widgettitle.gp-fancy-title .gp-element-icon,
+  .widget .woocommerce {
+    background-color: #ffffff;
+  }
+  .widgettitle.gp-fancy-title .gp-triangle {
+    border-left-color: #ffffff;
+  }
+  input,
+  textarea,
+  .gp-search-bar,
+  .wp-block-search__input,
+  .gp-theme #buddypress .dir-search input[type='search'],
+  .gp-theme #buddypress .dir-search input[type='text'],
+  .gp-theme #buddypress .groups-members-search input[type='search'],
+  .gp-theme #buddypress .standard-form input[type='color'],
+  .gp-theme #buddypress .standard-form input[type='date'],
+  .gp-theme #buddypress .standard-form input[type='datetime-local'],
+  .gp-theme #buddypress .standard-form input[type='datetime'],
+  .gp-theme #buddypress .standard-form input[type='email'],
+  .gp-theme #buddypress .standard-form input[type='month'],
+  .gp-theme #buddypress .standard-form input[type='number'],
+  .gp-theme #buddypress .standard-form input[type='password'],
+  .gp-theme #buddypress .standard-form input[type='range'],
+  .gp-theme #buddypress .standard-form input[type='search'],
+  .gp-theme #buddypress .standard-form input[type='tel'],
+  .gp-theme #buddypress .standard-form input[type='text'],
+  .gp-theme #buddypress .standard-form input[type='time'],
+  .gp-theme #buddypress .standard-form input[type='url'],
+  .gp-theme #buddypress .standard-form input[type='week'],
+  .gp-theme #buddypress .standard-form textarea,
+  .gp-theme #buddypress div.activity-comments form .ac-textarea,
+  .gp-theme #buddypress form#whats-new-form textarea {
+    background-color: #fafafa;
+  }
+  input,
+  textarea,
+  .gp-search-bar,
+  .wp-block-search__input,
+  .gp-login-wrapper .gp-login-icon,
+  .gp-login-wrapper .gp-password-icon,
+  .gp-login-wrapper .gp-email-icon,
+  .gp-theme #buddypress .dir-search input[type='search'],
+  .gp-theme #buddypress .dir-search input[type='text'],
+  .gp-theme #buddypress .groups-members-search input[type='search'],
+  .gp-theme #buddypress .standard-form input[type='color'],
+  .gp-theme #buddypress .standard-form input[type='date'],
+  .gp-theme #buddypress .standard-form input[type='datetime-local'],
+  .gp-theme #buddypress .standard-form input[type='datetime'],
+  .gp-theme #buddypress .standard-form input[type='email'],
+  .gp-theme #buddypress .standard-form input[type='month'],
+  .gp-theme #buddypress .standard-form input[type='number'],
+  .gp-theme #buddypress .standard-form input[type='password'],
+  .gp-theme #buddypress .standard-form input[type='range'],
+  .gp-theme #buddypress .standard-form input[type='search'],
+  .gp-theme #buddypress .standard-form input[type='tel'],
+  .gp-theme #buddypress .standard-form input[type='text'],
+  .gp-theme #buddypress .standard-form input[type='time'],
+  .gp-theme #buddypress .standard-form input[type='url'],
+  .gp-theme #buddypress .standard-form input[type='week'],
+  .gp-theme #buddypress .standard-form textarea,
+  .gp-theme #buddypress div.activity-comments form .ac-textarea,
+  .bb-global-search-ac.ui-autocomplete {
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+  }
+  input,
+  textarea,
+  .gp-search-bar,
+  .wp-block-search__input,
+  .gp-theme #buddypress .dir-search input[type='search'],
+  .gp-theme #buddypress .dir-search input[type='text'],
+  .gp-theme #buddypress .groups-members-search input[type='search'],
+  .gp-theme #buddypress .groups-members-search input[type='text'],
+  .gp-theme #buddypress .standard-form input[type='color'],
+  .gp-theme #buddypress .standard-form input[type='date'],
+  .gp-theme #buddypress .standard-form input[type='datetime-local'],
+  .gp-theme #buddypress .standard-form input[type='datetime'],
+  .gp-theme #buddypress .standard-form input[type='email'],
+  .gp-theme #buddypress .standard-form input[type='month'],
+  .gp-theme #buddypress .standard-form input[type='number'],
+  .gp-theme #buddypress .standard-form input[type='password'],
+  .gp-theme #buddypress .standard-form input[type='range'],
+  .gp-theme #buddypress .standard-form input[type='search'],
+  .gp-theme #buddypress .standard-form input[type='tel'],
+  .gp-theme #buddypress .standard-form input[type='text'],
+  .gp-theme #buddypress .standard-form input[type='time'],
+  .gp-theme #buddypress .standard-form input[type='url'],
+  .gp-theme #buddypress .standard-form input[type='week'],
+  .gp-theme #buddypress .standard-form textarea,
+  .gp-theme #buddypress div.activity-comments form .ac-textarea,
+  .gp-theme #buddypress form#whats-new-form textarea {
+    color: #000000;
+  }
+  select,
+  .gp-theme #buddypress .standard-form select,
+  .gp-theme #buddypress form#whats-new-form #whats-new-options select,
+  #buddypress .standard-form select:focus {
+    background-color: #353535;
+  }
+  select,
+  .gp-theme #buddypress .standard-form select,
+  .gp-theme #buddypress form#whats-new-form #whats-new-options select {
+    color: #ffffff;
+  }
+  input[type='button'],
+  input[type='submit'],
+  input[type='reset'],
+  button,
+  .button,
+  .wp-block-search__button,
+  .gp-theme #buddypress .comment-reply-link,
+  .gp-notification-counter,
+  #gp-cart-counter,
+  .gp-theme #buddypress a.button,
+  .gp-theme #buddypress button,
+  .gp-theme #buddypress div.generic-button a,
+  .gp-theme #buddypress input[type='button'],
+  .gp-theme #buddypress input[type='reset'],
+  .gp-theme #buddypress input[type='submit'],
+  .gp-theme #buddypress ul.button-nav li a,
+  a.bp-title-button,
+  .gp-theme #buddypress .activity-list #reply-title small a span,
+  .gp-theme #buddypress .activity-list a.bp-primary-action span,
+  .tribe-events-calendar thead th,
+  #tribe-events .tribe-events-button,
+  #tribe-events .tribe-events-button:hover,
+  #tribe_events_filters_wrapper input[type='submit'],
+  .tribe-events-button,
+  .tribe-events-button.tribe-active:hover,
+  .tribe-events-button.tribe-inactive,
+  .tribe-events-button:hover,
+  .tribe-events-calendar td.tribe-events-present div[id*='tribe-events-daynum-'],
+  .tribe-events-calendar td.tribe-events-present div[id*='tribe-events-daynum-'] > a,
+  #tribe-bar-form .tribe-bar-submit input[type='submit'],
+  .woocommerce #respond input#submit.alt,
+  .woocommerce a.button.alt,
+  .woocommerce button.button.alt,
+  .woocommerce input.button.alt,
+  #gp-dropdowncart .woocommerce a.button {
+    background-color: #0579bd;
+  }
+  input[type='button']:hover,
+  input[type='submit']:hover,
+  input[type='reset']:hover,
+  button:hover,
+  .button:hover,
+  .wp-block-search__button:hover,
+  .gp-theme #buddypress .comment-reply-link:hover,
+  .gp-theme #buddypress a.button:hover,
+  .gp-theme #buddypress button:hover,
+  .gp-theme #buddypress div.generic-button a:hover,
+  .gp-theme #buddypress input[type='button']:hover,
+  .gp-theme #buddypress input[type='reset']:hover,
+  .gp-theme #buddypress input[type='submit']:hover,
+  .gp-theme #buddypress ul.button-nav li a:hover,
+  a.bp-title-button:hover,
+  .gp-theme #buddypress .activity-list #reply-title small a:hover span,
+  .gp-theme #buddypress .activity-list a.bp-primary-action:hover span,
+  .woocommerce #respond input#submit.alt:hover,
+  .woocommerce a.button.alt:hover,
+  .woocommerce button.button.alt:hover,
+  .woocommerce input.button.alt:hover,
+  #gp-dropdowncart .woocommerce a.button:hover {
+    background-color: #353535;
+  }
+  input[type='button'],
+  input[type='submit'],
+  input[type='reset'],
+  button,
+  .button,
+  .wp-block-search__button,
+  a.gp-notification-counter,
+  a.gp-notification-counter:hover,
+  #gp-cart-counter:hover,
+  .gp-theme #buddypress .comment-reply-link,
+  .gp-theme #buddypress a.button,
+  .gp-theme #buddypress button,
+  .gp-theme #buddypress div.generic-button a,
+  .gp-theme #buddypress input[type='button'],
+  .gp-theme #buddypress input[type='reset'],
+  .gp-theme #buddypress input[type='submit'],
+  .gp-theme #buddypress ul.button-nav li a,
+  a.bp-title-button,
+  .gp-theme #buddypress .activity-list #reply-title small a span,
+  .gp-theme #buddypress .activity-list a.bp-primary-action span,
+  #gp-dropdowncart .woocommerce a.button {
+    color: #ffffff;
+  }
+  input[type='button']:hover,
+  input[type='submit']:hover,
+  input[type='reset']:hover,
+  button,
+  .button:hover,
+  .wp-block-search__button:hover,
+  .gp-theme #buddypress .comment-reply-link:hover,
+  .gp-theme #buddypress a.button:hover,
+  .gp-theme #buddypress button:hover,
+  .gp-theme #buddypress div.generic-button a:hover,
+  .gp-theme #buddypress input[type='button']:hover,
+  .gp-theme #buddypress input[type='reset']:hover,
+  .gp-theme #buddypress input[type='submit']:hover,
+  .gp-theme #buddypress ul.button-nav li a:hover,
+  a.bp-title-button:hover,
+  .gp-theme #buddypress .activity-list #reply-title small a span,
+  .gp-theme #buddypress .activity-list a.bp-primary-action span,
+  #gp-dropdowncart .woocommerce a.button:hover {
+    color: #ffffff;
+  }
+  #gp-footer {
+    background-color: #353535;
+  }
+  .gp-footer-widget .widgettitle,
+  .gp-footer-widget .widget-title,
+  .gp-footer-widget .wp-block-search__label {
+    font-family: Roboto;
+    line-height: 20px;
+    font-weight: 300;
+    font-style: normal;
+    color: #fff;
+    font-size: 16px;
+  }
+  .gp-footer-widget {
+    font-family: Roboto;
+    line-height: 20px;
+    font-weight: 300;
+    font-style: normal;
+    color: #ffffff;
+    font-size: 14px;
+  }
+  .gp-footer-widget a {
+    color: #f9bd16;
+  }
+  .gp-footer-widget a:hover {
+    color: #b1b1b1;
+  }
+  #gp-copyright {
+    background-color: #353535;
+  }
+  #gp-copyright {
+    border-top: 1px solid #444;
+  }
+  #gp-copyright {
+    color: #777777;
+  }
+  #gp-copyright a {
+    color: #999;
+  }
+  #gp-copyright a:hover {
+    color: #e0e0e0;
+  }
+  #gp-to-top {
+    background-color: #0579bd;
+  }
+  #gp-to-top {
+    color: #ffffff;
+  }
+</style>
+  <link rel="icon" href="enviroDIY_Favicon.png" type="image/png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#cb4b16" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script type="text/javascript" src="clipboard.js"></script>
+</head>
+
+<body
+    class="theme-socialize page-template-socialize-child gp-theme gp-responsive gp-wide-layout gp-retina gp-normal-scrolling gp-no-back-to-top gp-relative-header gp-header-standard gp-cart-disabled gp-search-all gp-profile-disabled gp-small-header-all gp-standard-page-header gp-no-sidebar"
+>
+	<div id="gp-site-wrapper">
+
+  <nav id="gp-mobile-nav">
+    <div id="gp-mobile-nav-close-button"></div>
+    <ul class="menu">
+      <li
+        class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children"
+      >
+<a href="index.html" class="menu-link main-menu-link">About</a>        <ul class="sub-menu menu-odd menu-depth-1">
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a href="page_calibration.html">Calibration</a>          </li>
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a href="change_log.html">ChangeLog</a>          </li>
+        </ul>
+      </li>
+      <li
+        class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-post_type menu-item-object-page"
+      >
+<a href="classyosemitech.html">The yosemitech Class</a>      </li>
+      <li
+        class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children"
+      >
+<a href="page_the_examples.html" class="menu-link main-menu-link">Examples using the Yosemitech Modbus Library</a>        <ul class="sub-menu menu-odd menu-depth-1">
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a href="example_get_values.html">Reading Sensor Values</a>          </li>
+          <li
+            class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+          >
+<a href="example_display_values.html">Displaying Values to a Screen</a>          </li>
+        </ul>
+      </li>
+      <li
+        class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-post_type menu-item-object-page"
+      >
+<a href="files.html" class="menu-link main-menu-link">Source Files</a>      </li>
+    </ul>
+  </nav> <!-- gp-mobile-nav -->
+  <div id="gp-mobile-nav-bg"></div>
+
+  <div id="gp-page-wrapper">
+
+    <header id="gp-main-header">
+      <div class="gp-container">
+        <div id="gp-logo">
+          <a href="index.html" title="YosemitechModbus 0.4.2">
+            <img
+              src="gp-desktop-logo.png"
+              alt="YosemitechModbus 0.4.2"
+              width="200"
+              height="42"
+              class="gp-desktop-logo"
+            />
+            <img
+              src="gp-scrolling-logo.png"
+              alt="YosemitechModbus 0.4.2"
+              width="264"
+              height="55"
+              class="gp-scrolling-logo"
+            />
+            <img
+              src="gp-mobile-logo.png"
+              alt="YosemitechModbus 0.4.2"
+              width="132"
+              height="28"
+              class="gp-mobile-logo"
+            />
+          </a>
+        </div> <!-- gp-logo -->
+
+        <a id="gp-mobile-nav-button"></a>
+
+        <nav id="gp-main-nav" class="gp-nav">
+          <nav id="gp-primary-main-nav">
+            <ul id="menu-main-menu-1" class="menu">
+              <li
+                class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children"
+              >
+<a href="index.html" class="menu-link main-menu-link" >About</a>                <ul class="sub-menu menu-odd menu-depth-1">
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a href="page_calibration.html">Calibration</a>                  </li>
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a href="change_log.html">ChangeLog</a>                  </li>
+                </ul>
+              </li>
+              <li
+                class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-post_type menu-item-object-page"
+              >
+<a href="classyosemitech.html">The yosemitech Class</a>              </li>
+              <li
+                class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-post_type menu-item-object-page menu-item-has-children"
+              >
+<a href="page_the_examples.html" class="menu-link main-menu-link" >Examples using the Yosemitech Modbus Library</a>                <ul class="sub-menu menu-odd menu-depth-1">
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a href="example_get_values.html">Reading Sensor Values</a>                  </li>
+                  <li
+                    class="gp-standard-menu gp-menu-link gp-show-all sub-menu-item menu-item-odd menu-item-depth-1 menu-item menu-item-type-post_type menu-item-object-page"
+                  >
+<a href="example_display_values.html">Displaying Values to a Screen</a>                  </li>
+                </ul>
+              </li>
+              <li
+                class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 menu-item menu-item-type-post_type menu-item-object-page"
+              >
+<a href="files.html"class="menu-link main-menu-link">Source Files</a>              </li>
+            </ul>
+          </nav> <!-- gp-primary-main-nav -->
+
+          <div id="gp-search">
+            <div id="m-search-button" class="m-show-m" onclick="return showSearch()">
+            </div> <!-- gp-search-box -->
+          </div> <!-- gp-search -->
+
+          <nav id="gp-secondary-main-nav"></nav>
+        </nav> <!-- gp-main-nav -->
+      </div> <!-- gp-container -->
+    </header> <!-- gp-main-header -->
+
+    <header id="gp-small-header">
+      <div class="gp-container">
+        <div class="gp-left-triangle"></div>
+        <div class="gp-right-triangle"></div>
+
+        <nav id="gp-top-nav" class="gp-nav">
+          <div id="gp-left-top-nav">
+            <p style="color:#fff">An Arduino library for communication with Yosemitech sensors via Modbus.</p>
+          </div>
+
+          <div id="gp-right-top-nav">
+            <ul id="menu-icon-links" class="menu">
+              <li
+                class="gp-standard-menu gp-columns-1 gp-show-all main-menu-item menu-item-even menu-item-depth-0 fa fa-github menu-item menu-item-type-custom menu-item-object-custom"
+              >
+                <a
+                  title="See it on GitHub"
+                  href="https://github.com/EnviroDIY/YosemitechModbus"
+                  class="menu-link main-menu-link"
+                  >See the source code on GitHub</a
+                >
+              </li>
+            </ul>
+          </div>
+
+        </nav>
+      </div>
+    </header> <!-- gp-small-header -->
+
+    <div id="gp-fixed-header-padding"></div>
+
+    <div class="m-doc-search" id="search">
+      <a href="#!" onclick="return hideSearch()"></a>
+      <div id="gp-header-area">
+        <div class="gp-container">
+          <div style="background-color:#fff;padding:20px;">
+            <div class="m-doc-search-header m-text m-small">
+              <div><span class="m-label m-info">Tab</span> / <span class="m-label m-info">T</span> to search, <span class="m-label m-info">Esc</span> to close</div>
+              <div id="search-symbolcount">&hellip;</div>
+            </div>
+            <div class="m-doc-search-content">
+              <form>
+                <input type="search" name="q" id="search-input" placeholder="Loading &hellip;" disabled="disabled" autofocus="autofocus" autocomplete="off" spellcheck="false" />
+              </form>
+              <noscript class="m-text m-danger m-text-center">Unlike everything else in the docs, the search functionality <em>requires</em> JavaScript.</noscript>
+              <div id="search-help" class="m-text m-dim m-text-center">
+                <p class="m-noindent">Search for symbols, directories, files, pages or
+            modules. You can omit any prefix from the symbol or file path; adding a
+            <code>:</code> or <code>/</code> suffix lists all members of given symbol or
+            directory.</p>
+            <p class="m-noindent">Use <span class="m-label m-dim">&darr;</span>
+            / <span class="m-label m-dim">&uarr;</span> to navigate through the list,
+            <span class="m-label m-dim">Enter</span> to go.
+            <span class="m-label m-dim">Tab</span> autocompletes common prefix, you can
+            copy a link to the result using <span class="m-label m-dim">⌘</span>
+            <span class="m-label m-dim">L</span> while <span class="m-label m-dim">⌘</span>
+            <span class="m-label m-dim">M</span> produces a Markdown link.</p>
+              </div>
+              <div id="search-notfound" class="m-text m-warning m-text-center">Sorry, nothing was found.</div>
+              <ul id="search-results"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="search-v2.js"></script>
+    <script src="searchdata-v2.js" async="async"></script>
+
+    <div class="gp-clear"></div>
+
+    <div id="gp-content-wrapper" class="gp-container">
+      <div id="gp-inner-container">
+        <div id="gp-left-column">
+          <div id="gp-content">
+
+            <main>
+              <article>
+                <div class="breadcrumbs" typeof="BreadcrumbList" vocab="http://schema.org/">
+        <span class="m-breadcrumb">
+          <a href="index.html">
+            YosemitechModbus
+          </a> &gt; <wbr/>
+        </span>
+        <span class="m-breadcrumb">
+          <a href="annotated.html">
+            Classes
+          </a> &gt; <wbr/>
+        </span>
+                <span class="m-breadcrumb">
+          yosemitech
+        </span>
+        <br>
+                </div>
+                <header class="gp-entry-header">
+                  <h1 class="gp-entry-title" itemprop="headline">
+
+            <div class="m-doc-include m-code m-inverted m-text-right"><span class="cp">#include</span> <a class="cpf" href="_yosemitech_modbus_8h.html">&lt;src/YosemitechModbus.h&gt;</a></div>
+
+            yosemitech
+            <span class="m-thin">class</span>
+
+                </h1>
+                </header>
+        <p>The class for communication with Yosemitech sensors via modbus.</p>
+        <nav class="m-block m-default">
+          <ul>
+            <li>
+              Reference
+              <ul>
+                <li><a href="#pub-methods">Public functions</a></li>
+                <li><a href="#functions-to-get-and-set-sensor-addresses-and-metadata">Functions to get and set sensor addresses and metadata</a></li>
+                <li><a href="#functions-to-start-and-stop-measurements">Functions to start and stop measurements</a></li>
+                <li><a href="#functions-to-get-one-or-more-values-from-a-sensor">Functions to get one or more values from a sensor.</a></li>
+                <li><a href="#functions-to-get-single-values-from-a-sensor">Functions to get single values from a sensor</a></li>
+                <li><a href="#functions-get-and-set-sensor-calibrations">Functions get and set sensor calibrations</a></li>
+                <li><a href="#functions-for-sensor-brushes">Functions for sensor brushes</a></li>
+                <li><a href="#debugging-functions">Debugging functions</a></li>
+              </ul>
+            </li>
+            <li>
+              Detailed Descriptions
+              <ul>
+                <li><a href="#function-details">Functions</a></li>
+              </ul>
+            </li>
+          </ul>
+        </nav>
+        <section id="pub-methods">
+          <h2>Public functions</h2>
+          <dl class="m-doc">
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool </span><a href="#a02e33210e0c0fdba5e1ce74be2931e5c" class="m-doc">begin</a>(</span><span class="m-doc-wrap"><span class="m-dim"><a href="_yosemitech_modbus_8h.html#a517840e9a91335c992f33b700dc42ba2" class="m-doc">yosemitechModel</a></span> <span class="m-param">model</span>,
+              <span class="m-dim">byte</span> <span class="m-param">modbusSlaveID</span>,
+              <span class="m-dim">Stream*</span> <span class="m-param">stream</span>,
+              <span class="m-dim">int</span> <span class="m-param">enablePin</span><span class="m-dim"> = -1</span>) -&gt; bool</span>
+            </dt>
+            <dd>This function sets up the communication.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool </span><a href="#ae7b0773df684326570ed82bf24521438" class="m-doc">begin</a>(</span><span class="m-doc-wrap"><span class="m-dim"><a href="_yosemitech_modbus_8h.html#a517840e9a91335c992f33b700dc42ba2" class="m-doc">yosemitechModel</a></span> <span class="m-param">model</span>,
+              <span class="m-dim">byte</span> <span class="m-param">modbusSlaveID</span>,
+              <span class="m-dim">Stream&amp;</span> <span class="m-param">stream</span>,
+              <span class="m-dim">int</span> <span class="m-param">enablePin</span><span class="m-dim"> = -1</span>) -&gt; bool</span>
+            </dt>
+            <dd>This function sets up the communication.</dd>
+          </dl>
+        </section>
+        <hr>
+
+        <section id="functions-to-get-and-set-sensor-addresses-and-metadata">
+          <h2>Functions to get and set sensor addresses and metadata</h2>
+            <p><a name="metadata_fxns"></a></p>
+          <dl class="m-doc">
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">String </span><a href="#a2fd1e8d6ed2430d44204459a5b54518a" class="m-doc">getModel</a>(</span><span class="m-doc-wrap"><span class="m-dim">void</span><span class="m-param"></span>) -&gt; String</span>
+            </dt>
+            <dd>Returns a pretty string with the model information.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">String </span><a href="#afd92ac5738b591ea85c0e188ec7a70eb" class="m-doc">getParameter</a>(</span><span class="m-doc-wrap"><span class="m-dim">void</span><span class="m-param"></span>) -&gt; String</span>
+            </dt>
+            <dd>Returns a pretty string with the parameter measured.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">String </span><a href="#a1c6ee3e6515bac147a6015eec37bf5a2" class="m-doc">getUnits</a>(</span><span class="m-doc-wrap"><span class="m-dim">void</span><span class="m-param"></span>) -&gt; String</span>
+            </dt>
+            <dd>Returns a pretty string with the measurement units.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">byte </span><a href="#ae15fbd9cb04bc7e2c502ae57d2f3c94d" class="m-doc">getSlaveID</a>(</span><span class="m-doc-wrap"><span class="m-dim">void</span><span class="m-param"></span>) -&gt; byte</span>
+            </dt>
+            <dd>Gets the modbus slave ID.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool </span><a href="#ad6157a85bdc645170eea9748b60db4b7" class="m-doc">setSlaveID</a>(</span><span class="m-doc-wrap"><span class="m-dim">byte</span> <span class="m-param">newSlaveID</span>) -&gt; bool</span>
+            </dt>
+            <dd>Sets a new modbus slave ID.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">String </span><a href="#a58153edb680b7f5fb3ee26b2adb2cd6d" class="m-doc">getSerialNumber</a>(</span><span class="m-doc-wrap"><span class="m-dim">void</span><span class="m-param"></span>) -&gt; String</span>
+            </dt>
+            <dd>Gets the instrument serial number as a String.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool </span><a href="#ad6e6b1465f4cd7ba0937dc8d7e0e67fc" class="m-doc">getVersion</a>(</span><span class="m-doc-wrap"><span class="m-dim">float&amp;</span> <span class="m-param">hardwareVersion</span>,
+              <span class="m-dim">float&amp;</span> <span class="m-param">softwareVersion</span>) -&gt; bool</span>
+            </dt>
+            <dd>Gets the hardware and software version of the sensor.</dd>
+          </dl>
+        </section>
+        <hr>
+        <section id="functions-to-start-and-stop-measurements">
+          <h2>Functions to start and stop measurements</h2>
+            <p><a name="measurement_fxns"></a></p>
+          <dl class="m-doc">
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool </span><a href="#a7b81cfc96ba27aba9300c54906267ce9" class="m-doc">startMeasurement</a>(</span><span class="m-doc-wrap"><span class="m-dim">void</span><span class="m-param"></span>) -&gt; bool</span>
+            </dt>
+            <dd>Tells the optical sensors to begin taking measurements.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool </span><a href="#aeb6208b483890e6c3c2394e37d3ab403" class="m-doc">stopMeasurement</a>(</span><span class="m-doc-wrap"><span class="m-dim">void</span><span class="m-param"></span>) -&gt; bool</span>
+            </dt>
+            <dd>Tells the optical sensors to stop taking measurements.</dd>
+          </dl>
+        </section>
+        <hr>
+        <section id="functions-to-get-one-or-more-values-from-a-sensor">
+          <h2>Functions to get one or more values from a sensor.</h2>
+            <p><a name="value_fetching"></a></p><p>The float variables for value1 and value2 and the byte for the error code must be initialized prior to calling this function.</p><p>This function is overloaded so you have the option of getting: 1 value - This will be only the parameter value 1 value and an error code - Parameter value and the error code</p><p>2 values - This will be the parameter and the temperature, with the parameter first and the temperature second 2 values and an error code - As two values, but with error code</p><p>3 values - The parameter, the temperature, and a third value for the sensors that return can return something else &ndash; Y532 (pH) can return electrical potential &ndash; Y551 (COD) can return turbidity &ndash; Y560 (Ammonium) returns NH4_N (mg/L) and pH as primary parameters, but can return more. &ndash; Y504 (DO) allows calculation of DO in mg/L, which can be returned 3 values and an error code - As three values, but with error code</p><aside class="m-note m-info"><h4>Note</h4><p>The one, two, and three value variants will simply return false for a multiparameter sonde</p></aside><p>8 values - For sondes Y4000 and Y560.</p><ul><li>Y4000 Sonde returns in this order: &quot;DO; Turb; Cond; pH; Temp; ORP;
+         Chl; BGA&quot;</li><li>Y560 Ammonium returns these groupings of parameters:<ul><li>pH, pH_potential (mV)</li><li>NH4+_potential (mV), K_potential (mV)</li><li>NH4_N, NH4+, K+ (all in mg/L)</li><li>Temperature (C) 8 values and an error code - As 8 values, but with error code</li></ul></li></ul><aside class="m-note m-info"><h4>Note</h4><p>The 8 value versions will return false for anything but a sonde</p></aside>
+          <dl class="m-doc">
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool </span><a href="#ae6ec9df15d2445a8ebbef71552b5d8d8" class="m-doc">getValues</a>(</span><span class="m-doc-wrap"><span class="m-dim">float&amp;</span> <span class="m-param">parmValue</span>) -&gt; bool</span>
+            </dt>
+            <dd>Gets values back from the sensor.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool </span><a href="#a598944ad19cbc4b990a7cb261d02108a" class="m-doc">getValues</a>(</span><span class="m-doc-wrap"><span class="m-dim">float&amp;</span> <span class="m-param">parmValue</span>,
+              <span class="m-dim">byte&amp;</span> <span class="m-param">errorCode</span>) -&gt; bool</span>
+            </dt>
+            <dd>Gets values back from the sensor.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool </span><a href="#aab7efbba00d4a7d028bdc0a0f94e7826" class="m-doc">getValues</a>(</span><span class="m-doc-wrap"><span class="m-dim">float&amp;</span> <span class="m-param">parmValue</span>,
+              <span class="m-dim">float&amp;</span> <span class="m-param">tempValue</span>) -&gt; bool</span>
+            </dt>
+            <dd>Gets values back from the sensor.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool </span><a href="#a546149af9d14dac466a66e22d4453e3e" class="m-doc">getValues</a>(</span><span class="m-doc-wrap"><span class="m-dim">float&amp;</span> <span class="m-param">parmValue</span>,
+              <span class="m-dim">float&amp;</span> <span class="m-param">tempValue</span>,
+              <span class="m-dim">byte&amp;</span> <span class="m-param">errorCode</span>) -&gt; bool</span>
+            </dt>
+            <dd>Gets values back from the sensor.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool </span><a href="#abdad57592b6a1e38466b4df2b82d8a41" class="m-doc">getValues</a>(</span><span class="m-doc-wrap"><span class="m-dim">float&amp;</span> <span class="m-param">parmValue</span>,
+              <span class="m-dim">float&amp;</span> <span class="m-param">tempValue</span>,
+              <span class="m-dim">float&amp;</span> <span class="m-param">thirdValue</span>) -&gt; bool</span>
+            </dt>
+            <dd>Gets values back from the sensor.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool </span><a href="#a0d63b192b49a6e1eefb7f8a8a1874777" class="m-doc">getValues</a>(</span><span class="m-doc-wrap"><span class="m-dim">float&amp;</span> <span class="m-param">parmValue</span>,
+              <span class="m-dim">float&amp;</span> <span class="m-param">tempValue</span>,
+              <span class="m-dim">float&amp;</span> <span class="m-param">thirdValue</span>,
+              <span class="m-dim">byte&amp;</span> <span class="m-param">errorCode</span>) -&gt; bool</span>
+            </dt>
+            <dd>Gets values back from the sensor.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool </span><a href="#a5c75872326d332e3be3d38badced7f27" class="m-doc">getValues</a>(</span><span class="m-doc-wrap"><span class="m-dim">float&amp;</span> <span class="m-param">firstValue</span>,
+              <span class="m-dim">float&amp;</span> <span class="m-param">secondValue</span>,
+              <span class="m-dim">float&amp;</span> <span class="m-param">thirdValue</span>,
+              <span class="m-dim">float&amp;</span> <span class="m-param">forthValue</span>,
+              <span class="m-dim">float&amp;</span> <span class="m-param">fifthValue</span>,
+              <span class="m-dim">float&amp;</span> <span class="m-param">sixthValue</span>,
+              <span class="m-dim">float&amp;</span> <span class="m-param">seventhValue</span>,
+              <span class="m-dim">float&amp;</span> <span class="m-param">eighthValue</span>) -&gt; bool</span>
+            </dt>
+            <dd>Gets values back from a multiparamter sonde.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool </span><a href="#a2c7b25ee2ac68b56557f211e1adffc75" class="m-doc">getValues</a>(</span><span class="m-doc-wrap"><span class="m-dim">float&amp;</span> <span class="m-param">firstValue</span>,
+              <span class="m-dim">float&amp;</span> <span class="m-param">secondValue</span>,
+              <span class="m-dim">float&amp;</span> <span class="m-param">thirdValue</span>,
+              <span class="m-dim">float&amp;</span> <span class="m-param">forthValue</span>,
+              <span class="m-dim">float&amp;</span> <span class="m-param">fifthValue</span>,
+              <span class="m-dim">float&amp;</span> <span class="m-param">sixthValue</span>,
+              <span class="m-dim">float&amp;</span> <span class="m-param">seventhValue</span>,
+              <span class="m-dim">float&amp;</span> <span class="m-param">eighthValue</span>,
+              <span class="m-dim">byte&amp;</span> <span class="m-param">errorCode</span>) -&gt; bool</span>
+            </dt>
+            <dd>Gets values back from a multiparamter sonde.</dd>
+          </dl>
+        </section>
+        <hr>
+        <section id="functions-to-get-single-values-from-a-sensor">
+          <h2>Functions to get single values from a sensor</h2>
+            <p><a name="single_values"></a></p>
+          <dl class="m-doc">
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">float </span><a href="#a4d3553f389c0b4121e977954a17cf4ca" class="m-doc">getValue</a>(</span><span class="m-doc-wrap"><span class="m-dim">void</span><span class="m-param"></span>) -&gt; float</span>
+            </dt>
+            <dd>Gets the main &quot;parameter&quot; value as a float.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">float </span><a href="#ab7b3f756409c1965672b61693f10684f" class="m-doc">getValue</a>(</span><span class="m-doc-wrap"><span class="m-dim">byte&amp;</span> <span class="m-param">errorCode</span>) -&gt; float</span>
+            </dt>
+            <dd>Gets the main &quot;parameter&quot; value as a float.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">float </span><a href="#a405fed178365417b41c053aba96e6177" class="m-doc">getTemperatureValue</a>(</span><span class="m-doc-wrap"><span class="m-dim">void</span><span class="m-param"></span>) -&gt; float</span>
+            </dt>
+            <dd>Returns the temperatures value from a sensor as a float.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">float </span><a href="#abc58e0d32d46e5a7e55a12ccc0072abb" class="m-doc">getPotentialValue</a>(</span><span class="m-doc-wrap"><span class="m-dim">void</span><span class="m-param"></span>) -&gt; float</span>
+            </dt>
+            <dd>Returns raw electrical potential value from the sensor as a float.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">float </span><a href="#a53948e1617a2bddabfc1ed9d5faabf5a" class="m-doc">getDOmgLValue</a>(</span><span class="m-doc-wrap"><span class="m-dim">void</span><span class="m-param"></span>) -&gt; float</span>
+            </dt>
+            <dd>Returns DO in mg/L (instead of % saturation) as a float.</dd>
+          </dl>
+        </section>
+        <hr>
+        <section id="functions-get-and-set-sensor-calibrations">
+          <h2>Functions get and set sensor calibrations</h2>
+            <p><a name="calibrations"></a></p>
+          <dl class="m-doc">
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool </span><a href="#add1417f27c23204658975ddd5399a5a8" class="m-doc">getCalibration</a>(</span><span class="m-doc-wrap"><span class="m-dim">float&amp;</span> <span class="m-param">K</span>,
+              <span class="m-dim">float&amp;</span> <span class="m-param">B</span>) -&gt; bool</span>
+            </dt>
+            <dd>Gets the calibration constants for the sensor.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool </span><a href="#ad61f12f06c838c3379c695cc99fd1130" class="m-doc">getCalibration</a>(</span><span class="m-doc-wrap"><span class="m-dim">float&amp;</span> <span class="m-param">K1</span>,
+              <span class="m-dim">float&amp;</span> <span class="m-param">K2</span>,
+              <span class="m-dim">float&amp;</span> <span class="m-param">K3</span>,
+              <span class="m-dim">float&amp;</span> <span class="m-param">K4</span>,
+              <span class="m-dim">float&amp;</span> <span class="m-param">K5</span>,
+              <span class="m-dim">float&amp;</span> <span class="m-param">K6</span>) -&gt; bool</span>
+            </dt>
+            <dd>Gets all six calibration constants for a pH sensor.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool </span><a href="#aef70a3ec6f758d75d8d86bb54d5447a8" class="m-doc">setCalibration</a>(</span><span class="m-doc-wrap"><span class="m-dim">float</span> <span class="m-param">K</span>,
+              <span class="m-dim">float</span> <span class="m-param">B</span>) -&gt; bool</span>
+            </dt>
+            <dd>Sets the calibration constants for a sensor.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool </span><a href="#a775e1d55a21a76c2f4340b0359cf55c1" class="m-doc">setCalibration</a>(</span><span class="m-doc-wrap"><span class="m-dim">float</span> <span class="m-param">K1</span>,
+              <span class="m-dim">float</span> <span class="m-param">K2</span>,
+              <span class="m-dim">float</span> <span class="m-param">K3</span>,
+              <span class="m-dim">float</span> <span class="m-param">K4</span>,
+              <span class="m-dim">float</span> <span class="m-param">K5</span>,
+              <span class="m-dim">float</span> <span class="m-param">K6</span>) -&gt; bool</span>
+            </dt>
+            <dd>Sets the FULL calibration constants for a pH sensor, which requires 6 coefficients.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool </span><a href="#a44057fcacdb1015219c95df609ac494b" class="m-doc">pHCalibrationPoint</a>(</span><span class="m-doc-wrap"><span class="m-dim">float</span> <span class="m-param">pH</span>) -&gt; bool</span>
+            </dt>
+            <dd>Sets the 3 calibration points for a pH sensor.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">byte </span><a href="#a93c3eec2ce56171d32d03e59f0db7122" class="m-doc">pHCalibrationStatus</a>(</span><span class="m-doc-wrap"><span class="m-dim">void</span><span class="m-param"></span>) -&gt; byte</span>
+            </dt>
+            <dd>Verifies the success of a calibration for a pH sensor.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool </span><a href="#a8138a0fcda5bf6f48f88adb55d2dc762" class="m-doc">setCapCoefficients</a>(</span><span class="m-doc-wrap"><span class="m-dim">float</span> <span class="m-param">K0</span>,
+              <span class="m-dim">float</span> <span class="m-param">K1</span>,
+              <span class="m-dim">float</span> <span class="m-param">K2</span>,
+              <span class="m-dim">float</span> <span class="m-param">K3</span>,
+              <span class="m-dim">float</span> <span class="m-param">K4</span>,
+              <span class="m-dim">float</span> <span class="m-param">K5</span>,
+              <span class="m-dim">float</span> <span class="m-param">K6</span>,
+              <span class="m-dim">float</span> <span class="m-param">K7</span>) -&gt; bool</span>
+            </dt>
+            <dd>Sets the cap coefficients constants for a sensor.</dd>
+          </dl>
+        </section>
+        <hr>
+        <section id="functions-for-sensor-brushes">
+          <h2>Functions for sensor brushes</h2>
+            <p><a name="brushing"></a></p>
+          <dl class="m-doc">
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool </span><a href="#aeec61628b9b08dc2a58ac88169878209" class="m-doc">activateBrush</a>(</span><span class="m-doc-wrap"><span class="m-dim">void</span><span class="m-param"></span>) -&gt; bool</span>
+            </dt>
+            <dd>Immediately activates the cleaning brush for sensors with one.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool </span><a href="#ae365f9ac4a6e78e7194fcac57643f46a" class="m-doc">setBrushInterval</a>(</span><span class="m-doc-wrap"><span class="m-dim">uint16_t</span> <span class="m-param">intervalMinutes</span>) -&gt; bool</span>
+            </dt>
+            <dd>Sets the brush interval - that is, how frequently the brush will run if power is continuously applied to the sensor.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">uint16_t </span><a href="#a3cfda31e4de143d3627eaf9ae6f4a6e5" class="m-doc">getBrushInterval</a>(</span><span class="m-doc-wrap"><span class="m-dim">void</span><span class="m-param"></span>) -&gt; uint16_t</span>
+            </dt>
+            <dd>Returns the brushing interval - that is, how frequently the brush will run if power is continuously applied to the sensor.</dd>
+          </dl>
+        </section>
+        <hr>
+        <section id="debugging-functions">
+          <h2>Debugging functions</h2>
+            <p><a name="debugging"></a></p>
+          <dl class="m-doc">
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">void </span><a href="#a5afd84124e07053dfcbd23231e5d3d4a" class="m-doc">setDebugStream</a>(</span><span class="m-doc-wrap"><span class="m-dim">Stream*</span> <span class="m-param">stream</span>)</span>
+            </dt>
+            <dd>Set a stream for debugging information to go to.</dd>
+                          <dt>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">void </span><a href="#a555e2c72d79bbb4ecce2afe19292c985" class="m-doc">setDebugStream</a>(</span><span class="m-doc-wrap"><span class="m-dim">Stream&amp;</span> <span class="m-param">stream</span>)</span>
+            </dt>
+            <dd>Set a stream for debugging information to go to.</dd>
+                          <dt id="af7e33da2498d7bebec4693fd00622832">
+              <span class="m-doc-wrap-bumper"><span class="m-dim">void </span><a href="#af7e33da2498d7bebec4693fd00622832" class="m-doc-self">stopDebugging</a>(</span><span class="m-doc-wrap"><span class="m-dim">void</span><span class="m-param"></span>)</span>
+            </dt>
+            <dd>Un-set the stream for debugging information to go to; stop debugging.</dd>
+          </dl>
+        </section>
+        <hr>
+
+        <section id="function-details">
+          <h2>Function documentation</h2>
+                      <section class="m-doc-details" id="a02e33210e0c0fdba5e1ce74be2931e5c"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool  yosemitech::<wbr /></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a
+                    href="#a02e33210e0c0fdba5e1ce74be2931e5c" class="m-doc-self">begin</a>(</span><span class="m-doc-wrap"><span class="m-dim"><a href="_yosemitech_modbus_8h.html#a517840e9a91335c992f33b700dc42ba2" class="m-doc">yosemitechModel</a></span> <span
+                    class="m-param">model</span>,
+              <span class="m-dim">byte</span> <span
+                    class="m-param">modbusSlaveID</span>,
+              <span class="m-dim">Stream*</span> <span
+                    class="m-param">stream</span>,
+              <span class="m-dim">int</span> <span
+                    class="m-param">enablePin</span><span class="m-dim"> = -1</span>)</span></span>
+            </h3>
+            <p>This function sets up the communication.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="m-param"  style="width: 1%"><span class="m-param">model</span></td>
+                  <td>The model of the Yosemitech sensor, from <a href="_yosemitech_modbus_8h.html#a517840e9a91335c992f33b700dc42ba2" class="m-doc">yosemitechModel</a></td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">modbusSlaveID</span></td>
+                  <td>The byte identifier of the modbus slave device.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">stream</span></td>
+                  <td>A pointer to the Arduino stream object to communicate with.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">enablePin</span></td>
+                  <td>A pin on the Arduino processor to use to send an enable signal to an RS485 to TTL adapter. Use a negative number if this does not apply. Optional with a default value of -1.</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td><span class="m-dim">bool</span> True if the starting communication was successful, false if not.</td>
+                </tr>
+              </tfoot>
+            </table>
+            <p>It should be run during the arduino &quot;setup&quot; function. The &quot;stream&quot; device must be initialized prior to running this.</p>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="ae7b0773df684326570ed82bf24521438"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool  yosemitech::<wbr /></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a
+                    href="#ae7b0773df684326570ed82bf24521438" class="m-doc-self">begin</a>(</span><span class="m-doc-wrap"><span class="m-dim"><a href="_yosemitech_modbus_8h.html#a517840e9a91335c992f33b700dc42ba2" class="m-doc">yosemitechModel</a></span> <span
+                    class="m-param">model</span>,
+              <span class="m-dim">byte</span> <span
+                    class="m-param">modbusSlaveID</span>,
+              <span class="m-dim">Stream&amp;</span> <span
+                    class="m-param">stream</span>,
+              <span class="m-dim">int</span> <span
+                    class="m-param">enablePin</span><span class="m-dim"> = -1</span>)</span></span>
+            </h3>
+            <p>This function sets up the communication.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="m-param"  style="width: 1%"><span class="m-param">model</span></td>
+                  <td>The model of the Yosemitech sensor, from <a href="_yosemitech_modbus_8h.html#a517840e9a91335c992f33b700dc42ba2" class="m-doc">yosemitechModel</a></td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">modbusSlaveID</span></td>
+                  <td>The byte identifier of the modbus slave device.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">stream</span></td>
+                  <td>A reference to the Arduino stream object to communicate with.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">enablePin</span></td>
+                  <td>A pin on the Arduino processor to use to send an enable signal to an RS485 to TTL adapter. Use a negative number if this does not apply. Optional with a default value of -1.</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td><span class="m-dim">bool</span> True if the starting communication was successful, false if not.</td>
+                </tr>
+              </tfoot>
+            </table>
+            <p>It should be run during the arduino &quot;setup&quot; function. The &quot;stream&quot; device must be initialized prior to running this.</p>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a2fd1e8d6ed2430d44204459a5b54518a"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">String  yosemitech::<wbr /></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a
+                    href="#a2fd1e8d6ed2430d44204459a5b54518a" class="m-doc-self">getModel</a>(</span><span class="m-doc-wrap"><span class="m-dim">void</span><span
+                    class="m-param"></span>)</span></span>
+            </h3>
+            <p>Returns a pretty string with the model information.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <tfoot>
+                <tr>
+                  <th style="width: 1%">Returns</th>
+                  <td><span class="m-dim">String</span> The Yosemitech sensor model</td>
+                </tr>
+              </tfoot>
+            </table>
+            <aside class="m-note m-info"><h4>Note</h4><p>This is only based on the model input from the &quot;begin&quot; fxn. The sensor itself does not return its model information.</p></aside>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="afd92ac5738b591ea85c0e188ec7a70eb"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">String  yosemitech::<wbr /></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a
+                    href="#afd92ac5738b591ea85c0e188ec7a70eb" class="m-doc-self">getParameter</a>(</span><span class="m-doc-wrap"><span class="m-dim">void</span><span
+                    class="m-param"></span>)</span></span>
+            </h3>
+            <p>Returns a pretty string with the parameter measured.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <tfoot>
+                <tr>
+                  <th style="width: 1%">Returns</th>
+                  <td><span class="m-dim">String</span> The primary parameter being measured on this Yosemitech sensor model.</td>
+                </tr>
+              </tfoot>
+            </table>
+            <aside class="m-note m-info"><h4>Note</h4><p>This is only based on the model input from the &quot;begin&quot; fxn. The sensor itself does not return this information.</p></aside>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a1c6ee3e6515bac147a6015eec37bf5a2"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">String  yosemitech::<wbr /></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a
+                    href="#a1c6ee3e6515bac147a6015eec37bf5a2" class="m-doc-self">getUnits</a>(</span><span class="m-doc-wrap"><span class="m-dim">void</span><span
+                    class="m-param"></span>)</span></span>
+            </h3>
+            <p>Returns a pretty string with the measurement units.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <tfoot>
+                <tr>
+                  <th style="width: 1%">Returns</th>
+                  <td><span class="m-dim">String</span> The units of primary parameter being measured on this Yosemitech sensor model.</td>
+                </tr>
+              </tfoot>
+            </table>
+            <aside class="m-note m-info"><h4>Note</h4><p>This is only based on the model input from the &quot;begin&quot; fxn. The sensor itself does not return this information.</p></aside>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="ae15fbd9cb04bc7e2c502ae57d2f3c94d"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">byte  yosemitech::<wbr /></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a
+                    href="#ae15fbd9cb04bc7e2c502ae57d2f3c94d" class="m-doc-self">getSlaveID</a>(</span><span class="m-doc-wrap"><span class="m-dim">void</span><span
+                    class="m-param"></span>)</span></span>
+            </h3>
+            <p>Gets the modbus slave ID.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <tfoot>
+                <tr>
+                  <th style="width: 1%">Returns</th>
+                  <td><span class="m-dim">byte</span> The slave ID of the Yosemitech sensor</td>
+                </tr>
+              </tfoot>
+            </table>
+            <p>Not supported by many sensors.</p>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="ad6157a85bdc645170eea9748b60db4b7"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool  yosemitech::<wbr /></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a
+                    href="#ad6157a85bdc645170eea9748b60db4b7" class="m-doc-self">setSlaveID</a>(</span><span class="m-doc-wrap"><span class="m-dim">byte</span> <span
+                    class="m-param">newSlaveID</span>)</span></span>
+            </h3>
+            <p>Sets a new modbus slave ID.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="m-param"  style="width: 1%"><span class="m-param">newSlaveID</span></td>
+                  <td>The new slave ID for the Yosemitech sensor</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td><span class="m-dim">bool</span> True if the slave ID was successfully set, false if not.</td>
+                </tr>
+              </tfoot>
+            </table>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a58153edb680b7f5fb3ee26b2adb2cd6d"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">String  yosemitech::<wbr /></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a
+                    href="#a58153edb680b7f5fb3ee26b2adb2cd6d" class="m-doc-self">getSerialNumber</a>(</span><span class="m-doc-wrap"><span class="m-dim">void</span><span
+                    class="m-param"></span>)</span></span>
+            </h3>
+            <p>Gets the instrument serial number as a String.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <tfoot>
+                <tr>
+                  <th style="width: 1%">Returns</th>
+                  <td><span class="m-dim">String</span> The serial number of the Yosemitech sensor</td>
+                </tr>
+              </tfoot>
+            </table>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="ad6e6b1465f4cd7ba0937dc8d7e0e67fc"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool  yosemitech::<wbr /></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a
+                    href="#ad6e6b1465f4cd7ba0937dc8d7e0e67fc" class="m-doc-self">getVersion</a>(</span><span class="m-doc-wrap"><span class="m-dim">float&amp;</span> <span
+                    class="m-param">hardwareVersion</span>,
+              <span class="m-dim">float&amp;</span> <span
+                    class="m-param">softwareVersion</span>)</span></span>
+            </h3>
+            <p>Gets the hardware and software version of the sensor.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="m-param"  style="width: 1%"><span class="m-param">hardwareVersion</span></td>
+                  <td>A reference to a float object to be modified with the hardware version.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">softwareVersion</span></td>
+                  <td>A reference to a float object to be modified with the software version.</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td><span class="m-dim">bool</span> True if the hardware and software versions were successfully updated, false if not.</td>
+                </tr>
+              </tfoot>
+            </table>
+            <p>The float variables for the hardware and software versions must be initialized prior to calling this function.</p><p>The reference (&amp;) is needed when declaring this function so that the function is able to modify the actual input floats rather than create and destroy copies of them.</p><p>There is no need to add the &amp; when actually using the function.</p>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a7b81cfc96ba27aba9300c54906267ce9"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool  yosemitech::<wbr /></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a
+                    href="#a7b81cfc96ba27aba9300c54906267ce9" class="m-doc-self">startMeasurement</a>(</span><span class="m-doc-wrap"><span class="m-dim">void</span><span
+                    class="m-param"></span>)</span></span>
+            </h3>
+            <p>Tells the optical sensors to begin taking measurements.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <tfoot>
+                <tr>
+                  <th style="width: 1%">Returns</th>
+                  <td><span class="m-dim">bool</span> True if the measurements were successfully started, false if not.</td>
+                </tr>
+              </tfoot>
+            </table>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="aeb6208b483890e6c3c2394e37d3ab403"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool  yosemitech::<wbr /></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a
+                    href="#aeb6208b483890e6c3c2394e37d3ab403" class="m-doc-self">stopMeasurement</a>(</span><span class="m-doc-wrap"><span class="m-dim">void</span><span
+                    class="m-param"></span>)</span></span>
+            </h3>
+            <p>Tells the optical sensors to stop taking measurements.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <tfoot>
+                <tr>
+                  <th style="width: 1%">Returns</th>
+                  <td><span class="m-dim">bool</span> True if the measurements were successfully started, false if not.</td>
+                </tr>
+              </tfoot>
+            </table>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="ae6ec9df15d2445a8ebbef71552b5d8d8"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool  yosemitech::<wbr /></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a
+                    href="#ae6ec9df15d2445a8ebbef71552b5d8d8" class="m-doc-self">getValues</a>(</span><span class="m-doc-wrap"><span class="m-dim">float&amp;</span> <span
+                    class="m-param">parmValue</span>)</span></span>
+            </h3>
+            <p>Gets values back from the sensor.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="m-param"  style="width: 1%"><span class="m-param">parmValue</span></td>
+                  <td>A float to replace with the first parameter value from the sensor.</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td><span class="m-dim">bool</span> True if the measurements were successfully obtained, false if not.</td>
+                </tr>
+              </tfoot>
+            </table>
+            <aside class="m-note m-default"><h4>See also</h4><p>value_fetching</p></aside>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a598944ad19cbc4b990a7cb261d02108a"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool  yosemitech::<wbr /></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a
+                    href="#a598944ad19cbc4b990a7cb261d02108a" class="m-doc-self">getValues</a>(</span><span class="m-doc-wrap"><span class="m-dim">float&amp;</span> <span
+                    class="m-param">parmValue</span>,
+              <span class="m-dim">byte&amp;</span> <span
+                    class="m-param">errorCode</span>)</span></span>
+            </h3>
+            <p>Gets values back from the sensor.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="m-param"  style="width: 1%"><span class="m-param">parmValue</span></td>
+                  <td>A float to replace with the first parameter value from the sensor.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">errorCode</span></td>
+                  <td>A byte to replace with the error code from the measurement.</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td><span class="m-dim">bool</span> True if the measurements were successfully obtained, false if not.</td>
+                </tr>
+              </tfoot>
+            </table>
+            <aside class="m-note m-default"><h4>See also</h4><p>value_fetching</p></aside>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="aab7efbba00d4a7d028bdc0a0f94e7826"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool  yosemitech::<wbr /></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a
+                    href="#aab7efbba00d4a7d028bdc0a0f94e7826" class="m-doc-self">getValues</a>(</span><span class="m-doc-wrap"><span class="m-dim">float&amp;</span> <span
+                    class="m-param">parmValue</span>,
+              <span class="m-dim">float&amp;</span> <span
+                    class="m-param">tempValue</span>)</span></span>
+            </h3>
+            <p>Gets values back from the sensor.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="m-param"  style="width: 1%"><span class="m-param">parmValue</span></td>
+                  <td>A float to replace with the first parameter value from the sensor.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">tempValue</span></td>
+                  <td>A float to replace with the temparature parameter value from the sensor.</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td><span class="m-dim">bool</span> True if the measurements were successfully obtained, false if not.</td>
+                </tr>
+              </tfoot>
+            </table>
+            <aside class="m-note m-default"><h4>See also</h4><p>value_fetching</p></aside>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a546149af9d14dac466a66e22d4453e3e"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool  yosemitech::<wbr /></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a
+                    href="#a546149af9d14dac466a66e22d4453e3e" class="m-doc-self">getValues</a>(</span><span class="m-doc-wrap"><span class="m-dim">float&amp;</span> <span
+                    class="m-param">parmValue</span>,
+              <span class="m-dim">float&amp;</span> <span
+                    class="m-param">tempValue</span>,
+              <span class="m-dim">byte&amp;</span> <span
+                    class="m-param">errorCode</span>)</span></span>
+            </h3>
+            <p>Gets values back from the sensor.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="m-param"  style="width: 1%"><span class="m-param">parmValue</span></td>
+                  <td>A float to replace with the first parameter value from the sensor.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">tempValue</span></td>
+                  <td>A float to replace with the temparature parameter value from the sensor.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">errorCode</span></td>
+                  <td>A byte to replace with the error code from the measurement.</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td><span class="m-dim">bool</span> True if the measurements were successfully obtained, false if not.</td>
+                </tr>
+              </tfoot>
+            </table>
+            <aside class="m-note m-default"><h4>See also</h4><p>value_fetching</p></aside>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="abdad57592b6a1e38466b4df2b82d8a41"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool  yosemitech::<wbr /></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a
+                    href="#abdad57592b6a1e38466b4df2b82d8a41" class="m-doc-self">getValues</a>(</span><span class="m-doc-wrap"><span class="m-dim">float&amp;</span> <span
+                    class="m-param">parmValue</span>,
+              <span class="m-dim">float&amp;</span> <span
+                    class="m-param">tempValue</span>,
+              <span class="m-dim">float&amp;</span> <span
+                    class="m-param">thirdValue</span>)</span></span>
+            </h3>
+            <p>Gets values back from the sensor.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="m-param"  style="width: 1%"><span class="m-param">parmValue</span></td>
+                  <td>A float to replace with the first parameter value from the sensor.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">tempValue</span></td>
+                  <td>A float to replace with the temparature parameter value from the sensor.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">thirdValue</span></td>
+                  <td>A float to replace with the third parameter value from the sensor, if applicable.</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td><span class="m-dim">bool</span> True if the measurements were successfully obtained, false if not.</td>
+                </tr>
+              </tfoot>
+            </table>
+            <aside class="m-note m-default"><h4>See also</h4><p>value_fetching</p></aside>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a0d63b192b49a6e1eefb7f8a8a1874777"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool  yosemitech::<wbr /></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a
+                    href="#a0d63b192b49a6e1eefb7f8a8a1874777" class="m-doc-self">getValues</a>(</span><span class="m-doc-wrap"><span class="m-dim">float&amp;</span> <span
+                    class="m-param">parmValue</span>,
+              <span class="m-dim">float&amp;</span> <span
+                    class="m-param">tempValue</span>,
+              <span class="m-dim">float&amp;</span> <span
+                    class="m-param">thirdValue</span>,
+              <span class="m-dim">byte&amp;</span> <span
+                    class="m-param">errorCode</span>)</span></span>
+            </h3>
+            <p>Gets values back from the sensor.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="m-param"  style="width: 1%"><span class="m-param">parmValue</span></td>
+                  <td>A float to replace with the first parameter value from the sensor.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">tempValue</span></td>
+                  <td>A float to replace with the temparature parameter value from the sensor.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">thirdValue</span></td>
+                  <td>A float to replace with the third parameter value from the sensor, if applicable.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">errorCode</span></td>
+                  <td>A byte to replace with the error code from the measurement.</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td><span class="m-dim">bool</span> True if the measurements were successfully obtained, false if not.</td>
+                </tr>
+              </tfoot>
+            </table>
+            <aside class="m-note m-default"><h4>See also</h4><p>value_fetching</p></aside>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a5c75872326d332e3be3d38badced7f27"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool  yosemitech::<wbr /></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a
+                    href="#a5c75872326d332e3be3d38badced7f27" class="m-doc-self">getValues</a>(</span><span class="m-doc-wrap"><span class="m-dim">float&amp;</span> <span
+                    class="m-param">firstValue</span>,
+              <span class="m-dim">float&amp;</span> <span
+                    class="m-param">secondValue</span>,
+              <span class="m-dim">float&amp;</span> <span
+                    class="m-param">thirdValue</span>,
+              <span class="m-dim">float&amp;</span> <span
+                    class="m-param">forthValue</span>,
+              <span class="m-dim">float&amp;</span> <span
+                    class="m-param">fifthValue</span>,
+              <span class="m-dim">float&amp;</span> <span
+                    class="m-param">sixthValue</span>,
+              <span class="m-dim">float&amp;</span> <span
+                    class="m-param">seventhValue</span>,
+              <span class="m-dim">float&amp;</span> <span
+                    class="m-param">eighthValue</span>)</span></span>
+            </h3>
+            <p>Gets values back from a multiparamter sonde.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="m-param"  style="width: 1%"><span class="m-param">firstValue</span></td>
+                  <td>A float to replace with the first parameter value from the sensor.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">secondValue</span></td>
+                  <td>A float to replace with the second parameter value from the sensor.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">thirdValue</span></td>
+                  <td>A float to replace with the third parameter value from the sensor.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">forthValue</span></td>
+                  <td>A float to replace with the fourth parameter value from the sensor.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">fifthValue</span></td>
+                  <td>A float to replace with the fifth parameter value from the sensor.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">sixthValue</span></td>
+                  <td>A float to replace with the sixtth parameter value from the sensor.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">seventhValue</span></td>
+                  <td>A float to replace with the seventh parameter value from the sensor.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">eighthValue</span></td>
+                  <td>A float to replace with the eighth parameter value from the sensor.</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td><span class="m-dim">bool</span> True if the measurements were successfully obtained, false if not.</td>
+                </tr>
+              </tfoot>
+            </table>
+            <aside class="m-note m-info"><h4>Note</h4><p>This will return false for anything but a sonde</p></aside>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a2c7b25ee2ac68b56557f211e1adffc75"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool  yosemitech::<wbr /></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a
+                    href="#a2c7b25ee2ac68b56557f211e1adffc75" class="m-doc-self">getValues</a>(</span><span class="m-doc-wrap"><span class="m-dim">float&amp;</span> <span
+                    class="m-param">firstValue</span>,
+              <span class="m-dim">float&amp;</span> <span
+                    class="m-param">secondValue</span>,
+              <span class="m-dim">float&amp;</span> <span
+                    class="m-param">thirdValue</span>,
+              <span class="m-dim">float&amp;</span> <span
+                    class="m-param">forthValue</span>,
+              <span class="m-dim">float&amp;</span> <span
+                    class="m-param">fifthValue</span>,
+              <span class="m-dim">float&amp;</span> <span
+                    class="m-param">sixthValue</span>,
+              <span class="m-dim">float&amp;</span> <span
+                    class="m-param">seventhValue</span>,
+              <span class="m-dim">float&amp;</span> <span
+                    class="m-param">eighthValue</span>,
+              <span class="m-dim">byte&amp;</span> <span
+                    class="m-param">errorCode</span>)</span></span>
+            </h3>
+            <p>Gets values back from a multiparamter sonde.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="m-param"  style="width: 1%"><span class="m-param">firstValue</span></td>
+                  <td>A float to replace with the first parameter value from the sensor.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">secondValue</span></td>
+                  <td>A float to replace with the second parameter value from the sensor.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">thirdValue</span></td>
+                  <td>A float to replace with the third parameter value from the sensor.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">forthValue</span></td>
+                  <td>A float to replace with the fourth parameter value from the sensor.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">fifthValue</span></td>
+                  <td>A float to replace with the fifth parameter value from the sensor.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">sixthValue</span></td>
+                  <td>A float to replace with the sixtth parameter value from the sensor.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">seventhValue</span></td>
+                  <td>A float to replace with the seventh parameter value from the sensor.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">eighthValue</span></td>
+                  <td>A float to replace with the eighth parameter value from the sensor.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">errorCode</span></td>
+                  <td>A byte to replace with the error code from the measurement.</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td><span class="m-dim">bool</span> True if the measurements were successfully obtained, false if not.</td>
+                </tr>
+              </tfoot>
+            </table>
+            <aside class="m-note m-info"><h4>Note</h4><p>This will return false for anything but a sonde</p></aside>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a4d3553f389c0b4121e977954a17cf4ca"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">float  yosemitech::<wbr /></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a
+                    href="#a4d3553f389c0b4121e977954a17cf4ca" class="m-doc-self">getValue</a>(</span><span class="m-doc-wrap"><span class="m-dim">void</span><span
+                    class="m-param"></span>)</span></span>
+            </h3>
+            <p>Gets the main &quot;parameter&quot; value as a float.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <tfoot>
+                <tr>
+                  <th style="width: 1%">Returns</th>
+                  <td><span class="m-dim">float</span> The main &quot;parameter&quot; value as a float</td>
+                </tr>
+              </tfoot>
+            </table>
+            <p>This is overloaded, so you have the option of getting the error code in another pre-initialized variable, if you want it and the sensor supports it.</p>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="ab7b3f756409c1965672b61693f10684f"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">float  yosemitech::<wbr /></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a
+                    href="#ab7b3f756409c1965672b61693f10684f" class="m-doc-self">getValue</a>(</span><span class="m-doc-wrap"><span class="m-dim">byte&amp;</span> <span
+                    class="m-param">errorCode</span>)</span></span>
+            </h3>
+            <p>Gets the main &quot;parameter&quot; value as a float.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="m-param"  style="width: 1%"><span class="m-param">errorCode</span></td>
+                  <td>A byte to replace with the error code from the measurement.</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td><span class="m-dim">float</span> The main &quot;parameter&quot; value as a float</td>
+                </tr>
+              </tfoot>
+            </table>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a405fed178365417b41c053aba96e6177"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">float  yosemitech::<wbr /></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a
+                    href="#a405fed178365417b41c053aba96e6177" class="m-doc-self">getTemperatureValue</a>(</span><span class="m-doc-wrap"><span class="m-dim">void</span><span
+                    class="m-param"></span>)</span></span>
+            </h3>
+            <p>Returns the temperatures value from a sensor as a float.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <tfoot>
+                <tr>
+                  <th style="width: 1%">Returns</th>
+                  <td><span class="m-dim">float</span> The temperature value as a float</td>
+                </tr>
+              </tfoot>
+            </table>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="abc58e0d32d46e5a7e55a12ccc0072abb"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">float  yosemitech::<wbr /></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a
+                    href="#abc58e0d32d46e5a7e55a12ccc0072abb" class="m-doc-self">getPotentialValue</a>(</span><span class="m-doc-wrap"><span class="m-dim">void</span><span
+                    class="m-param"></span>)</span></span>
+            </h3>
+            <p>Returns raw electrical potential value from the sensor as a float.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <tfoot>
+                <tr>
+                  <th style="width: 1%">Returns</th>
+                  <td><span class="m-dim">float</span> The raw electrical potential value as a float</td>
+                </tr>
+              </tfoot>
+            </table>
+            <p>This only applies to pH</p>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a53948e1617a2bddabfc1ed9d5faabf5a"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">float  yosemitech::<wbr /></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a
+                    href="#a53948e1617a2bddabfc1ed9d5faabf5a" class="m-doc-self">getDOmgLValue</a>(</span><span class="m-doc-wrap"><span class="m-dim">void</span><span
+                    class="m-param"></span>)</span></span>
+            </h3>
+            <p>Returns DO in mg/L (instead of % saturation) as a float.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <tfoot>
+                <tr>
+                  <th style="width: 1%">Returns</th>
+                  <td><span class="m-dim">float</span> The dissolved oxygen value as a float</td>
+                </tr>
+              </tfoot>
+            </table>
+            <p>This only applies to DO and is calculated in the <a href="classyosemitech.html#ae6ec9df15d2445a8ebbef71552b5d8d8" class="m-doc">getValues()</a> equation using the measured temperature and a salinity of 0 and pressure of 760 mmHg (sea level)</p>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="add1417f27c23204658975ddd5399a5a8"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool  yosemitech::<wbr /></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a
+                    href="#add1417f27c23204658975ddd5399a5a8" class="m-doc-self">getCalibration</a>(</span><span class="m-doc-wrap"><span class="m-dim">float&amp;</span> <span
+                    class="m-param">K</span>,
+              <span class="m-dim">float&amp;</span> <span
+                    class="m-param">B</span>)</span></span>
+            </h3>
+            <p>Gets the calibration constants for the sensor.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="m-param"  style="width: 1%"><span class="m-param">K</span></td>
+                  <td>A float to replace with the first calibration constant - K = slope.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">B</span></td>
+                  <td>A float to replace with the second calibration constant - B = intercept.</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td><span class="m-dim">bool</span> True if floats were successfully replaced with the calibration information, false if not.</td>
+                </tr>
+              </tfoot>
+            </table>
+            <p>The float variables must be initialized prior to calling this function. MOST sensors have two calibration coefficients: K = slope, B = intercept The calibration is applied to all values returned by the sensor as: value_returned = (value_raw * K) + B</p><aside class="m-note m-info"><h4>Note</h4><p>This should <strong>NOT</strong> be used with the pH sensor.</p></aside>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="ad61f12f06c838c3379c695cc99fd1130"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool  yosemitech::<wbr /></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a
+                    href="#ad61f12f06c838c3379c695cc99fd1130" class="m-doc-self">getCalibration</a>(</span><span class="m-doc-wrap"><span class="m-dim">float&amp;</span> <span
+                    class="m-param">K1</span>,
+              <span class="m-dim">float&amp;</span> <span
+                    class="m-param">K2</span>,
+              <span class="m-dim">float&amp;</span> <span
+                    class="m-param">K3</span>,
+              <span class="m-dim">float&amp;</span> <span
+                    class="m-param">K4</span>,
+              <span class="m-dim">float&amp;</span> <span
+                    class="m-param">K5</span>,
+              <span class="m-dim">float&amp;</span> <span
+                    class="m-param">K6</span>)</span></span>
+            </h3>
+            <p>Gets all six calibration constants for a pH sensor.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="m-param"  style="width: 1%"><span class="m-param">K1</span></td>
+                  <td>A float to replace with the first calibration constant.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">K2</span></td>
+                  <td>A float to replace with the second calibration constant.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">K3</span></td>
+                  <td>A float to replace with the third calibration constant.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">K4</span></td>
+                  <td>A float to replace with the fourth calibration constant.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">K5</span></td>
+                  <td>A float to replace with the fifth calibration constant.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">K6</span></td>
+                  <td>A float to replace with the sixth calibration constant.</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td><span class="m-dim">bool</span> True if floats were successfully replaced with the calibration information, false if not.</td>
+                </tr>
+              </tfoot>
+            </table>
+            <p>The pH sensor uses SIX calibration coefficients Factory calibration values for pH are: K1=6.86, K2=-6.72, K3=0.04, K4=6.86, K5=-6.56, K6=-1.04</p><aside class="m-note m-info"><h4>Note</h4><p>This only applies to the pH sensor!</p></aside>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="aef70a3ec6f758d75d8d86bb54d5447a8"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool  yosemitech::<wbr /></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a
+                    href="#aef70a3ec6f758d75d8d86bb54d5447a8" class="m-doc-self">setCalibration</a>(</span><span class="m-doc-wrap"><span class="m-dim">float</span> <span
+                    class="m-param">K</span>,
+              <span class="m-dim">float</span> <span
+                    class="m-param">B</span>)</span></span>
+            </h3>
+            <p>Sets the calibration constants for a sensor.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="m-param"  style="width: 1%"><span class="m-param">K</span></td>
+                  <td>The calibration slope</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">B</span></td>
+                  <td>The calibration intercept</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td><span class="m-dim">bool</span> True if the calibration was successfully set; false if not.</td>
+                </tr>
+              </tfoot>
+            </table>
+            <p>The suggested calibration protocol for sensors with a 2-coefficient calibration is:</p><ol><li>Use this command to set calibration coefficients as K = 1 and B = 0</li><li>Put the probe in a solution of known value.</li><li>Send the &quot;startMeasurement&quot; command and allow the probe to stabilize.</li><li>Send the &quot;getValue&quot; command to get the returned parameter value. (Depending on the sensor, you may want to take multiple values and average them.)</li><li>Ideally, repeat steps 2-4 in multiple standard solutions</li><li>Calculate the slope (K) and offset (B) between the known values for the standard solutions and the values returned by the sensor. (x - values from sensor, y = values of standard solutions)</li><li>Send the calculated slope (K) and offset (B) to the sensor using this command.</li></ol><p>The pH sensor can be calibrated in this fashion, or it can be calibrated using the steps detailed below for the functions pHCalibrationPoint and pHCalibrationStatus.</p>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a775e1d55a21a76c2f4340b0359cf55c1"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool  yosemitech::<wbr /></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a
+                    href="#a775e1d55a21a76c2f4340b0359cf55c1" class="m-doc-self">setCalibration</a>(</span><span class="m-doc-wrap"><span class="m-dim">float</span> <span
+                    class="m-param">K1</span>,
+              <span class="m-dim">float</span> <span
+                    class="m-param">K2</span>,
+              <span class="m-dim">float</span> <span
+                    class="m-param">K3</span>,
+              <span class="m-dim">float</span> <span
+                    class="m-param">K4</span>,
+              <span class="m-dim">float</span> <span
+                    class="m-param">K5</span>,
+              <span class="m-dim">float</span> <span
+                    class="m-param">K6</span>)</span></span>
+            </h3>
+            <p>Sets the FULL calibration constants for a pH sensor, which requires 6 coefficients.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="m-param"  style="width: 1%"><span class="m-param">K1</span></td>
+                  <td>The first calibration constant.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">K2</span></td>
+                  <td>The second calibration constant.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">K3</span></td>
+                  <td>The third calibration constant.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">K4</span></td>
+                  <td>The fourth calibration constant.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">K5</span></td>
+                  <td>The fifth calibration constant.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">K6</span></td>
+                  <td>The sixth calibration constant.</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td><span class="m-dim">bool</span> True if the calibration was successfully set; false if not.</td>
+                </tr>
+              </tfoot>
+            </table>
+            <p>Factory calibration values for pH are: K1=6.86, K2=-6.72, K3=0.04, K4=6.86, K5=-6.56, K6=-1.04.</p><p>Use the functions <a href="classyosemitech.html#a44057fcacdb1015219c95df609ac494b" class="m-doc">yosemitech::<wbr />pHCalibrationPoint(float pH)</a> and <a href="classyosemitech.html#a93c3eec2ce56171d32d03e59f0db7122" class="m-doc">yosemitech::<wbr />pHCalibrationStatus()</a> to calibrate and verify calibrations of these meters</p>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a44057fcacdb1015219c95df609ac494b"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool  yosemitech::<wbr /></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a
+                    href="#a44057fcacdb1015219c95df609ac494b" class="m-doc-self">pHCalibrationPoint</a>(</span><span class="m-doc-wrap"><span class="m-dim">float</span> <span
+                    class="m-param">pH</span>)</span></span>
+            </h3>
+            <p>Sets the 3 calibration points for a pH sensor.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="m-param"  style="width: 1%"><span class="m-param">pH</span></td>
+                  <td>The pH of the current calibration solution.</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td><span class="m-dim">bool</span> True if the calibration point was accepted; false if not.</td>
+                </tr>
+              </tfoot>
+            </table>
+            <p>Calibration steps for pH (3 point calibration only):</p><ol><li>Put sensor in solution and allow to stabilize for 1 minute</li><li>Input value of calibration standard (ie, run command pHCalibrationPoint(pH))</li><li>Repeat for points 2 and 3 (pH of 4.00, 6.86, and 9.18 recommended)</li><li>Read calibration status</li></ol>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a93c3eec2ce56171d32d03e59f0db7122"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">byte  yosemitech::<wbr /></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a
+                    href="#a93c3eec2ce56171d32d03e59f0db7122" class="m-doc-self">pHCalibrationStatus</a>(</span><span class="m-doc-wrap"><span class="m-dim">void</span><span
+                    class="m-param"></span>)</span></span>
+            </h3>
+            <p>Verifies the success of a calibration for a pH sensor.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <tfoot>
+                <tr>
+                  <th style="width: 1%">Returns</th>
+                  <td><span class="m-dim">byte</span> A byte with the calibration status.</td>
+                </tr>
+              </tfoot>
+            </table>
+            <p>Return values: 0x00 - Success 0x01 - Non-matching calibration standards 0x02 - Less than 3 points used in calibration 0x04 - Calibration coefficients out of range</p>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a8138a0fcda5bf6f48f88adb55d2dc762"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool  yosemitech::<wbr /></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a
+                    href="#a8138a0fcda5bf6f48f88adb55d2dc762" class="m-doc-self">setCapCoefficients</a>(</span><span class="m-doc-wrap"><span class="m-dim">float</span> <span
+                    class="m-param">K0</span>,
+              <span class="m-dim">float</span> <span
+                    class="m-param">K1</span>,
+              <span class="m-dim">float</span> <span
+                    class="m-param">K2</span>,
+              <span class="m-dim">float</span> <span
+                    class="m-param">K3</span>,
+              <span class="m-dim">float</span> <span
+                    class="m-param">K4</span>,
+              <span class="m-dim">float</span> <span
+                    class="m-param">K5</span>,
+              <span class="m-dim">float</span> <span
+                    class="m-param">K6</span>,
+              <span class="m-dim">float</span> <span
+                    class="m-param">K7</span>)</span></span>
+            </h3>
+            <p>Sets the cap coefficients constants for a sensor.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="m-param"  style="width: 1%"><span class="m-param">K0</span></td>
+                  <td>The zero-th DO cap coefficient.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">K1</span></td>
+                  <td>The first DO cap coefficient.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">K2</span></td>
+                  <td>The second DO cap coefficient.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">K3</span></td>
+                  <td>The third DO cap coefficient.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">K4</span></td>
+                  <td>The fourth DO cap coefficient.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">K5</span></td>
+                  <td>The fifth DO cap coefficient.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">K6</span></td>
+                  <td>The sixth DO cap coefficient.</td>
+                </tr>
+                <tr>
+                  <td class="m-param" ><span class="m-param">K7</span></td>
+                  <td>The seventh DO cap coefficient.</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td><span class="m-dim">bool</span> True if the coefficients were accepted; false if not.</td>
+                </tr>
+              </tfoot>
+            </table>
+            <p>This only applies to dissolved oxygen sensors. The sensor caps should be replaced yearly or as the readings beome unstable. The values of these coefficients are supplied by the manufacturer.</p>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="aeec61628b9b08dc2a58ac88169878209"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool  yosemitech::<wbr /></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a
+                    href="#aeec61628b9b08dc2a58ac88169878209" class="m-doc-self">activateBrush</a>(</span><span class="m-doc-wrap"><span class="m-dim">void</span><span
+                    class="m-param"></span>)</span></span>
+            </h3>
+            <p>Immediately activates the cleaning brush for sensors with one.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <tfoot>
+                <tr>
+                  <th style="width: 1%">Returns</th>
+                  <td><span class="m-dim">bool</span> True if the brush was activated; false if not.</td>
+                </tr>
+              </tfoot>
+            </table>
+            <aside class="m-note m-info"><h4>Note</h4><p>The brush also activates as soon as power is applied.</p><p>One cleaning sweep with the brush takes about 10 seconds.</p><p>Brushing commands will only work on turbidity sensors with hardware Rev1.0 and software Rev1.7 or later</p></aside>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="ae365f9ac4a6e78e7194fcac57643f46a"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">bool  yosemitech::<wbr /></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a
+                    href="#ae365f9ac4a6e78e7194fcac57643f46a" class="m-doc-self">setBrushInterval</a>(</span><span class="m-doc-wrap"><span class="m-dim">uint16_t</span> <span
+                    class="m-param">intervalMinutes</span>)</span></span>
+            </h3>
+            <p>Sets the brush interval - that is, how frequently the brush will run if power is continuously applied to the sensor.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="m-param"  style="width: 1%"><span class="m-param">intervalMinutes</span></td>
+                  <td>The brushing interval in minutes</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th>Returns</th>
+                  <td><span class="m-dim">bool</span> True if the brushing interval was successfully set; false if not</td>
+                </tr>
+              </tfoot>
+            </table>
+            <aside class="m-note m-info"><h4>Note</h4><p>Brushing commands will only work on turbidity sensors with hardware Rev1.0 and software Rev1.7 or later</p></aside>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a3cfda31e4de143d3627eaf9ae6f4a6e5"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">uint16_t  yosemitech::<wbr /></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a
+                    href="#a3cfda31e4de143d3627eaf9ae6f4a6e5" class="m-doc-self">getBrushInterval</a>(</span><span class="m-doc-wrap"><span class="m-dim">void</span><span
+                    class="m-param"></span>)</span></span>
+            </h3>
+            <p>Returns the brushing interval - that is, how frequently the brush will run if power is continuously applied to the sensor.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <tfoot>
+                <tr>
+                  <th style="width: 1%">Returns</th>
+                  <td><span class="m-dim">uint16_t</span> The brushing interval in minutes</td>
+                </tr>
+              </tfoot>
+            </table>
+            <aside class="m-note m-info"><h4>Note</h4><p>Brushing commands will only work on turbidity sensors with hardware Rev1.0 and software Rev1.7 or later</p></aside>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a5afd84124e07053dfcbd23231e5d3d4a"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">void  yosemitech::<wbr /></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a
+                    href="#a5afd84124e07053dfcbd23231e5d3d4a" class="m-doc-self">setDebugStream</a>(</span><span class="m-doc-wrap"><span class="m-dim">Stream*</span> <span
+                    class="m-param">stream</span>)</span></span>
+            </h3>
+            <p>Set a stream for debugging information to go to.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="m-param"  style="width: 1%"><span class="m-param">stream</span></td>
+                  <td>An Arduino stream object</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <hr>
+          </div>
+        </section>
+                      <section class="m-doc-details" id="a555e2c72d79bbb4ecce2afe19292c985"><div>
+            <h3>
+              <span class="m-doc-wrap-bumper"><span class="m-dim">void  yosemitech::<wbr /></span></span><span class="m-doc-wrap"><span class="m-doc-wrap-bumper"><a
+                    href="#a555e2c72d79bbb4ecce2afe19292c985" class="m-doc-self">setDebugStream</a>(</span><span class="m-doc-wrap"><span class="m-dim">Stream&amp;</span> <span
+                    class="m-param">stream</span>)</span></span>
+            </h3>
+            <p>Set a stream for debugging information to go to.</p>
+            <table class="m-table m-fullwidth m-flat">
+              <thead>
+                <tr><th colspan="2">Parameters</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="m-param"  style="width: 1%"><span class="m-param">stream</span></td>
+                  <td>An Arduino stream object</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <hr>
+          </div>
+        </section>
+        </section>
+        <hr>
+
+              </article>
+            </main>
+
+          </div> <!-- gp-content -->
+        </div> <!-- gp-left-column -->
+      </div> <!-- gp-inner-container -->
+    </div> <!-- gp-content-wrapper -->
+
+    <div id="footer-image">
+      <div class="gp-container">
+        <img
+          src="https://www.envirodiy.org/wp-content/uploads/2016/05/EnviroDIY_LogoMaster_Square_V5_TwoTree_Trans_notext-e1462820115833.png"
+          width="99"
+          height="22"
+          alt=""
+        />
+      </div>
+    </div>
+
+    <footer id="gp-footer">
+      <div id="gp-copyright">
+        <div class="gp-container">
+          <div id="gp-copyright-text">
+            <p>
+              <a href="https://stroudcenter.org/" target="_blank"
+                >EnviroDIY™ is a community for do-it-yourself ideas for environmental
+                science and monitoring. EnviroDIY is an initiative of
+                <a
+                  style="text-decoration: underline"
+                  href="https://stroudcenter.org/"
+                  target="_blank"
+                  >Stroud Water Research Center</a
+                >, which advances knowledge and stewardship of freshwater systems through
+                global research, education, and watershed restoration.
+              </a>
+            </p>
+            <p>
+              All content on EnviroDIY is licensed as Creative Commons
+              Attribution-ShareAlike 4.0 International (CC-BY-SA). Hardware designs on this
+              website are released under the CERN Open Hardware License 1.2.
+              <a style="text-decoration: underline" href="https://envirodiy.org/licenses/"
+                >See all licenses.</a
+              >
+              <a style="text-decoration: underline" href="https://envirodiy.org/terms/"
+                >Terms of Use</a
+              >
+              |
+              <a style="text-decoration: underline" href="https://envirodiy.org/privacy/"
+                >Privacy Policy</a
+              >
+              |
+              <a style="text-decoration: underline" href="https://envirodiy.org/cookies/"
+                >Cookie Policy</a
+              >
+              |
+              <a
+                style="text-decoration: underline"
+                href="https://envirodiy.org/shop-policies/"
+                >Shop Policies</a
+              >
+              |
+              <a style="text-decoration: underline" href="https://envirodiy.org/contact/"
+                >Contact</a
+              >
+            </p>
+            <p>
+              Created with <a href="https://doxygen.org/">Doxygen</a> 1.11.0 and <a href="https://mcss.mosra.cz/">m.css</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <div class="gp-clear"></div>
+
+    </div> <!-- gp-site-wrapper -->
+  </div> <!-- gp-site-wrapper -->
+
+</body>
+</html>

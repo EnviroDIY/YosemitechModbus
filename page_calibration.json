@@ -1,0 +1,68 @@
+{
+  "version": "1.11.0",
+  "compound": {
+    "kind": "page",
+    "id": "page_calibration",
+    "name": "YosemiTech Calibration Protocols & Spreadsheets",
+    "url_base": "page_calibration",
+    "url": "page_calibration.html",
+    "include": null,
+    "has_template_details": false,
+    "templates": null,
+    "brief": "",
+    "description": "<p><a name=\"md_extras_2calibrator__spreadsheets_2_read_me\"></a> This is a <strong>work in progress</strong>.</p><section id=\"calibration_cleaning\"><h2>Cleaning pH electrode</h2><p>For environmental deployments, we suggest would suggest this order:</p><ul><li>Wipe, brush, and rinse with DI water to physically remove all biofilms.</li><li>Rinse with Methanol</li><li>Soak overnight in lab detergent, preferably with an enzyme to also remove proteins. Rinse with DI water.</li><li>Soak in 1% HCl for 10 min. Rinse with DI water.</li><li>Calibrate sensor. Any of these steps can be skipped, based on the type of fouling and how easily the sensor recalibrates.</li></ul><p>For for more detailed information on each of these steps, see <a href=\"https://www.coleparmer.com/tech-article/how-to-store-clean-and-recondition-ph-electrodes\">https:/<wbr />/<wbr />www.coleparmer.com/<wbr />tech-article/<wbr />how-to-store-clean-and-recondition-ph-electrodes</a></p></section>",
+    "sections": [],
+    "deprecated": null,
+    "since": null,
+    "example_navigation": null,
+    "footer_navigation": null,
+    "modules": [],
+    "dirs": [],
+    "files": [],
+    "namespaces": [],
+    "classes": [],
+    "base_classes": [],
+    "derived_classes": [],
+    "enums": [],
+    "typedefs": [],
+    "funcs": [],
+    "vars": [],
+    "defines": [],
+    "public_types": [],
+    "public_static_funcs": [],
+    "typeless_funcs": [],
+    "public_funcs": [],
+    "signals": [],
+    "public_slots": [],
+    "public_static_vars": [],
+    "public_vars": [],
+    "protected_types": [],
+    "protected_static_funcs": [],
+    "protected_funcs": [],
+    "protected_slots": [],
+    "protected_static_vars": [],
+    "protected_vars": [],
+    "private_funcs": [],
+    "private_slots": [],
+    "related": [],
+    "friend_funcs": [],
+    "groups": [],
+    "has_enum_details": false,
+    "has_typedef_details": false,
+    "has_func_details": false,
+    "has_var_details": false,
+    "has_define_details": false,
+    "breadcrumb": [
+      [
+        "YosemiTech Calibration Protocols &amp; Spreadsheets",
+        "page_calibration.html"
+      ]
+    ],
+    "breadcrumbGroup": [
+      [
+        "YosemiTech Calibration Protocols &amp; Spreadsheets",
+        "page_calibration.html"
+      ]
+    ]
+  }
+}
