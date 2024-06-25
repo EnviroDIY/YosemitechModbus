@@ -23,8 +23,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.4.2]
 
 ### Changed
-
-- Applied clang format.
 - Modified example to apply to more processors.
 
 ### Added
