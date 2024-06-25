@@ -1,0 +1,18 @@
+name: Build Examples
+
+# Triggers the workflow on push or pull request events
+on: [push, pull_request]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build_examples:
+    name: Build all examples with PlatformIO and the Arduino CLI
+    if: ${{ ! contains(github.event.head_commit.message, 'ci skip') }}
+    uses: EnviroDIY/workflows/.github/workflows/build_examples.yaml@main
+    with:
+      boards_to_build: 'all'
+      examples_to_build: 'examples/GetValues'
+    secrets: inherit

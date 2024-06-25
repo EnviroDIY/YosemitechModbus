@@ -1,0 +1,9 @@
+{
+  "dependencies": [
+    {
+      "name": "AltSoftSerial",
+      "owner": "PaulStoffregen",
+      "version": "https://github.com/PaulStoffregen/AltSoftSerial.git"
+    }
+  ]
+}
