@@ -31,6 +31,8 @@ seems to be one of few all support identically.
 //   ie, pin locations, addresses, calibrations and related settings
 // ---------------------------------------------------------------------------
 
+const int32_t serialBaud = 115200;  // Baud rate for serial monitor
+
 // Define pin number variables
 const int PwrPin = 22;  // The pin sending power to the sensor *AND* RS485 adapter
 const int DEREPin = -1;   // The pin controlling Recieve Enable and Driver Enable
@@ -68,30 +70,24 @@ String SN;
 // Working Functions
 // ---------------------------------------------------------------------------
 // This flips the device/receive enable to DRIVER so the arduino can send text
-void driverEnable(void)
-{
-    if (DEREPin > 0)
-    {
+void driverEnable(void) {
+    if (DEREPin > 0) {
         digitalWrite(DEREPin, HIGH);
         delay(8);
     }
 }
 
 // This flips the device/receive enable to RECIEVER so the sensor can send text
-void recieverEnable(void)
-{
-    if (DEREPin > 0)
-    {
+void recieverEnable(void) {
+    if (DEREPin > 0) {
         digitalWrite(DEREPin, LOW);
         delay(8);
     }
 }
 
 // This empties the serial buffer
-void emptyResponseBuffer(Stream *stream)
-{
-    while (stream->available() > 0)
-    {
+void emptyResponseBuffer(Stream *stream) {
+    while (stream->available() > 0) {
         stream->read();
         delay(1);
     }
@@ -99,11 +95,9 @@ void emptyResponseBuffer(Stream *stream)
 
 // From: https://ctlsys.com/support/how_to_compute_the_modbus_rtu_message_crc/
 // and: https://stackoverflow.com/questions/19347685/calculating-modbus-rtu-crc-16
-void insertCRC(byte modbusFrame[], int frameLength)
-{
+void insertCRC(byte modbusFrame[], int frameLength) {
     uint16_t crc = 0xFFFF;
-    for (int pos = 0; pos < frameLength - 2; pos++)
-    {
+    for (int pos = 0; pos < frameLength - 2; pos++) {
         crc ^= (unsigned int)modbusFrame[pos];  // XOR byte into least sig. byte of crc
 
         for (int i = 8; i != 0; i--) {    // Loop over each bit
@@ -126,11 +120,9 @@ void insertCRC(byte modbusFrame[], int frameLength)
 }
 
 // Just a function to pretty-print the modbus hex frames
-void printFrameHex(byte modbusFrame[], int frameLength, Stream *stream)
-{
+void printFrameHex(byte modbusFrame[], int frameLength, Stream *stream) {
     stream->print("{");
-    for (int i = 0; i < frameLength; i++)
-    {
+    for (int i = 0; i < frameLength; i++) {
         stream->print("0x");
         if (modbusFrame[i] < 16) stream->print("0");
         stream->print(modbusFrame[i], HEX);
@@ -139,13 +131,11 @@ void printFrameHex(byte modbusFrame[], int frameLength, Stream *stream)
     stream->println("}");
 }
 
-String parseSN(byte modbusFrame[])
-{
+String parseSN(byte modbusFrame[]) {
     int sn_len = responseBuffer[2];
     char sn_arr[sn_len] = {0,};
     int j = 0;
-    for (int i = 4; i < 16; i++)
-    {
+    for (int i = 4; i < 16; i++) {
         sn_arr[j] = responseBuffer[i];
         j++;
     }
@@ -153,15 +143,13 @@ String parseSN(byte modbusFrame[])
     return SN;
 }
 
-void scanSNs(void)
-{
+void scanSNs(void) {
     Serial.println(F("Scanning for Yosemitech modbus sensors...."));
     Serial.println(F("------------------------------------------"));
     Serial.println(F("Modbus Address ------ Sensor Serial Number"));
 
     int numFound = 0;
-    for (uint8_t addrTest = 1; addrTest <= 247; addrTest++)
-    {
+    for (uint8_t addrTest = 1; addrTest <= 247; addrTest++) {
         byte getSN[] = {addrTest, 0x03, 0x09, 0x00, 0x00, 0x07, 0x00, 0x00}; // for all except Y4000 Sonde
 //        byte getSN[] = {addrTest, 0x03, 0x14, 0x00, 0x00, 0x07, 0x00, 0x00}; // for Y4000 Sonde
         insertCRC(getSN, sizeof(getSN)/sizeof(getSN[0]));
@@ -174,18 +162,17 @@ void scanSNs(void)
 
         recieverEnable();
         start = millis();
-        while (modbusSerial.available() == 0 && millis() - start < modbusTimeout)
-        { delay(1);}
+        while (modbusSerial.available() == 0 && millis() - start < modbusTimeout) {
+            delay(1);
+        }
 
-        if (modbusSerial.available() > 0)
-        {
+        if (modbusSerial.available() > 0) {
             // Read the incoming bytes
             // 18 byte response frame for serial number, according to  the manual
             bytesRead = modbusSerial.readBytes(responseBuffer, 20);
 
             // Parse into a string and print that
-            if (bytesRead >= 18)
-            {
+            if (bytesRead >= 18) {
                 SN = parseSN(responseBuffer);
                 numFound++;
                 Serial.print(F("     0x"));
@@ -194,8 +181,7 @@ void scanSNs(void)
                 Serial.print(F("      ------    "));
                 Serial.println(SN);
             }
-            else  // if recieved a response, but less than 18 bytes
-            {
+            else  {  // if recieved a response, but less than 18 bytes
                 Serial.print(F("     0x"));
                 if (addrTest < 16) Serial.print(F("0"));
                 Serial.print(addrTest, HEX);
@@ -216,15 +202,14 @@ void scanSNs(void)
 // ---------------------------------------------------------------------------
 // Main setup function
 // ---------------------------------------------------------------------------
-void setup()
-{
+void setup() {
 
     pinMode(PwrPin, OUTPUT);
     digitalWrite(PwrPin, HIGH);
 
     if (DEREPin > 0) pinMode(DEREPin, OUTPUT);
 
-    Serial.begin(57600);  // Main serial port for debugging via USB Serial Monitor
+    Serial.begin(serialBaud);  // Main serial port for debugging via USB Serial Monitor
     modbusSerial.begin(modbusBaud);
     modbusSerial.setTimeout(modbusFrameTimeout);
 
@@ -233,8 +218,7 @@ void setup()
     // Allow the sensor and converter to warm up
     Serial.println("\n");
     Serial.println(F("Allowing sensor and adapter to warm up"));
-    for (int i = 10; i > 0; i--)
-    {
+    for (int i = 10; i > 0; i--) {
         Serial.print(i);
         delay (250);
         Serial.print(".");
@@ -255,5 +239,6 @@ void setup()
 // ---------------------------------------------------------------------------
 // Main loop function
 // ---------------------------------------------------------------------------
-void loop()
-{}
+void loop() {
+    // This all runs from setup!
+}

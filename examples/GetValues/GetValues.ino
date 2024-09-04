@@ -29,19 +29,17 @@
 //  Sensor Settings
 // ==========================================================================
 // Define the sensor type
-yosemitechModel model = Y700;  // The sensor model number
+yosemitechModel model = UNKNOWN;  // The sensor model number
 
 // Define the sensor's modbus address, or SlaveID
 // NOTE: YosemiTech Windows software presents SlaveID as an integer (decimal),
 // whereas EnviroDIY and most other modbus systems present it in hexadecimal form.
 // Use an online "HEX to DEC Converter".
-byte modbusAddress =
-    0x01;  // Yosemitech ships sensors with a default ID of 0x01.
+byte modbusAddress = 0x01;  // Yosemitech ships sensors with default ID 0x01
 
 // Sensor Timing
 // Edit these to explore
-#define WARM_UP_TIME \
-    1000  // milliseconds for sensor to respond to commands.
+#define WARM_UP_TIME 1000  // milliseconds for sensor to respond to commands.
           // DO responds within 275-300ms;
           // Turbidity and pH within 500ms
           // Conductivity doesn't respond until 1.15-1.2s
@@ -90,7 +88,7 @@ byte modbusAddress =
 const int32_t serialBaud = 115200;  // Baud rate for serial monitor
 
 // Define pin number variables
-const int sensorPwrPin  = 11;  // The pin sending power to the sensor
+const int sensorPwrPin  = 10;  // The pin sending power to the sensor
 const int adapterPwrPin = 22;  // The pin sending power to the RS485 adapter
 const int DEREPin       = -1;  // The pin controlling Recieve Enable and Driver Enable
                                // on the RS485 adapter, if applicable (else, -1)

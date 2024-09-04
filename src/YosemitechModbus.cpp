@@ -202,11 +202,14 @@ String yosemitech::getUnits(void) {
 }
 
 
-// This gets the modbus slave ID.  Not supported by many sensors.
-// TODO:  Get list of YosemiTech sensors this works for
+// This gets the modbus slave ID or Sensor Modbus Address.
+// Works for newer sensors, but many older models.
+// TODO: Get list of YosemiTech sensors this works for
+// Works for: new Y4000
 // The slaveID is in register 0x3000 (12288)
 byte yosemitech::getSlaveID(void) {
     byte command[8] = {0xFF, 0x03, 0x30, 0x00, 0x00, 0x01, 0x9E, 0xD4};
+            //  address, ReadHolding, startRegister, numRegisters,  CRC
     modbus.sendCommand(command, 8);
     // int respSize = modbus.sendCommand(command, 8);
     // if (respSize == 7) return modbus.responseBuffer[3];
@@ -215,7 +218,7 @@ byte yosemitech::getSlaveID(void) {
 }
 
 
-// This sets a new modbus slave ID
+// This sets a new modbus slave ID or Sensor Modbus Address.
 // The slaveID is in register 0x3000 (12288)
 bool yosemitech::setSlaveID(byte newSlaveID) {
     byte dataToSend[2] = {newSlaveID, 0x00};
@@ -300,7 +303,7 @@ bool yosemitech::getVersion(float& hardwareVersion, float& softwareVersion) {
 }
 
 
-// This tells the optical sensors to begin taking measurements
+// This tells the sensors to begin taking measurements
 // Note: this doesn't appear to be necessary for the Y4000 sonde
 bool yosemitech::startMeasurement(void) {
     switch (_model) {
