@@ -14,22 +14,18 @@
  * @m_footernavigation
  * ======================================================================= */
 
-// ---------------------------------------------------------------------------
-// Include the base required libraries
-// ---------------------------------------------------------------------------
+// ==========================================================================
+//  Include the libraries required for any data logger
+// ==========================================================================
 #include <Arduino.h>
 #include <YosemitechModbus.h>
-
-// Turn on debugging outputs (i.e. raw Modbus requests & responsds)
-// by uncommenting next line (i.e. `#define DEBUG`)
-// #define DEBUG
 
 
 // ==========================================================================
 //  Sensor Settings
 // ==========================================================================
 // Define the sensor type
-yosemitechModel model = UNKNOWN;  // The sensor model number
+yosemitechModel model = Y520;  // The sensor model number
 
 // Define the sensor's modbus address, or SlaveID
 // NOTE: YosemiTech Windows software presents SlaveID as an integer (decimal),
@@ -39,7 +35,7 @@ byte modbusAddress = 0x01;  // Yosemitech ships sensors with default ID 0x01
 
 // Sensor Timing
 // Edit these to explore
-#define WARM_UP_TIME 1000  // milliseconds for sensor to respond to commands.
+#define WARM_UP_TIME 1500  // milliseconds for sensor to respond to commands.
           // DO responds within 275-300ms;
           // Turbidity and pH within 500ms
           // Conductivity doesn't respond until 1.15-1.2s
@@ -51,7 +47,7 @@ byte modbusAddress = 0x01;  // Yosemitech ships sensors with default ID 0x01
            // Ammonium takes 15 s
 // No readings should be taken during this time.
 
-#define STABILIZATION_TIME 4000  // milliseconds for readings to stablize.
+#define STABILIZATION_TIME 10000  // milliseconds for readings to stablize.
 // The modbus manuals recommend the following stabilization times between starting
 // measurements and requesting values (times include brushing time):
 //  2 s for whipered chlorophyll
@@ -83,7 +79,7 @@ byte modbusAddress = 0x01;  // Yosemitech ships sensors with default ID 0x01
 
 
 // ==========================================================================
-//  Data Logging Options
+//  Data Logger Options
 // ==========================================================================
 const int32_t serialBaud = 115200;  // Baud rate for serial monitor
 
@@ -95,8 +91,24 @@ const int DEREPin       = -1;  // The pin controlling Recieve Enable and Driver 
                                // Setting HIGH enables the driver (arduino) to send text
                                // Setting LOW enables the receiver (sensor) to send text
 
-// Construct a Serial object for Modbus
-#if defined(ARDUINO_AVR_UNO) || defined(ARDUINO_AVR_FEATHER328P)
+// Turn on debugging outputs (i.e. raw Modbus requests & responses)
+// by uncommenting next line (i.e. `#define DEBUG`)
+// #define DEBUG
+
+
+// ==========================================================================
+// Create and Assign a Serial Port for Modbus
+// ==========================================================================
+// Harware serial ports are prefered when available.
+// AltSoftSerial is the most stable alternative for modbus.
+//   Select over alternatives with the define below.
+#define BUILD_ALTSOFTSERIAL // Comment-out if you prefer alternatives
+
+#if defined(BUILD_ALTSOFTSERIAL)
+#include <AltSoftSerial.h>
+AltSoftSerial modbusSerial;
+
+#elif defined(ARDUINO_AVR_UNO) || defined(ARDUINO_AVR_FEATHER328P)
 // The Uno only has 1 hardware serial port, which is dedicated to comunication with the
 // computer. If using an Uno, you will be restricted to using AltSofSerial or
 // SoftwareSerial
@@ -105,20 +117,26 @@ const int SSRxPin = 10;  // Receive pin for software serial (Rx on RS485 adapter
 const int SSTxPin = 11;  // Send pin for software serial (Tx on RS485 adapter)
 #pragma message("Using Software Serial for the Uno on pins 10 and 11")
 SoftwareSerial modbusSerial(SSRxPin, SSTxPin);
-// AltSoftSerial modbusSerial;
-#elif defined ESP8266
-#pragma message("Using Software Serial for the ESP8266")
+
+#elif defined(ESP8266)
 #include <SoftwareSerial.h>
+const int SSRxPin = 13;  // Receive pin for software serial (Rx on RS485 adapter)
+const int SSTxPin = 14;  // Send pin for software serial (Tx on RS485 adapter)
+#pragma message("Using Software Serial for the ESP8266")
+
 SoftwareSerial modbusSerial;
+
 #elif defined(NRF52832_FEATHER) || defined(ARDUINO_NRF52840_FEATHER)
 #pragma message("Using TinyUSB for the NRF52")
 #include <Adafruit_TinyUSB.h>
 HardwareSerial& modbusSerial = Serial1;
+
 #elif !defined(NO_GLOBAL_SERIAL1) && !defined(STM32_CORE_VERSION)
 // This is just a assigning another name to the same port, for convienence
 // Unless it is unavailable, always prefer hardware serial.
 #pragma message("Using HarwareSerial / Serial1")
 HardwareSerial& modbusSerial = Serial1;
+
 #else
 // This is just a assigning another name to the same port, for convienence
 // Unless it is unavailable, always prefer hardware serial.
@@ -163,13 +181,11 @@ void setup() {
 
     // Turn on your modbus serial port
     // The modbus serial stream - Baud rate MUST be 9600 and the configuration 8N1
-#if defined(ESP8266)
-    const int SSRxPin = 13;  // Receive pin for software serial (Rx on RS485 adapter)
-    const int SSTxPin = 14;  // Send pin for software serial (Tx on RS485 adapter)
+    #if defined(ESP8266)
     modbusSerial.begin(9600, SWSERIAL_8N1, SSRxPin, SSTxPin, false);
-#else
+    #else
     modbusSerial.begin(9600);
-#endif
+    #endif
 
     // Start up the Yosemitech sensor
     sensor.begin(model, modbusAddress, &modbusSerial, DEREPin);
