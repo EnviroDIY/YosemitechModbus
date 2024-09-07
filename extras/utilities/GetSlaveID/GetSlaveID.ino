@@ -34,7 +34,8 @@ seems to be one of few all support identically.
 const int32_t serialBaud = 115200;  // Baud rate for serial monitor
 
 // Define pin number variables
-const int PwrPin = 22;  // The pin sending power to the sensor *AND* RS485 adapter
+const int sensorPwrPin  = 10;  // The pin sending power to the sensor
+const int adapterPwrPin = 22;  // The pin sending power to the sensor *AND* RS485 adapter
 const int DEREPin = -1;   // The pin controlling Recieve Enable and Driver Enable
                           // on the RS485 adapter, if applicable (else, -1)
                           // Setting HIGH enables the driver (arduino) to send text
@@ -199,15 +200,20 @@ void scanSNs(void) {
     if (numFound == 0) Serial.println(F("XXX  --  NO SENSORS FOUND  --  XXX"));
 }
 
-// ---------------------------------------------------------------------------
-// Main setup function
-// ---------------------------------------------------------------------------
+// ==========================================================================
+//  Arduino Setup Function
+// ==========================================================================
 void setup() {
+    if (sensorPwrPin > 0) {
+        pinMode(sensorPwrPin, OUTPUT);
+        digitalWrite(sensorPwrPin, HIGH);
+    }
+    if (adapterPwrPin > 0) {
+        pinMode(adapterPwrPin, OUTPUT);
+        digitalWrite(adapterPwrPin, HIGH);
+    }
 
-    pinMode(PwrPin, OUTPUT);
-    digitalWrite(PwrPin, HIGH);
-
-    if (DEREPin > 0) pinMode(DEREPin, OUTPUT);
+    if (DEREPin > 0) { pinMode(DEREPin, OUTPUT); }
 
     Serial.begin(serialBaud);  // Main serial port for debugging via USB Serial Monitor
     modbusSerial.begin(modbusBaud);

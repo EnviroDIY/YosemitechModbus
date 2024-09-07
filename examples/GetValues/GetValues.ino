@@ -33,6 +33,10 @@ yosemitechModel model = Y520;  // The sensor model number
 // Use an online "HEX to DEC Converter".
 byte modbusAddress = 0x01;  // Yosemitech ships sensors with default ID 0x01
 
+// The Modbus baud rate the sensor uses
+int32_t modbusBaud = 9600;  // 9600 is the default baud rate for most sensors
+
+
 // Sensor Timing
 // Edit these to explore
 #define WARM_UP_TIME 1500  // milliseconds for sensor to respond to commands.
@@ -120,10 +124,7 @@ SoftwareSerial modbusSerial(SSRxPin, SSTxPin);
 
 #elif defined(ESP8266)
 #include <SoftwareSerial.h>
-const int SSRxPin = 13;  // Receive pin for software serial (Rx on RS485 adapter)
-const int SSTxPin = 14;  // Send pin for software serial (Tx on RS485 adapter)
 #pragma message("Using Software Serial for the ESP8266")
-
 SoftwareSerial modbusSerial;
 
 #elif defined(NRF52832_FEATHER) || defined(ARDUINO_NRF52840_FEATHER)
@@ -152,12 +153,13 @@ bool       success;
 // ==========================================================================
 // Working Functions
 // ==========================================================================
-// A function for pretty-printing the Modbuss Address, from ModularSensors
-String sensorLocation(byte _modbusAddress) {
-    String sensorLocation = F("0x");
-    if (_modbusAddress < 0x10) { sensorLocation += "0"; }
-    sensorLocation += String(_modbusAddress, HEX);
-    return sensorLocation;
+// A function for pretty-printing the Modbuss Address in Hexadecimal notation,
+// from ModularSensors `sensorLocation()`
+String prettyprintAddressHex(byte _modbusAddress) {
+    String addressHex = F("0x");
+    if (_modbusAddress < 0x10) { addressHex += "0"; }
+    addressHex += String(_modbusAddress, HEX);
+    return addressHex;
 }
 
 
@@ -165,6 +167,7 @@ String sensorLocation(byte _modbusAddress) {
 //  Arduino Setup Function
 // ==========================================================================
 void setup() {
+    // Setup power pins
     if (sensorPwrPin > 0) {
         pinMode(sensorPwrPin, OUTPUT);
         digitalWrite(sensorPwrPin, HIGH);
@@ -180,11 +183,15 @@ void setup() {
     Serial.begin(serialBaud);
 
     // Turn on your modbus serial port
-    // The modbus serial stream - Baud rate MUST be 9600 and the configuration 8N1
-    #if defined(ESP8266)
-    modbusSerial.begin(9600, SWSERIAL_8N1, SSRxPin, SSTxPin, false);
-    #else
-    modbusSerial.begin(9600);
+#if defined(ARDUINO_AVR_UNO) || defined(ARDUINO_AVR_FEATHER328P) || \
+    defined(ARDUINO_SAM_DUE) || not defined(SERIAL_8E1)
+    modbusSerial.begin(modbusBaud);
+#elif defined(ESP8266)
+    const int SSRxPin = 13;  // Receive pin for software serial (Rx on RS485 adapter)
+    const int SSTxPin = 14;  // Send pin for software serial (Tx on RS485 adapter)
+    modbusSerial.begin(modbusBaud, SWSERIAL_8N1, SSRxPin, SSTxPin, false);
+#else
+    modbusSerial.begin(modbusBaud);
     #endif
 
     // Start up the Yosemitech sensor
@@ -212,20 +219,19 @@ void setup() {
     Serial.print(F("    integer: "));
     Serial.print(modbusAddress, DEC);
     Serial.print(F(", hexidecimal: "));
-    Serial.println(sensorLocation(modbusAddress));
+    Serial.println(prettyprintAddressHex(modbusAddress));
 
     Serial.println(F("Discovered modbus address."));
     Serial.print(F("    integer: "));
     byte id = sensor.getSlaveID();
     Serial.print(id, DEC);
     Serial.print(F(", hexidecimal: "));
-    // Serial.print(id, HEX);
-    Serial.println(sensorLocation(id));
+    Serial.println(prettyprintAddressHex(id));
 
     if (id != modbusAddress) {
         Serial.print(F("Updating sensor modbus address to: "));
         modbusAddress = id;
-        Serial.println(sensorLocation(modbusAddress));
+        Serial.println(prettyprintAddressHex(modbusAddress));
         Serial.println();
         // Restart the sensor
         sensor.begin(model, modbusAddress, &modbusSerial, DEREPin);
