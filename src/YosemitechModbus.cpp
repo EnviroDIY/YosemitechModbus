@@ -64,6 +64,9 @@ String yosemitech::getModel(void) {
         case Y520: {
             return "Y520";
         }
+        case Y521: {
+            return "Y521";
+        }
         case Y532: {
             return "Y532";
         }
@@ -101,6 +104,9 @@ String yosemitech::getParameter(void) {
         case Y504: {
             return "Dissolved Oxygen";
         }
+        // case Y505: {
+        //     return "Dissolved Oxygen";
+        // }
         case Y510: {
             return "Turbidity";
         }
@@ -117,6 +123,9 @@ String yosemitech::getParameter(void) {
             return "Oil in Water";
         }
         case Y520: {
+            return "Conductivity";
+        }
+        case Y521: {
             return "Conductivity";
         }
         case Y532: {
@@ -156,6 +165,9 @@ String yosemitech::getUnits(void) {
         case Y504: {
             return "percent";
         }
+        // case Y505: {
+        //     return "percent";
+        // }
         case Y510: {
             return "NTU";
         }
@@ -163,7 +175,7 @@ String yosemitech::getUnits(void) {
             return "NTU";
         }
         case Y513: {
-            return "µg/L";
+            return "cells/mL";
         }
         case Y514: {
             return "µg/L";
@@ -172,6 +184,9 @@ String yosemitech::getUnits(void) {
             return "ppb";
         }
         case Y520: {
+            return "mS/cm";
+        }
+        case Y521: {
             return "mS/cm";
         }
         case Y532: {
@@ -193,7 +208,7 @@ String yosemitech::getUnits(void) {
             return "mm H2O";
         }
         case Y4000: {
-            return "mg/L, NTU,  mS/cm, pH,   °C,   mV,   µg/L, µg/L";
+            return "mg/L, NTU,  mS/cm, pH,   °C,   mV,   µg/L, cells/mL";
         }
         default: {
             return "Unknown";
@@ -256,6 +271,7 @@ String yosemitech::getSerialNumber(void) {
         if (modelSS == 10) _model = Y510;   // 10 means turbidity sensor
         if (modelSS == 29) _model = Y511;   // 29 means self-cleaning turbidity sensor
         if (modelSS == 61) _model = Y513;   // 61 means Blue Green Algae (BGA)
+        if (modelSS == 62) _model = Y513;   // 61 means Blue Green Algae (BGA) self-cleaning
         if (modelSS == 48) _model = Y514;   // 48 means chlorophyll
         if (modelSS == 43) _model = Y532;   // 43 must mean pH
         if (modelSS == 47) _model = Y551;   // 47 must mean COD
@@ -307,7 +323,8 @@ bool yosemitech::getVersion(float& hardwareVersion, float& softwareVersion) {
 // Note: this doesn't appear to be necessary for the Y4000 sonde
 bool yosemitech::startMeasurement(void) {
     switch (_model) {
-        case Y520: {
+        case Y520:
+        case Y521: {
             byte startMeasurementW[9] = {_slaveID, 0x10, 0x1C, 0x00, 0x00,
                                          0x00,     0x00, 0x00, 0x00};
             // _slaveID, Write, Reg 7168 ,0 Registers, 0byte,    CRC
@@ -333,6 +350,11 @@ bool yosemitech::startMeasurement(void) {
         {
             return true;
         }
+        // Y510/Y511 Turbidity Modbus manual sent in July 2020 and
+        // Y504 Optical Dissolved Oxygen Modbus manual sent in June 2019 
+        // both describe using this function at register 0x2500 to:
+        // "Set probe in continuous light emitting mode and start measuring",  
+        // however, newer paper manuals sent in 2024 do not list this command.
         default: {
             byte startMeasurementR[8] = {_slaveID, 0x03, 0x25, 0x00,
                                          0x00,     0x00, 0x00, 0x00};
@@ -389,7 +411,7 @@ bool yosemitech::stopMeasurement(void) {
 // return two 32-bit float values beginning in holding register 0x2600 (9728),
 // where the parameter value is in the first two register and the
 // temperature in celsius is in the next two registers.  For some sensors
-// (Y520 Conductivity and Y514 Chlorophyll) this followed by an error code.
+// (Y520/Y521 Conductivity and Y514 Chlorophyll) this followed by an error code.
 // The pH sensor returns the pH as a 32-bit float beginning in holding register
 // 0x2800 (10240) and the temperature in celsuis as a separate 32-bit float
 // beginning in holding register 0x2400 (9216).  The pH sensor can also return
@@ -406,8 +428,8 @@ bool yosemitech::getValues(float& parmValue, float& tempValue, float& thirdValue
     errorCode  = 0xFF;  // Error!
 
     switch (_model) {
-        case Y4000:  // Y4000 Multiparameter sonde
-        {
+        // Y4000 Multiparameter sonde
+        case Y4000: {
             // The sonde returns 8 values at once, we're not going to pick three
             // of them to return.  We'll just send a false response.  If someone
             // wants the sonde results, they should give 8 values to put them in.
@@ -417,23 +439,23 @@ bool yosemitech::getValues(float& parmValue, float& tempValue, float& thirdValue
         case Y560: {
             // Y560 Ammonium has many parameters, but this will return the
             // three most important (NH4_N, Temp, pH). Other options are below.
-            if (modbus.getRegisters(0x03, 0x2600,
-                                    4))  // default register gives potential & pH
-            {
+            if (modbus.getRegisters(0x03, 0x2600, 4)) {
+                // default register gives potential & pH
                 // pH in registers 3-4 of 4 (starting in byte 7 of total response frame)
                 thirdValue = modbus.float32FromFrame(littleEndian, 7);
                 // Get temperature at register 0x2400. 32 bits = 4 bytes = 2 registers
                 tempValue = modbus.float32FromRegister(0x03, 0x2400, littleEndian);
                 // Get NH3_N (mg/L) at register 0x2800
                 parmValue = modbus.float32FromRegister(0x03, 0x2800, littleEndian);
-                errorCode = 0x00;  // No errors
+                errorCode = 0x00;  // No error code is provided
                 return true;
             }
             break;
         }
-        case Y550:  // Y550 COD, old vesion (not tested)
-        case Y551:  // Y551 COD, with turbidity
-        {
+        // Y550 COD, old vesion (not tested)
+        case Y550:  
+        // Y551 COD, with turbidity
+        case Y551: {
             if (modbus.getRegisters(0x03, 0x2600, 5)) {
                 tempValue  = modbus.float32FromFrame(littleEndian, 3);
                 parmValue  = modbus.float32FromFrame(littleEndian, 7);
@@ -453,17 +475,17 @@ bool yosemitech::getValues(float& parmValue, float& tempValue, float& thirdValue
                 tempValue = modbus.float32FromRegister(0x03, 0x2400, littleEndian);
                 // Get potential (mV) at register 0x1200
                 thirdValue = modbus.float32FromRegister(0x03, 0x1200, littleEndian);
-                errorCode  = 0x00;  // No errors
+                errorCode  = 0x00;  // No error code is provided
                 return true;
             }
             break;
         }
-        // or Y533 (ORP)
+        // Y533 (ORP)
         case Y533: {
             if (modbus.getRegisters(0x03, 0x1200, 2)) {
                 parmValue = modbus.float32FromFrame(littleEndian, 3);
                 tempValue = modbus.float32FromRegister(0x03, 0x2400, littleEndian);
-                errorCode = 0x00;  // No errors
+                errorCode = 0x00;  // No error code is provided
                 return true;
             }
             break;
@@ -471,79 +493,79 @@ bool yosemitech::getValues(float& parmValue, float& tempValue, float& thirdValue
         // Y504 (DO)
         case Y502:
         case Y504: {
-            if (modbus.getRegisters(0x03, 0x2600, 4)) {
+            if (modbus.getRegisters(0x03, 0x2600, 6)) {
                 tempValue       = modbus.float32FromFrame(littleEndian, 3);
                 float DOpercent = modbus.float32FromFrame(littleEndian, 7);
                 parmValue       = DOpercent * 100;  // Because it returns number not %
+                thirdValue      = modbus.float32FromFrame(littleEndian, 11);
                 errorCode       = 0x00;             // No errors
 
-                // Calculate DO saturation at sea level at a given temp/salinity
-                // using equation by Weiss (1970, Deep-Sea Res. 17:721-735)
-                //
-                // The equation by Weiss reads:
-                //
-                // ln DO = A1 + A2 100/T + A3 ln T/100 + A4 T/100          (1)
-                //
-                //    + S [B1 + B2 T/100 + B3 (T/100)2]
-                //
-                // where:
-                //   ln DO is the natural log of the DO solubility in milliliters per
-                //   liter (ml/L)
-                //   T = temperature in degrees K(273.15 + t  degrees C)
-                //   S = salinity in g/kg (o/oo)
-                float A1 = -173.4292;
-                float A2 = 249.6339;
-                float A3 = 143.3483;
-                float A4 = -21.8492;
-                float Bl = -0.033096;  // NOTE:  Intentionally Bl not B1, B1 is a
-                                       // defined preprocessor macro
-                float B2 = 0.014259;
-                float B3 = -0.001700;
+                // Older DO sensors did not give a third value in mg/L, 
+                // so we calculate that value.
+                if (thirdValue <= 0.0) {
+                    // Calculate DO saturation at sea level at a given temp/salinity
+                    // using equation by Weiss (1970, Deep-Sea Res. 17:721-735)
+                    //
+                    // ln DO = A1 + A2 100/T + A3 ln T/100 + A4 T/100          (1)
+                    //         + S [B1 + B2 T/100 + B3 (T/100)2]
+                    // where:
+                    //   ln DO is the natural log of the DO solubility in milliliters per
+                    //   liter (ml/L)
+                    //   T = temperature in degrees K(273.15 + t  degrees C)
+                    //   S = salinity in g/kg (o/oo)
+                    float A1 = -173.4292;
+                    float A2 = 249.6339;
+                    float A3 = 143.3483;
+                    float A4 = -21.8492;
+                    float Bl = -0.033096;  // NOTE:  Intentionally Bl not B1, B1 is a
+                                        // defined preprocessor macro
+                    float B2 = 0.014259;
+                    float B3 = -0.001700;
 
-                //  Calculate DO saturation at sea level at a given temp/salinity
-                float Tkelvin  = 273.15 + tempValue;  //  celsius to kelvin
-                float salinity = 0.0;                 // assume 0 for pure water
-                float lnDO     = A1 + A2 * (100 / Tkelvin) + A3 * log(Tkelvin / 100) +
-                    A4 * (Tkelvin / 100) +
-                    salinity *
-                        (Bl + B2 * (Tkelvin / 100) +
-                         B3 * (Tkelvin / 100) * (Tkelvin / 100));
-                float DO_saturation_SL_mlL = exp(lnDO);
+                    //  Calculate DO saturation at sea level at a given temp/salinity
+                    float Tkelvin  = 273.15 + tempValue;  //  celsius to kelvin
+                    float salinity = 0.0;                 // assume 0 for pure water
+                    float lnDO     = A1 + A2 * (100 / Tkelvin) + A3 * log(Tkelvin / 100) +
+                        A4 * (Tkelvin / 100) +
+                        salinity *
+                            (Bl + B2 * (Tkelvin / 100) +
+                            B3 * (Tkelvin / 100) * (Tkelvin / 100));
+                    float DO_saturation_SL_mlL = exp(lnDO);
 
-                //  Multiply by the constant 1.4276 to
-                //  convert to milligrams per liter (mg/L).
-                float DO_saturation_SL_mgL = DO_saturation_SL_mlL * 1.4276;
+                    //  Multiply by the constant 1.4276 to
+                    //  convert to milligrams per liter (mg/L).
+                    float DO_saturation_SL_mgL = DO_saturation_SL_mlL * 1.4276;
 
-                //  Calculate the vapor pressur of water at sea level at a given
-                //  temperature from the empirical equation derived from the
-                //  Handbook of Chemistry and Physics
-                //  (Chemical Rubber Company, Cleveland, Ohio, 1964)
-                //
-                //  log u = 8.10765 - (1750.286/ (235+t))                   (3)
-                //  where:
-                //    t is temperature in degrees C
-                //    log u is the log base 10 of the vapor pressur of water in mmHg
-                float logVaporPressureH2O = 8.10765 - (1750.286 / (235 + tempValue));
-                float VaporPressureH2O    = pow(logVaporPressureH2O, 10);
+                    //  Calculate the vapor pressur of water at sea level at a given
+                    //  temperature from the empirical equation derived from the
+                    //  Handbook of Chemistry and Physics
+                    //  (Chemical Rubber Company, Cleveland, Ohio, 1964)
+                    //
+                    //  log u = 8.10765 - (1750.286/ (235+t))                   (3)
+                    //  where:
+                    //    t is temperature in degrees C
+                    //    log u is the log base 10 of the vapor pressur of water in mmHg
+                    float logVaporPressureH2O = 8.10765 - (1750.286 / (235 + tempValue));
+                    float VaporPressureH2O    = pow(logVaporPressureH2O, 10);
 
-                // Correct the DO saturation for the vapor pressure of water
-                // at pressures other than sea level using the equation:
-                // DO' = D0! (P-u/760-u)                                    (2)
-                //
-                // where:
-                //   DO' is the saturation DO at barometric pressure P
-                //   D0! is saturation DO at barometric pressure 760 mm Hg
-                //   u is the vapor pressure of water
-                float baroPressure_mmHg       = 760;  // assume working at sea level
-                float DO_saturation_press_mgL = DO_saturation_SL_mgL *
-                    ((baroPressure_mmHg - VaporPressureH2O) / (760 - VaporPressureH2O));
+                    // Correct the DO saturation for the vapor pressure of water
+                    // at pressures other than sea level using the equation:
+                    // DO' = D0! (P-u/760-u)                                    (2)
+                    //
+                    // where:
+                    //   DO' is the saturation DO at barometric pressure P
+                    //   D0! is saturation DO at barometric pressure 760 mm Hg
+                    //   u is the vapor pressure of water
+                    float baroPressure_mmHg       = 760;  // assume working at sea level
+                    float DO_saturation_press_mgL = DO_saturation_SL_mgL *
+                        ((baroPressure_mmHg - VaporPressureH2O) / (760 - VaporPressureH2O));
 
-                // Finally, multiply the measured percent saturation by the mg/L
-                // concentration of O2 at saturation at the given temperature,
-                // pressure, and salinity to get the measured DO concentration in mg/L
-                float DOmgL = DO_saturation_press_mgL * DOpercent;
-                thirdValue  = DOmgL;
-
+                    // Finally, multiply the measured percent saturation by the mg/L
+                    // concentration of O2 at saturation at the given temperature,
+                    // pressure, and salinity to get the measured DO concentration in mg/L
+                    float DOmgL = DO_saturation_press_mgL * DOpercent;
+                    thirdValue  = DOmgL;
+                }
                 return true;
             }
             break;
@@ -559,8 +581,18 @@ bool yosemitech::getValues(float& parmValue, float& tempValue, float& thirdValue
             }
             break;
         }
-        // Everybody else other than Y4000 Sonde; Y551 COD; Y532 (pH); Y533 (ORP); Y502
-        // & Y504 (DO)
+        // Y513 BGA
+        case Y513: {
+            if (modbus.getRegisters(0x03, 0x2600, 4)) {
+                tempValue = modbus.float32FromFrame(littleEndian, 3);
+                parmValue = modbus.float32FromFrame(littleEndian, 7);
+                errorCode  = 0x00;  // No error code is provided
+                return true;
+            }
+            break;
+        }
+        // All other sensors not listed above: Y510, Y511, Y513
+        // NOTE: new Y510/Y511 manual shows command simlar to Y513 above
         default: {
             if (modbus.getRegisters(0x03, 0x2600, 5)) {
                 tempValue = modbus.float32FromFrame(littleEndian, 3);
@@ -625,9 +657,8 @@ bool yosemitech::getValues(float& DOmgL, float& Turbidity, float& Cond, float& p
                 pH        = modbus.float32FromFrame(littleEndian, 15);  // pH
                 Temp      = modbus.float32FromFrame(littleEndian, 19);  // Temperature
                 ORP       = modbus.float32FromFrame(littleEndian, 23);  // ORP
-                Chlorophyll = modbus.float32FromFrame(littleEndian, 27);  // Chlorophyll
-                BGA         = modbus.float32FromFrame(littleEndian,
-                                                      31);  // Blue Green Algae (BGA)
+                Chlorophyll = modbus.float32FromFrame(littleEndian, 27); // Chlorophyll
+                BGA         = modbus.float32FromFrame(littleEndian, 31); // Blue Green
                 // Error code is separately stored in register 0x0800
                 errorCode = modbus.byteFromRegister(0x03, 0x0800, 1);
                 return true;
@@ -896,6 +927,7 @@ bool yosemitech::activateBrush(void) {
             else
                 return false;
         }
+        // Start brush by sending a write command to register 0x3100
         default: {
             byte activateBrush[9] = {_slaveID, 0x10, 0x31, 0x00, 0x00,
                                      0x00,     0x00, 0x00, 0x00};

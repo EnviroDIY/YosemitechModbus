@@ -25,7 +25,7 @@
 //  Sensor Settings
 // ==========================================================================
 // Define the sensor type
-yosemitechModel model = Y520;  // The sensor model number
+yosemitechModel model = Y521;  // The sensor model number
 
 // Define the sensor's modbus address, or SlaveID
 // NOTE: YosemiTech Windows software presents SlaveID as an integer (decimal),
@@ -96,8 +96,8 @@ const int DEREPin       = -1;  // The pin controlling Recieve Enable and Driver 
                                // Setting LOW enables the receiver (sensor) to send text
 
 // Turn on debugging outputs (i.e. raw Modbus requests & responses)
-// by uncommenting next line (i.e. `#define DEBUG`)
-// #define DEBUG
+// by uncommenting next line (i.e. `#define YM_DEBUG`)
+// #define YM_DEBUG
 
 
 // ==========================================================================
@@ -198,7 +198,7 @@ void setup() {
     sensor.begin(model, modbusAddress, &modbusSerial, DEREPin);
 
 // Turn on debugging
-#ifdef DEBUG
+#ifdef YM_DEBUG
     sensor.setDebugStream(&Serial);
 #endif
 
