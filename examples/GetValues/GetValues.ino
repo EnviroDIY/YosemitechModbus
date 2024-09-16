@@ -25,7 +25,7 @@
 //  Sensor Settings
 // ==========================================================================
 // Define the sensor type
-yosemitechModel model = Y521;  // The sensor model number
+yosemitechModel model = Y504;  // The sensor model number
 
 // Define the sensor's modbus address, or SlaveID
 // NOTE: YosemiTech Windows software presents SlaveID as an integer (decimal),
@@ -37,24 +37,25 @@ byte modbusAddress = 0x01;  // Yosemitech ships sensors with default ID 0x01
 int32_t modbusBaud = 9600;  // 9600 is the default baud rate for most sensors
 
 
-// Sensor Timing
-// Edit these to explore
-#define WARM_UP_TIME 1500  // milliseconds for sensor to respond to commands.
+// Time in milliseconds after powering up for the slave device to respond
+#define WARM_UP_TIME 1500 
           // DO responds within 275-300ms;
           // Turbidity and pH within 500ms
           // Conductivity doesn't respond until 1.15-1.2s
 
-#define BRUSH_TIME 10000  // milliseconds for readings to stablize.
+// Time in milliseconds for brush cycle to complete.
+// No readings should be taken during this time.
+#define BRUSH_TIME 10000  
            // On wipered (self-cleaning) models, the brush immediately activates after
            // getting power and takes approximately 10-15 seconds to finish.
            // Turbidity takes 10-11 s
            // Ammonium takes 15 s
-// No readings should be taken during this time.
 
-#define STABILIZATION_TIME 10000  // milliseconds for readings to stablize.
+// Time in milliseconds for readings to stablize.
+#define STABILIZATION_TIME 2000  
 // The modbus manuals recommend the following stabilization times between starting
 // measurements and requesting values (times include brushing time):
-//  2 s for whipered chlorophyll
+//  2 s for chlorophyll with wiper
 // 20 s for turbidity, including 11 s to complete a brush cycle
 // 10 s for conductivity
 //  2 s for COD
@@ -90,14 +91,14 @@ const int32_t serialBaud = 115200;  // Baud rate for serial monitor
 // Define pin number variables
 const int sensorPwrPin  = 10;  // The pin sending power to the sensor
 const int adapterPwrPin = 22;  // The pin sending power to the RS485 adapter
-const int DEREPin       = -1;  // The pin controlling Recieve Enable and Driver Enable
+const int DEREPin       = -1;  // The pin controlling Receive Enable and Driver Enable
                                // on the RS485 adapter, if applicable (else, -1)
                                // Setting HIGH enables the driver (arduino) to send text
                                // Setting LOW enables the receiver (sensor) to send text
 
 // Turn on debugging outputs (i.e. raw Modbus requests & responses)
 // by uncommenting next line (i.e. `#define YM_DEBUG`)
-// #define YM_DEBUG
+// #define DEBUG
 
 
 // ==========================================================================
@@ -147,6 +148,8 @@ HardwareSerial& modbusSerial = Serial;
 
 // Construct the Yosemitech modbus instance
 yosemitech sensor;
+
+// Initialize success flag for set commands
 bool       success;
 
 
@@ -167,17 +170,16 @@ String prettyprintAddressHex(byte _modbusAddress) {
 //  Arduino Setup Function
 // ==========================================================================
 void setup() {
-    // Setup power pins
-    if (sensorPwrPin > 0) {
+    // Set various pins as needed
+    if (DEREPin >= 0) { pinMode(DEREPin, OUTPUT); }
+    if (sensorPwrPin >= 0) {
         pinMode(sensorPwrPin, OUTPUT);
         digitalWrite(sensorPwrPin, HIGH);
     }
-    if (adapterPwrPin > 0) {
+    if (adapterPwrPin >= 0) {
         pinMode(adapterPwrPin, OUTPUT);
         digitalWrite(adapterPwrPin, HIGH);
     }
-
-    if (DEREPin > 0) { pinMode(DEREPin, OUTPUT); }
 
     // Turn on the "main" serial port for debugging via USB Serial Monitor
     Serial.begin(serialBaud);
@@ -215,25 +217,26 @@ void setup() {
     delay(WARM_UP_TIME);
 
     // Confirm Modbus Address
-    Serial.println(F("\nSelected modbus address:"));
-    Serial.print(F("    integer: "));
+    Serial.println(F("\nExpected modbus address:"));
+    Serial.print(F("    Decimal: "));
     Serial.print(modbusAddress, DEC);
-    Serial.print(F(", hexidecimal: "));
+    Serial.print(F(", Hexidecimal: "));
     Serial.println(prettyprintAddressHex(modbusAddress));
 
-    Serial.println(F("Discovered modbus address."));
-    Serial.print(F("    integer: "));
+    // Get the current Modbus Address
+    Serial.println(F("Getting current modbus address..."));
     byte id = sensor.getSlaveID();
+    Serial.print(F("    Decimal: "));
     Serial.print(id, DEC);
-    Serial.print(F(", hexidecimal: "));
+    Serial.print(F(", Hexidecimal: "));
     Serial.println(prettyprintAddressHex(id));
 
-    if (id != modbusAddress) {
+    if (id != 0xFF && id != modbusAddress) {
+        Serial.println(F("\nDiscovered modbus address different than expected!"));
         Serial.print(F("Updating sensor modbus address to: "));
         modbusAddress = id;
         Serial.println(prettyprintAddressHex(modbusAddress));
-        Serial.println();
-        // Restart the sensor
+        // Restart the sensor with the discovered address
         sensor.begin(model, modbusAddress, &modbusSerial, DEREPin);
         delay(1500);
     };

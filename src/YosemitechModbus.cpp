@@ -223,13 +223,56 @@ String yosemitech::getUnits(void) {
 // Works for: new Y4000
 // The slaveID is in register 0x3000 (12288)
 byte yosemitech::getSlaveID(void) {
-    byte command[8] = {0xFF, 0x03, 0x30, 0x00, 0x00, 0x01, 0x9E, 0xD4};
-            //  address, ReadHolding, startRegister, numRegisters,  CRC
-    modbus.sendCommand(command, 8);
-    // int respSize = modbus.sendCommand(command, 8);
-    // if (respSize == 7) return modbus.responseBuffer[3];
-    // else return 0x01;  // This is the default address
-    return modbus.responseBuffer[3];
+    // expand modbusMaster::getRegisters()
+
+    byte _slaveID = 0xFF;  // 
+    byte readCommand = 0x03;  // 
+    int16_t startRegister = 12288;  // 
+    int16_t numRegisters = 1;  // 
+
+    // Create an array for the command
+    byte command[8];
+
+    // Put in the slave id and the command
+    command[0] = _slaveID;
+    command[1] = readCommand;
+
+    // Put in the starting register
+    leFrame fram  = {{
+         0,
+    }};
+    fram.Int16[0] = startRegister;
+    command[2]    = fram.Byte[1];
+    command[3]    = fram.Byte[0];
+
+    // Put in the number of registers
+    fram.Int16[1] = numRegisters;
+    command[4]    = fram.Byte[3];
+    command[5]    = fram.Byte[2];
+
+    // The size of the returned frame should be:
+    // # Registers X 2 bytes/register + 5 bytes of modbus RTU frame
+
+    // Try up to 10 times to get the right results
+    int     tries    = 0;
+    int16_t respSize = 0;
+    while (respSize != (numRegisters * 2 + 5) && tries < 10) {
+        // Send out the command (this adds the CRC)
+        // TODO: figure out how to get around this modbusMaster error:
+        // "Response is not from the correct modbus slave!" error
+        // and why it causes respSize = 0
+        // Serial.println(respSize);
+        respSize = modbus.sendCommand(command, 8);
+        tries++;
+        delay(25);
+    }
+    if (respSize == (numRegisters * 2 + 5)) {
+        // Serial.print(F("Success!"));
+        return modbus.responseBuffer[3];
+    } else {
+        // Serial.print(F("Failed!"));
+        return modbus.responseBuffer[3];
+    }
 }
 
 
