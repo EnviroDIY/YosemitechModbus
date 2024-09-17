@@ -14,49 +14,48 @@
  * @m_footernavigation
  * ======================================================================= */
 
-// ---------------------------------------------------------------------------
-// Include the base required libraries
-// ---------------------------------------------------------------------------
+// ==========================================================================
+//  Include the libraries required for any data logger
+// ==========================================================================
 #include <Arduino.h>
 #include <YosemitechModbus.h>
-
-// Turn on debugging outputs (i.e. raw Modbus requests & responsds)
-// by uncommenting next line (i.e. `#define DEBUG`)
-// #define DEBUG
 
 
 // ==========================================================================
 //  Sensor Settings
 // ==========================================================================
 // Define the sensor type
-yosemitechModel model = Y700;  // The sensor model number
+yosemitechModel model = Y504;  // The sensor model number
 
 // Define the sensor's modbus address, or SlaveID
 // NOTE: YosemiTech Windows software presents SlaveID as an integer (decimal),
 // whereas EnviroDIY and most other modbus systems present it in hexadecimal form.
 // Use an online "HEX to DEC Converter".
-byte modbusAddress =
-    0x01;  // Yosemitech ships sensors with a default ID of 0x01.
+byte modbusAddress = 0x01;  // Yosemitech ships sensors with default ID 0x01
 
-// Sensor Timing
-// Edit these to explore
-#define WARM_UP_TIME \
-    1000  // milliseconds for sensor to respond to commands.
+// The Modbus baud rate the sensor uses
+int32_t modbusBaud = 9600;  // 9600 is the default baud rate for most sensors
+
+
+// Time in milliseconds after powering up for the slave device to respond
+#define WARM_UP_TIME 1500 
           // DO responds within 275-300ms;
           // Turbidity and pH within 500ms
           // Conductivity doesn't respond until 1.15-1.2s
 
-#define BRUSH_TIME 10000  // milliseconds for readings to stablize.
+// Time in milliseconds for brush cycle to complete.
+// No readings should be taken during this time.
+#define BRUSH_TIME 10000  
            // On wipered (self-cleaning) models, the brush immediately activates after
            // getting power and takes approximately 10-15 seconds to finish.
            // Turbidity takes 10-11 s
            // Ammonium takes 15 s
-// No readings should be taken during this time.
 
-#define STABILIZATION_TIME 4000  // milliseconds for readings to stablize.
+// Time in milliseconds for readings to stablize.
+#define STABILIZATION_TIME 2000  
 // The modbus manuals recommend the following stabilization times between starting
 // measurements and requesting values (times include brushing time):
-//  2 s for whipered chlorophyll
+//  2 s for chlorophyll with wiper
 // 20 s for turbidity, including 11 s to complete a brush cycle
 // 10 s for conductivity
 //  2 s for COD
@@ -85,20 +84,36 @@ byte modbusAddress =
 
 
 // ==========================================================================
-//  Data Logging Options
+//  Data Logger Options
 // ==========================================================================
 const int32_t serialBaud = 115200;  // Baud rate for serial monitor
 
 // Define pin number variables
-const int sensorPwrPin  = 11;  // The pin sending power to the sensor
+const int sensorPwrPin  = 10;  // The pin sending power to the sensor
 const int adapterPwrPin = 22;  // The pin sending power to the RS485 adapter
-const int DEREPin       = -1;  // The pin controlling Recieve Enable and Driver Enable
+const int DEREPin       = -1;  // The pin controlling Receive Enable and Driver Enable
                                // on the RS485 adapter, if applicable (else, -1)
                                // Setting HIGH enables the driver (arduino) to send text
                                // Setting LOW enables the receiver (sensor) to send text
 
-// Construct a Serial object for Modbus
-#if defined(ARDUINO_AVR_UNO) || defined(ARDUINO_AVR_FEATHER328P)
+// Turn on debugging outputs (i.e. raw Modbus requests & responses)
+// by uncommenting next line (i.e. `#define YM_DEBUG`)
+// #define DEBUG
+
+
+// ==========================================================================
+// Create and Assign a Serial Port for Modbus
+// ==========================================================================
+// Harware serial ports are prefered when available.
+// AltSoftSerial is the most stable alternative for modbus.
+//   Select over alternatives with the define below.
+#define BUILD_ALTSOFTSERIAL // Comment-out if you prefer alternatives
+
+#if defined(BUILD_ALTSOFTSERIAL)
+#include <AltSoftSerial.h>
+AltSoftSerial modbusSerial;
+
+#elif defined(ARDUINO_AVR_UNO) || defined(ARDUINO_AVR_FEATHER328P)
 // The Uno only has 1 hardware serial port, which is dedicated to comunication with the
 // computer. If using an Uno, you will be restricted to using AltSofSerial or
 // SoftwareSerial
@@ -107,20 +122,23 @@ const int SSRxPin = 10;  // Receive pin for software serial (Rx on RS485 adapter
 const int SSTxPin = 11;  // Send pin for software serial (Tx on RS485 adapter)
 #pragma message("Using Software Serial for the Uno on pins 10 and 11")
 SoftwareSerial modbusSerial(SSRxPin, SSTxPin);
-// AltSoftSerial modbusSerial;
-#elif defined ESP8266
-#pragma message("Using Software Serial for the ESP8266")
+
+#elif defined(ESP8266)
 #include <SoftwareSerial.h>
+#pragma message("Using Software Serial for the ESP8266")
 SoftwareSerial modbusSerial;
+
 #elif defined(NRF52832_FEATHER) || defined(ARDUINO_NRF52840_FEATHER)
 #pragma message("Using TinyUSB for the NRF52")
 #include <Adafruit_TinyUSB.h>
 HardwareSerial& modbusSerial = Serial1;
+
 #elif !defined(NO_GLOBAL_SERIAL1) && !defined(STM32_CORE_VERSION)
 // This is just a assigning another name to the same port, for convienence
 // Unless it is unavailable, always prefer hardware serial.
 #pragma message("Using HarwareSerial / Serial1")
 HardwareSerial& modbusSerial = Serial1;
+
 #else
 // This is just a assigning another name to the same port, for convienence
 // Unless it is unavailable, always prefer hardware serial.
@@ -130,18 +148,21 @@ HardwareSerial& modbusSerial = Serial;
 
 // Construct the Yosemitech modbus instance
 yosemitech sensor;
+
+// Initialize success flag for set commands
 bool       success;
 
 
 // ==========================================================================
 // Working Functions
 // ==========================================================================
-// A function for pretty-printing the Modbuss Address, from ModularSensors
-String sensorLocation(byte _modbusAddress) {
-    String sensorLocation = F("0x");
-    if (_modbusAddress < 0x10) { sensorLocation += "0"; }
-    sensorLocation += String(_modbusAddress, HEX);
-    return sensorLocation;
+// A function for pretty-printing the Modbuss Address in Hexadecimal notation,
+// from ModularSensors `sensorLocation()`
+String prettyprintAddressHex(byte _modbusAddress) {
+    String addressHex = F("0x");
+    if (_modbusAddress < 0x10) { addressHex += "0"; }
+    addressHex += String(_modbusAddress, HEX);
+    return addressHex;
 }
 
 
@@ -149,35 +170,37 @@ String sensorLocation(byte _modbusAddress) {
 //  Arduino Setup Function
 // ==========================================================================
 void setup() {
-    if (sensorPwrPin > 0) {
+    // Set various pins as needed
+    if (DEREPin >= 0) { pinMode(DEREPin, OUTPUT); }
+    if (sensorPwrPin >= 0) {
         pinMode(sensorPwrPin, OUTPUT);
         digitalWrite(sensorPwrPin, HIGH);
     }
-    if (adapterPwrPin > 0) {
+    if (adapterPwrPin >= 0) {
         pinMode(adapterPwrPin, OUTPUT);
         digitalWrite(adapterPwrPin, HIGH);
     }
-
-    if (DEREPin > 0) { pinMode(DEREPin, OUTPUT); }
 
     // Turn on the "main" serial port for debugging via USB Serial Monitor
     Serial.begin(serialBaud);
 
     // Turn on your modbus serial port
-    // The modbus serial stream - Baud rate MUST be 9600 and the configuration 8N1
-#if defined(ESP8266)
+#if defined(ARDUINO_AVR_UNO) || defined(ARDUINO_AVR_FEATHER328P) || \
+    defined(ARDUINO_SAM_DUE) || not defined(SERIAL_8E1)
+    modbusSerial.begin(modbusBaud);
+#elif defined(ESP8266)
     const int SSRxPin = 13;  // Receive pin for software serial (Rx on RS485 adapter)
     const int SSTxPin = 14;  // Send pin for software serial (Tx on RS485 adapter)
-    modbusSerial.begin(9600, SWSERIAL_8N1, SSRxPin, SSTxPin, false);
+    modbusSerial.begin(modbusBaud, SWSERIAL_8N1, SSRxPin, SSTxPin, false);
 #else
-    modbusSerial.begin(9600);
-#endif
+    modbusSerial.begin(modbusBaud);
+    #endif
 
     // Start up the Yosemitech sensor
     sensor.begin(model, modbusAddress, &modbusSerial, DEREPin);
 
 // Turn on debugging
-#ifdef DEBUG
+#ifdef YM_DEBUG
     sensor.setDebugStream(&Serial);
 #endif
 
@@ -194,26 +217,26 @@ void setup() {
     delay(WARM_UP_TIME);
 
     // Confirm Modbus Address
-    Serial.println(F("\nSelected modbus address:"));
-    Serial.print(F("    integer: "));
+    Serial.println(F("\nExpected modbus address:"));
+    Serial.print(F("    Decimal: "));
     Serial.print(modbusAddress, DEC);
-    Serial.print(F(", hexidecimal: "));
-    Serial.println(sensorLocation(modbusAddress));
+    Serial.print(F(", Hexidecimal: "));
+    Serial.println(prettyprintAddressHex(modbusAddress));
 
-    Serial.println(F("Discovered modbus address."));
-    Serial.print(F("    integer: "));
+    // Get the current Modbus Address
+    Serial.println(F("Getting current modbus address..."));
     byte id = sensor.getSlaveID();
+    Serial.print(F("    Decimal: "));
     Serial.print(id, DEC);
-    Serial.print(F(", hexidecimal: "));
-    // Serial.print(id, HEX);
-    Serial.println(sensorLocation(id));
+    Serial.print(F(", Hexidecimal: "));
+    Serial.println(prettyprintAddressHex(id));
 
-    if (id != modbusAddress) {
+    if (id != 0xFF && id != modbusAddress) {
+        Serial.println(F("\nDiscovered modbus address different than expected!"));
         Serial.print(F("Updating sensor modbus address to: "));
         modbusAddress = id;
-        Serial.println(sensorLocation(modbusAddress));
-        Serial.println();
-        // Restart the sensor
+        Serial.println(prettyprintAddressHex(modbusAddress));
+        // Restart the sensor with the discovered address
         sensor.begin(model, modbusAddress, &modbusSerial, DEREPin);
         delay(1500);
     };

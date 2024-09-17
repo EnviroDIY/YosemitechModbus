@@ -18,45 +18,38 @@
  * @brief The various Yosemitech sensors.
  */
 typedef enum yosemitechModel {
-    Y502 = 0,  ///< [Online Optical Dissolved Oxygen
+    Y502 = 0,  ///< [Optical Dissolved Oxygen (discontinued)
                ///< Sensor](http://en.yosemitech.com/aspcms/product/2020-5-8/72.html)
-    Y504,      ///< [Optical Dissolved Oxygen
-               ///< Sensor](http://en.yosemitech.com/aspcms/product/2021-3-1/161.html)
-
-    // Y505,  ///< [Aquaculture Optical Dissolved Oxygen
-    // (ODO)](http://en.yosemitech.com/aspcms/product/2020-5-8/79.html)
-
+    Y504,      ///< [Optical Dissolved Oxygen (ODO)
+               ///< Sensor](https://e.yosemitech.com/DO/Y504-A.html)
+    // Y505,  ///< [ Optical Dissolved Oxygen (ODO) for 
+    //        ///< Aquaculture](https://e.yosemitech.com/DO/Y505-A.html)
     Y510,  ///< [Turbidity
-           ///< Sensor](http://en.yosemitech.com/aspcms/product/2020-5-8/76.html)
-    Y511,  ///<  [Turbidity Sensor with
-           ///<  wiper](http://en.yosemitech.com/aspcms/product/2020-5-8/76.html)
-    Y513,  ///<  [Blue Green Algae sensor with
-           ///<  Wiper](http://en.yosemitech.com/aspcms/product/2020-5-8/82.html)
-    Y514,  ///<  [Chlorophyll Sensor with
-           ///<  Wiper](http://en.yosemitech.com/aspcms/product/2020-4-23/39.html)
+           ///< Sensor](https://e.yosemitech.com/TUR/Y510-B.html)
+    Y511,  ///< [Turbidity Sensor with
+           ///<  wiper](https://e.yosemitech.com/TUR/Y511-A.html)
+    Y513,  ///< [Blue Green Algae (BGA) sensor with
+           ///<  Wiper](https://e.yosemitech.com/CHL/Y513-A.html)
+    Y514,  ///< [Chlorophyll Sensor with
+           ///<  Wiper](https://e.yosemitech.com/CHL/Y514-A.html)
     Y516,  ///< [Oil in water (Crude
            ///< Oil)](http://en.yosemitech.com/aspcms/product/2020-5-8/69.html)
-
     // Y517,    ///< [Oil in water (Refined
     // Oil)](http://en.yosemitech.com/aspcms/product/2020-5-8/69.html)
-
-    Y520,  ///<  [4-Electrode Conductivity
+    Y520,  ///<  [4-Electrode Conductivity (discontinued)
            ///<  Sensor](http://en.yosemitech.com/aspcms/product/2020-4-23/58.html)
-
-    // Y521,    ///<  [4-Electrode Conductivity Sensor(metal
-    // housing)](http://en.yosemitech.com/aspcms/product/2020-4-23/58.html)
-
-    Y532,   ///<  [pH](http://en.yosemitech.com/aspcms/product/2020-6-15/154.html)
-    Y533,   ///<  [ORP](http://en.yosemitech.com/aspcms/product/2020-5-8/91.html)
-    Y550,   ///<  [UV254/COD Sensor, old version no longer
-            ///<  sold](http://en.yosemitech.com/aspcms/product/2020-5-8/94.html)
+    Y521,   ///< [4-Electrode Conductivity Sensor (metal
+            ///< housing)](https://e.yosemitech.com/CT/Y521-A.html)
+    Y532,   ///<  [pH Sensor](https://e.yosemitech.com/pH/Y532-A.html)
+    Y533,   ///<  [ORP Sensor](https://e.yosemitech.com/pH/Y533-A.html)
+    Y550,   ///<  [UV254/COD Sensor (
+            ///<  discontinued)](http://en.yosemitech.com/aspcms/product/2020-5-8/94.html)
     Y551,   ///<  [UV254/COD
-            ///<  Sensor](http://en.yosemitech.com/aspcms/product/2020-5-8/94.html)
-    Y560,   ///<  [NH4 Probe](http://en.yosemitech.com/aspcms/product/2020-4-23/61.html)
-    Y700,   ///<  Water Pressure/Depth Sensor Prototype developed for Clean Water
-            ///<  Services
+            ///<  Sensor](https://e.yosemitech.com/COD-16/Y551-B.html)
+    Y560,   ///<  [Ammonium ISE Sensor](https://e.yosemitech.com/NH4-N-19/Y560-A.html)
+    Y700,   ///<  [Depth Sensor](https://e.yosemitech.com/WLT/68.html)
     Y4000,  ///<  [Multiparameter
-            ///<  Sonde](http://en.yosemitech.com/aspcms/product/2020-5-8/95.html)
+            ///<  Sonde](https://e.yosemitech.com/MULTI/Y4000.html)
     UNKNOWN  ///<  Use if the sensor model is unknown. Doing this is generally a bad
              ///<  idea, but it can be helpful for doing things like getting the serial
              ///<  number of an unknown model.
