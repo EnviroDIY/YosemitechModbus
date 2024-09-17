@@ -25,7 +25,7 @@
 //  Sensor Settings
 // ==========================================================================
 // Define the sensor type
-yosemitechModel model = Y504;  // The sensor model number
+yosemitechModel model = Y513;  // The sensor model number
 
 // Define the sensor's modbus address, or SlaveID
 // NOTE: YosemiTech Windows software presents SlaveID as an integer (decimal),

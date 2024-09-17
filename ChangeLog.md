@@ -20,6 +20,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ***
 
+## [0.5.0] 2024-09-17
+
+Add Y513 Blue Green Algae (BGA) and fix examples.
+
+### Changed
+
+- updated Y504 to first try to get thridvalue for DOmgL before calculating it.
+- The `getValue.ino` example has better formatted outputs.
+- The `getSlaveID()` command now works better with broadcast address 0xFF.
+  - NOTE that old YosemiTech sensors (before 2020??) don't have a functioning broadcast address
+- Update [SensorModbusMaster](https://github.com/EnviroDIY/SensorModbusMaster) dependency to v0.7.3.
+
+### Added
+
+- Support for the Y513 Blue Green Algae (BGA) sensor with wiper (773a3a0781a16b7ba6e9f49fadc73cedddce0fbc)
+- Added explicit support for the Y521 Conductivity sensor, given that the Y520 has been discontinued.
+- Successfully tested on new models of Y504, Y511, Y513.
+
+### Fixed
+
+- The `getValue.ino` example wouldn't work with AltSoftSerial (see d4204ebd1212608aaf05a7a65b763e432c59fe37 and https://github.com/EnviroDIY/SensorModbusMaster/commit/f1daa2fdd22c7ec991fc2ff50330aa41e4a7a53e)
+- Fixed broken links to YosemiTech product pages
+
+***
+
 ## [0.4.2]
 
 ### Changed
