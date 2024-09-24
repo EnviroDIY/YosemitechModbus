@@ -50,6 +50,8 @@ typedef enum yosemitechModel {
     Y700,   ///<  [Depth Sensor](https://e.yosemitech.com/WLT/68.html)
     Y4000,  ///<  [Multiparameter
             ///<  Sonde](https://e.yosemitech.com/MULTI/Y4000.html)
+    Y4000V2,///<  [Multiparameter
+            ///<  Sonde new version with blue elements (different adresses)](https://e.yosemitech.com/MULTI/Y4000.html)
     UNKNOWN  ///<  Use if the sensor model is unknown. Doing this is generally a bad
              ///<  idea, but it can be helpful for doing things like getting the serial
              ///<  number of an unknown model.
@@ -344,6 +346,7 @@ class yosemitech {
     bool getValues(float& firstValue, float& secondValue, float& thirdValue,
                    float& forthValue, float& fifthValue, float& sixthValue,
                    float& seventhValue, float& eighthValue);
+
     /**
      * @brief Gets values back from a multiparamter sonde
      *
@@ -371,6 +374,65 @@ class yosemitech {
     bool getValues(float& firstValue, float& secondValue, float& thirdValue,
                    float& forthValue, float& fifthValue, float& sixthValue,
                    float& seventhValue, float& eighthValue, byte& errorCode);
+
+    /**
+     * @brief Gets values back from a multiparamter sonde
+     *
+     * @note This will return false for anything but a sonde
+     *
+     * @param firstValue A float to replace with the first parameter value from the
+     * sensor.
+     * @param secondValue A float to replace with the second parameter value from the
+     * sensor.
+     * @param thirdValue A float to replace with the third parameter value from the
+     * sensor.
+     * @param forthValue A float to replace with the fourth parameter value from the
+     * sensor.
+     * @param fifthValue A float to replace with the fifth parameter value from the
+     * sensor.
+     * @param sixthValue A float to replace with the sixtth parameter value from the
+     * sensor.
+     * @param seventhValue A float to replace with the seventh parameter value from the
+     * sensor.
+     * @param eighthValue A float to replace with the eighth parameter value from the
+     * sensor.
+     * @param errorCode A byte to replace with the error code from the measurement.
+     * @return *bool* True if the measurements were successfully obtained, false if not.
+     */
+    bool getValues(float& firstValue, float& secondValue, float& thirdValue,
+                   float& forthValue, float& fifthValue, float& sixthValue,
+                   float& seventhValue, float& eighthValue, float& ninthValue,
+                   float& tenthValue, float& eleventhValue, float& twelfthValue);
+
+    /**
+     * @brief Gets values back from a multiparamter sonde
+     *
+     * @note This will return false for anything but a sonde
+     *
+     * @param firstValue A float to replace with the first parameter value from the
+     * sensor.
+     * @param secondValue A float to replace with the second parameter value from the
+     * sensor.
+     * @param thirdValue A float to replace with the third parameter value from the
+     * sensor.
+     * @param forthValue A float to replace with the fourth parameter value from the
+     * sensor.
+     * @param fifthValue A float to replace with the fifth parameter value from the
+     * sensor.
+     * @param sixthValue A float to replace with the sixtth parameter value from the
+     * sensor.
+     * @param seventhValue A float to replace with the seventh parameter value from the
+     * sensor.
+     * @param eighthValue A float to replace with the eighth parameter value from the
+     * sensor.
+     * @param errorCode A byte to replace with the error code from the measurement.
+     * @return *bool* True if the measurements were successfully obtained, false if not.
+     */
+    bool getValues(float& firstValue, float& secondValue, float& thirdValue,
+                   float& forthValue, float& fifthValue, float& sixthValue,
+                   float& seventhValue, float& eighthValue, float& ninthValue,
+                   float& tenthValue, float& eleventhValue, float& twelfthValue,
+                   byte& errorCode);
     /**@}*/
 
     /**
