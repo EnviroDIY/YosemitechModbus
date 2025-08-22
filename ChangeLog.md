@@ -20,6 +20,21 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ***
 
+## [0.5.1]
+
+### Changed
+
+- Updated doxygen formatting
+- Bumped SensorModbusMaster dependency
+
+### Added
+
+- Added code spell configurations
+
+### Fixed
+
+- Fixed spelling errors
+
 ## [0.5.0] 2024-09-17
 
 Add Y513 Blue Green Algae (BGA) and fix examples.
@@ -203,7 +218,9 @@ Newest Modbus Manuals
 
 Initial release
 
-[Unreleased]: https://github.com/EnviroDIY/YosemitechModbus/compare/v0.4.2...HEAD
+[Unreleased]: https://github.com/EnviroDIY/YosemitechModbus/compare/v0.5.1...HEAD
+[0.5.1]: https://github.com/EnviroDIY/YosemitechModbus/releases/tag/v0.5.1
+[0.5.0]: https://github.com/EnviroDIY/YosemitechModbus/releases/tag/v0.5.0
 [0.4.2]: https://github.com/EnviroDIY/YosemitechModbus/releases/tag/v0.4.2
 [0.4.1]: https://github.com/EnviroDIY/YosemitechModbus/releases/tag/v0.4.1
 [0.4.0]: https://github.com/EnviroDIY/YosemitechModbus/releases/tag/v0.4.0
