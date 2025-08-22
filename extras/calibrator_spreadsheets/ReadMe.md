@@ -1,8 +1,8 @@
-# YosemiTech Calibration Protocols & Spreadsheets<!-- {#page_calibration} -->
+# YosemiTech Calibration Protocols & Spreadsheets<!--! {#page_calibration} -->
 
 This is a **work in progress**.
 
-## Cleaning pH electrode<!-- {#calibration_cleaning} -->
+## Cleaning pH electrode<!--! {#calibration_cleaning} -->
 
 For environmental deployments, we suggest would suggest this order:
 

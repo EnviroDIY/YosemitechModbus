@@ -1,9 +1,37 @@
 {
+  "action_cache_version": 1,
   "dependencies": [
+    {
+      "name": "NeoSWSerial",
+      "version": "https://github.com/SRGDamia1/NeoSWSerial.git"
+    },
     {
       "name": "AltSoftSerial",
       "owner": "PaulStoffregen",
       "version": "https://github.com/PaulStoffregen/AltSoftSerial.git"
+    },
+    {
+      "name": "Adafruit BusIO",
+      "owner": "adafruit",
+      "library id": "6214",
+      "url": "https://github.com/adafruit/Adafruit_BusIO",
+      "version": "~1.17.2",
+      "note": "Adafruit BusIO, a dependency of other Adafruit libraries",
+      "authors": ["Adafruit"]
+    },
+    {
+      "owner": "Adafruit",
+      "name": "Adafruit GFX Library",
+      "library id": "1824",
+      "url": "https://github.com/adafruit/Adafruit-GFX-Library.git",
+      "version": "~1.12.1"
+    },
+    {
+      "owner": "Adafruit",
+      "name": "Adafruit SSD1306",
+      "library id": "1824",
+      "url": "https://github.com/adafruit/Adafruit_SSD1306.git",
+      "version": "~2.5.15"
     }
   ]
 }

@@ -9,10 +9,6 @@
 /**
  * @dir examples
  * @brief Contains all of the example sketches
- * @dir examples/DisplayValues
- * @copybrief DisplayValues.ino
- * @dir examples/GetValues
- * @copybrief GetValues.ino
  */
 /**
  * @dir extras

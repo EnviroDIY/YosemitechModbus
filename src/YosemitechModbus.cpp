@@ -225,10 +225,10 @@ String yosemitech::getUnits(void) {
 byte yosemitech::getSlaveID(void) {
     // expand modbusMaster::getRegisters()
 
-    byte _slaveID = 0xFF;  // 
-    byte readCommand = 0x03;  // 
-    int16_t startRegister = 12288;  // 
-    int16_t numRegisters = 1;  // 
+    byte    _slaveID      = 0xFF;   //
+    byte    readCommand   = 0x03;   //
+    int16_t startRegister = 12288;  //
+    int16_t numRegisters  = 1;      //
 
     // Create an array for the command
     byte command[8];
@@ -239,7 +239,7 @@ byte yosemitech::getSlaveID(void) {
 
     // Put in the starting register
     leFrame fram  = {{
-         0,
+        0,
     }};
     fram.Int16[0] = startRegister;
     command[2]    = fram.Byte[1];
@@ -309,12 +309,13 @@ String yosemitech::getSerialNumber(void) {
 
     // If model was unknown, assign it based on serial number
     if (_model == UNKNOWN) {
-        if (modelSS == 1) _model = Y504;    // 01 means DO sensor
-        if (modelSS == 9) _model = Y520;    // 09 means conductivity sensor
-        if (modelSS == 10) _model = Y510;   // 10 means turbidity sensor
-        if (modelSS == 29) _model = Y511;   // 29 means self-cleaning turbidity sensor
-        if (modelSS == 61) _model = Y513;   // 61 means Blue Green Algae (BGA)
-        if (modelSS == 62) _model = Y513;   // 61 means Blue Green Algae (BGA) self-cleaning
+        if (modelSS == 1) _model = Y504;   // 01 means DO sensor
+        if (modelSS == 9) _model = Y520;   // 09 means conductivity sensor
+        if (modelSS == 10) _model = Y510;  // 10 means turbidity sensor
+        if (modelSS == 29) _model = Y511;  // 29 means self-cleaning turbidity sensor
+        if (modelSS == 61) _model = Y513;  // 61 means Blue Green Algae (BGA)
+        if (modelSS == 62)
+            _model = Y513;  // 61 means Blue Green Algae (BGA) self-cleaning
         if (modelSS == 48) _model = Y514;   // 48 means chlorophyll
         if (modelSS == 43) _model = Y532;   // 43 must mean pH
         if (modelSS == 47) _model = Y551;   // 47 must mean COD
@@ -377,7 +378,7 @@ bool yosemitech::startMeasurement(void) {
             else
                 return false;
         }
-        // Y532 (pH), Y533 (ORP), Y560 (Ammonium) ion selective elctrodes, and
+        // Y532 (pH), Y533 (ORP), Y560 (Ammonium) ion selective electrodes, and
         // Y700 (Pressure/Depth) sensors do not require Start/Stop functions.
         // These commands are not in their Modbus Manuals.
         // However, Start/Stop functions are required to get these to work in
@@ -394,9 +395,9 @@ bool yosemitech::startMeasurement(void) {
             return true;
         }
         // Y510/Y511 Turbidity Modbus manual sent in July 2020 and
-        // Y504 Optical Dissolved Oxygen Modbus manual sent in June 2019 
+        // Y504 Optical Dissolved Oxygen Modbus manual sent in June 2019
         // both describe using this function at register 0x2500 to:
-        // "Set probe in continuous light emitting mode and start measuring",  
+        // "Set probe in continuous light emitting mode and start measuring",
         // however, newer paper manuals sent in 2024 do not list this command.
         default: {
             byte startMeasurementR[8] = {_slaveID, 0x03, 0x25, 0x00,
@@ -416,7 +417,7 @@ bool yosemitech::startMeasurement(void) {
 // This tells the optical sensors to stop taking measurements
 bool yosemitech::stopMeasurement(void) {
     switch (_model) {
-        // Y532 (pH), Y533 (ORP), Y560 (Ammonium) ion selective elctrodes, and
+        // Y532 (pH), Y533 (ORP), Y560 (Ammonium) ion selective electrodes, and
         // Y700 (Pressure/Depth) sensors do not require Start/Stop functions.
         // These commands are not in their Modbus Manuals.
         // However, Start/Stop functions are required to get these to work in
@@ -456,10 +457,10 @@ bool yosemitech::stopMeasurement(void) {
 // temperature in celsius is in the next two registers.  For some sensors
 // (Y520/Y521 Conductivity and Y514 Chlorophyll) this followed by an error code.
 // The pH sensor returns the pH as a 32-bit float beginning in holding register
-// 0x2800 (10240) and the temperature in celsuis as a separate 32-bit float
+// 0x2800 (10240) and the temperature in Celsius as a separate 32-bit float
 // beginning in holding register 0x2400 (9216).  The pH sensor can also return
 // the raw electrical potential values back from the sensor as a 32-bit float
-// beginning in holding register 0x1200 (4608).  As a convienence, I am also
+// beginning in holding register 0x1200 (4608).  As a convenience, I am also
 // calculating the DO in mg/L from the DO sensor, which otherwise would only
 // return percent saturation.
 bool yosemitech::getValues(float& parmValue, float& tempValue, float& thirdValue,
@@ -495,8 +496,8 @@ bool yosemitech::getValues(float& parmValue, float& tempValue, float& thirdValue
             }
             break;
         }
-        // Y550 COD, old vesion (not tested)
-        case Y550:  
+        // Y550 COD, old version (not tested)
+        case Y550:
         // Y551 COD, with turbidity
         case Y551: {
             if (modbus.getRegisters(0x03, 0x2600, 5)) {
@@ -541,9 +542,9 @@ bool yosemitech::getValues(float& parmValue, float& tempValue, float& thirdValue
                 float DOpercent = modbus.float32FromFrame(littleEndian, 7);
                 parmValue       = DOpercent * 100;  // Because it returns number not %
                 thirdValue      = modbus.float32FromFrame(littleEndian, 11);
-                errorCode       = 0x00;             // No errors
+                errorCode       = 0x00;  // No errors
 
-                // Older DO sensors did not give a third value in mg/L, 
+                // Older DO sensors did not give a third value in mg/L,
                 // so we calculate that value.
                 if (thirdValue <= 0.0) {
                     // Calculate DO saturation at sea level at a given temp/salinity
@@ -552,34 +553,33 @@ bool yosemitech::getValues(float& parmValue, float& tempValue, float& thirdValue
                     // ln DO = A1 + A2 100/T + A3 ln T/100 + A4 T/100          (1)
                     //         + S [B1 + B2 T/100 + B3 (T/100)2]
                     // where:
-                    //   ln DO is the natural log of the DO solubility in milliliters per
-                    //   liter (ml/L)
-                    //   T = temperature in degrees K(273.15 + t  degrees C)
-                    //   S = salinity in g/kg (o/oo)
+                    //   ln DO is the natural log of the DO solubility in milliliters
+                    //   per liter (ml/L) T = temperature in degrees K(273.15 + t
+                    //   degrees C) S = salinity in g/kg (o/oo)
                     float A1 = -173.4292;
                     float A2 = 249.6339;
                     float A3 = 143.3483;
                     float A4 = -21.8492;
                     float Bl = -0.033096;  // NOTE:  Intentionally Bl not B1, B1 is a
-                                        // defined preprocessor macro
+                                           // defined preprocessor macro
                     float B2 = 0.014259;
                     float B3 = -0.001700;
 
                     //  Calculate DO saturation at sea level at a given temp/salinity
                     float Tkelvin  = 273.15 + tempValue;  //  celsius to kelvin
                     float salinity = 0.0;                 // assume 0 for pure water
-                    float lnDO     = A1 + A2 * (100 / Tkelvin) + A3 * log(Tkelvin / 100) +
+                    float lnDO = A1 + A2 * (100 / Tkelvin) + A3 * log(Tkelvin / 100) +
                         A4 * (Tkelvin / 100) +
                         salinity *
                             (Bl + B2 * (Tkelvin / 100) +
-                            B3 * (Tkelvin / 100) * (Tkelvin / 100));
+                             B3 * (Tkelvin / 100) * (Tkelvin / 100));
                     float DO_saturation_SL_mlL = exp(lnDO);
 
                     //  Multiply by the constant 1.4276 to
                     //  convert to milligrams per liter (mg/L).
                     float DO_saturation_SL_mgL = DO_saturation_SL_mlL * 1.4276;
 
-                    //  Calculate the vapor pressur of water at sea level at a given
+                    //  Calculate the vapor pressure of water at sea level at a given
                     //  temperature from the empirical equation derived from the
                     //  Handbook of Chemistry and Physics
                     //  (Chemical Rubber Company, Cleveland, Ohio, 1964)
@@ -587,9 +587,11 @@ bool yosemitech::getValues(float& parmValue, float& tempValue, float& thirdValue
                     //  log u = 8.10765 - (1750.286/ (235+t))                   (3)
                     //  where:
                     //    t is temperature in degrees C
-                    //    log u is the log base 10 of the vapor pressur of water in mmHg
-                    float logVaporPressureH2O = 8.10765 - (1750.286 / (235 + tempValue));
-                    float VaporPressureH2O    = pow(logVaporPressureH2O, 10);
+                    //    log u is the log base 10 of the vapor pressure of water in
+                    //    mmHg
+                    float logVaporPressureH2O = 8.10765 -
+                        (1750.286 / (235 + tempValue));
+                    float VaporPressureH2O = pow(logVaporPressureH2O, 10);
 
                     // Correct the DO saturation for the vapor pressure of water
                     // at pressures other than sea level using the equation:
@@ -601,11 +603,13 @@ bool yosemitech::getValues(float& parmValue, float& tempValue, float& thirdValue
                     //   u is the vapor pressure of water
                     float baroPressure_mmHg       = 760;  // assume working at sea level
                     float DO_saturation_press_mgL = DO_saturation_SL_mgL *
-                        ((baroPressure_mmHg - VaporPressureH2O) / (760 - VaporPressureH2O));
+                        ((baroPressure_mmHg - VaporPressureH2O) /
+                         (760 - VaporPressureH2O));
 
                     // Finally, multiply the measured percent saturation by the mg/L
                     // concentration of O2 at saturation at the given temperature,
-                    // pressure, and salinity to get the measured DO concentration in mg/L
+                    // pressure, and salinity to get the measured DO concentration in
+                    // mg/L
                     float DOmgL = DO_saturation_press_mgL * DOpercent;
                     thirdValue  = DOmgL;
                 }
@@ -629,13 +633,13 @@ bool yosemitech::getValues(float& parmValue, float& tempValue, float& thirdValue
             if (modbus.getRegisters(0x03, 0x2600, 4)) {
                 tempValue = modbus.float32FromFrame(littleEndian, 3);
                 parmValue = modbus.float32FromFrame(littleEndian, 7);
-                errorCode  = 0x00;  // No error code is provided
+                errorCode = 0x00;  // No error code is provided
                 return true;
             }
             break;
         }
         // All other sensors not listed above: Y510, Y511, Y513
-        // NOTE: new Y510/Y511 manual shows command simlar to Y513 above
+        // NOTE: new Y510/Y511 manual shows command similar to Y513 above
         default: {
             if (modbus.getRegisters(0x03, 0x2600, 5)) {
                 tempValue = modbus.float32FromFrame(littleEndian, 3);
@@ -700,8 +704,8 @@ bool yosemitech::getValues(float& DOmgL, float& Turbidity, float& Cond, float& p
                 pH        = modbus.float32FromFrame(littleEndian, 15);  // pH
                 Temp      = modbus.float32FromFrame(littleEndian, 19);  // Temperature
                 ORP       = modbus.float32FromFrame(littleEndian, 23);  // ORP
-                Chlorophyll = modbus.float32FromFrame(littleEndian, 27); // Chlorophyll
-                BGA         = modbus.float32FromFrame(littleEndian, 31); // Blue Green
+                Chlorophyll = modbus.float32FromFrame(littleEndian, 27);  // Chlorophyll
+                BGA         = modbus.float32FromFrame(littleEndian, 31);  // Blue Green
                 // Error code is separately stored in register 0x0800
                 errorCode = modbus.byteFromRegister(0x03, 0x0800, 1);
                 return true;
@@ -1013,3 +1017,5 @@ uint16_t yosemitech::getBrushInterval(void) {
         }
     }
 }
+
+// cspell: ignore fram Tkelvin baroPressure calibs capCoeffs

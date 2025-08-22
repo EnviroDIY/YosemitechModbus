@@ -22,7 +22,7 @@ typedef enum yosemitechModel {
                ///< Sensor](http://en.yosemitech.com/aspcms/product/2020-5-8/72.html)
     Y504,      ///< [Optical Dissolved Oxygen (ODO)
                ///< Sensor](https://e.yosemitech.com/DO/Y504-A.html)
-    // Y505,  ///< [ Optical Dissolved Oxygen (ODO) for 
+    // Y505,  ///< [ Optical Dissolved Oxygen (ODO) for
     //        ///< Aquaculture](https://e.yosemitech.com/DO/Y505-A.html)
     Y510,  ///< [Turbidity
            ///< Sensor](https://e.yosemitech.com/TUR/Y510-B.html)
@@ -38,18 +38,18 @@ typedef enum yosemitechModel {
     // Oil)](http://en.yosemitech.com/aspcms/product/2020-5-8/69.html)
     Y520,  ///<  [4-Electrode Conductivity (discontinued)
            ///<  Sensor](http://en.yosemitech.com/aspcms/product/2020-4-23/58.html)
-    Y521,   ///< [4-Electrode Conductivity Sensor (metal
-            ///< housing)](https://e.yosemitech.com/CT/Y521-A.html)
-    Y532,   ///<  [pH Sensor](https://e.yosemitech.com/pH/Y532-A.html)
-    Y533,   ///<  [ORP Sensor](https://e.yosemitech.com/pH/Y533-A.html)
-    Y550,   ///<  [UV254/COD Sensor (
-            ///<  discontinued)](http://en.yosemitech.com/aspcms/product/2020-5-8/94.html)
-    Y551,   ///<  [UV254/COD
-            ///<  Sensor](https://e.yosemitech.com/COD-16/Y551-B.html)
-    Y560,   ///<  [Ammonium ISE Sensor](https://e.yosemitech.com/NH4-N-19/Y560-A.html)
-    Y700,   ///<  [Depth Sensor](https://e.yosemitech.com/WLT/68.html)
-    Y4000,  ///<  [Multiparameter
-            ///<  Sonde](https://e.yosemitech.com/MULTI/Y4000.html)
+    Y521,  ///< [4-Electrode Conductivity Sensor (metal
+           ///< housing)](https://e.yosemitech.com/CT/Y521-A.html)
+    Y532,  ///<  [pH Sensor](https://e.yosemitech.com/pH/Y532-A.html)
+    Y533,  ///<  [ORP Sensor](https://e.yosemitech.com/pH/Y533-A.html)
+    Y550,  ///<  [UV254/COD Sensor (
+           ///<  discontinued)](http://en.yosemitech.com/aspcms/product/2020-5-8/94.html)
+    Y551,    ///<  [UV254/COD
+             ///<  Sensor](https://e.yosemitech.com/COD-16/Y551-B.html)
+    Y560,    ///<  [Ammonium ISE Sensor](https://e.yosemitech.com/NH4-N-19/Y560-A.html)
+    Y700,    ///<  [Depth Sensor](https://e.yosemitech.com/WLT/68.html)
+    Y4000,   ///<  [Multiparameter
+             ///<  Sonde](https://e.yosemitech.com/MULTI/Y4000.html)
     UNKNOWN  ///<  Use if the sensor model is unknown. Doing this is generally a bad
              ///<  idea, but it can be helpful for doing things like getting the serial
              ///<  number of an unknown model.
@@ -173,8 +173,8 @@ class yosemitech {
      * hardware version.
      * @param softwareVersion A reference to a float object to be modified with the
      * software version.
-     * @return *bool* True if the hardware and software versions were successfully updated,
-     * false if not.
+     * @return *bool* True if the hardware and software versions were successfully
+     * updated, false if not.
      */
     bool getVersion(float& hardwareVersion, float& softwareVersion);
     /**@}*/
@@ -269,7 +269,7 @@ class yosemitech {
      *
      * @param parmValue A float to replace with the first parameter value from the
      * sensor.
-     * @param tempValue A float to replace with the temparature parameter value from the
+     * @param tempValue A float to replace with the temperature parameter value from the
      * sensor.
      * @return *bool* True if the measurements were successfully obtained, false if not.
      */
@@ -281,7 +281,7 @@ class yosemitech {
      *
      * @param parmValue A float to replace with the first parameter value from the
      * sensor.
-     * @param tempValue A float to replace with the temparature parameter value from the
+     * @param tempValue A float to replace with the temperature parameter value from the
      * sensor.
      * @param errorCode A byte to replace with the error code from the measurement.
      * @return *bool* True if the measurements were successfully obtained, false if not.
@@ -294,7 +294,7 @@ class yosemitech {
      *
      * @param parmValue A float to replace with the first parameter value from the
      * sensor.
-     * @param tempValue A float to replace with the temparature parameter value from the
+     * @param tempValue A float to replace with the temperature parameter value from the
      * sensor.
      * @param thirdValue A float to replace with the third parameter value from the
      * sensor, if applicable.
@@ -308,7 +308,7 @@ class yosemitech {
      *
      * @param parmValue A float to replace with the first parameter value from the
      * sensor.
-     * @param tempValue A float to replace with the temparature parameter value from the
+     * @param tempValue A float to replace with the temperature parameter value from the
      * sensor.
      * @param thirdValue A float to replace with the third parameter value from the
      * sensor, if applicable.
@@ -319,7 +319,7 @@ class yosemitech {
                    byte& errorCode);
 
     /**
-     * @brief Gets values back from a multiparamter sonde
+     * @brief Gets values back from a multi-parameter sonde
      *
      * @note This will return false for anything but a sonde
      *
@@ -333,7 +333,7 @@ class yosemitech {
      * sensor.
      * @param fifthValue A float to replace with the fifth parameter value from the
      * sensor.
-     * @param sixthValue A float to replace with the sixtth parameter value from the
+     * @param sixthValue A float to replace with the sixth parameter value from the
      * sensor.
      * @param seventhValue A float to replace with the seventh parameter value from the
      * sensor.
@@ -345,7 +345,7 @@ class yosemitech {
                    float& forthValue, float& fifthValue, float& sixthValue,
                    float& seventhValue, float& eighthValue);
     /**
-     * @brief Gets values back from a multiparamter sonde
+     * @brief Gets values back from a multi-parameter sonde
      *
      * @note This will return false for anything but a sonde
      *
@@ -359,7 +359,7 @@ class yosemitech {
      * sensor.
      * @param fifthValue A float to replace with the fifth parameter value from the
      * sensor.
-     * @param sixthValue A float to replace with the sixtth parameter value from the
+     * @param sixthValue A float to replace with the sixth parameter value from the
      * sensor.
      * @param seventhValue A float to replace with the seventh parameter value from the
      * sensor.
@@ -548,7 +548,7 @@ class yosemitech {
      * @brief Sets the cap coefficients constants for a sensor
      *
      * This only applies to dissolved oxygen sensors.
-     * The sensor caps should be replaced yearly or as the readings beome unstable.
+     * The sensor caps should be replaced yearly or as the readings become unstable.
      * The values of these coefficients are supplied by the manufacturer.
      *
      * @param K0 The zero-th DO cap coefficient.

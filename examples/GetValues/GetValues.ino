@@ -34,25 +34,26 @@ yosemitechModel model = Y513;  // The sensor model number
 byte modbusAddress = 0x01;  // Yosemitech ships sensors with default ID 0x01
 
 // The Modbus baud rate the sensor uses
-int32_t modbusBaud = 9600;  // 9600 is the default baud rate for most sensors
+int32_t modbusBaud =
+    9600;  // 9600 is the default baud rate for most sensors
 
 
 // Time in milliseconds after powering up for the slave device to respond
-#define WARM_UP_TIME 1500 
-          // DO responds within 275-300ms;
-          // Turbidity and pH within 500ms
-          // Conductivity doesn't respond until 1.15-1.2s
+#define WARM_UP_TIME 1500
+           // DO responds within 275-300ms;
+           // Turbidity and pH within 500ms
+           // Conductivity doesn't respond until 1.15-1.2s
 
 // Time in milliseconds for brush cycle to complete.
 // No readings should be taken during this time.
-#define BRUSH_TIME 10000  
+#define BRUSH_TIME 10000
            // On wipered (self-cleaning) models, the brush immediately activates after
            // getting power and takes approximately 10-15 seconds to finish.
            // Turbidity takes 10-11 s
            // Ammonium takes 15 s
 
-// Time in milliseconds for readings to stablize.
-#define STABILIZATION_TIME 2000  
+// Time in milliseconds for readings to stabilize.
+#define STABILIZATION_TIME 2000
 // The modbus manuals recommend the following stabilization times between starting
 // measurements and requesting values (times include brushing time):
 //  2 s for chlorophyll with wiper
@@ -104,22 +105,22 @@ const int DEREPin       = -1;  // The pin controlling Receive Enable and Driver 
 // ==========================================================================
 // Create and Assign a Serial Port for Modbus
 // ==========================================================================
-// Harware serial ports are prefered when available.
+// Hardware serial ports are preferred when available.
 // AltSoftSerial is the most stable alternative for modbus.
 //   Select over alternatives with the define below.
-#define BUILD_ALTSOFTSERIAL // Comment-out if you prefer alternatives
+#define BUILD_ALTSOFTSERIAL  // Comment-out if you prefer alternatives
 
 #if defined(BUILD_ALTSOFTSERIAL)
 #include <AltSoftSerial.h>
 AltSoftSerial modbusSerial;
 
 #elif defined(ARDUINO_AVR_UNO) || defined(ARDUINO_AVR_FEATHER328P)
-// The Uno only has 1 hardware serial port, which is dedicated to comunication with the
+// The Uno only has 1 hardware serial port, which is dedicated to communication with the
 // computer. If using an Uno, you will be restricted to using AltSofSerial or
 // SoftwareSerial
 #include <SoftwareSerial.h>
-const int SSRxPin = 10;  // Receive pin for software serial (Rx on RS485 adapter)
-const int SSTxPin = 11;  // Send pin for software serial (Tx on RS485 adapter)
+const int      SSRxPin = 10;  // Receive pin for software serial (Rx on RS485 adapter)
+const int      SSTxPin = 11;  // Send pin for software serial (Tx on RS485 adapter)
 #pragma message("Using Software Serial for the Uno on pins 10 and 11")
 SoftwareSerial modbusSerial(SSRxPin, SSTxPin);
 
@@ -134,15 +135,15 @@ SoftwareSerial modbusSerial;
 HardwareSerial& modbusSerial = Serial1;
 
 #elif !defined(NO_GLOBAL_SERIAL1) && !defined(STM32_CORE_VERSION)
-// This is just a assigning another name to the same port, for convienence
+// This is just a assigning another name to the same port, for convenience
 // Unless it is unavailable, always prefer hardware serial.
-#pragma message("Using HarwareSerial / Serial1")
+#pragma message("Using HardwareSerial / Serial1")
 HardwareSerial& modbusSerial = Serial1;
 
 #else
-// This is just a assigning another name to the same port, for convienence
+// This is just a assigning another name to the same port, for convenience
 // Unless it is unavailable, always prefer hardware serial.
-#pragma message("Using HarwareSerial / Serial")
+#pragma message("Using HardwareSerial / Serial")
 HardwareSerial& modbusSerial = Serial;
 #endif
 
@@ -150,7 +151,7 @@ HardwareSerial& modbusSerial = Serial;
 yosemitech sensor;
 
 // Initialize success flag for set commands
-bool       success;
+bool success;
 
 
 // ==========================================================================
@@ -194,7 +195,7 @@ void setup() {
     modbusSerial.begin(modbusBaud, SWSERIAL_8N1, SSRxPin, SSTxPin, false);
 #else
     modbusSerial.begin(modbusBaud);
-    #endif
+#endif
 
     // Start up the Yosemitech sensor
     sensor.begin(model, modbusAddress, &modbusSerial, DEREPin);
@@ -325,7 +326,7 @@ void setup() {
         Serial.println(F("Waiting to complete brushing cycle.."));
         Serial.print(F("    Brush time (ms): "));
         Serial.println(BRUSH_TIME);
-        for (int i = (BRUSH_TIME + 500) / 1000; i > 0; i--) { // +500 to round up
+        for (int i = (BRUSH_TIME + 500) / 1000; i > 0; i--) {  // +500 to round up
             Serial.print(i);
             delay(250);
             Serial.print(F("."));

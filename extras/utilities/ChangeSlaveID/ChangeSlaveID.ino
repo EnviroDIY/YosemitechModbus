@@ -4,7 +4,7 @@ Yosemitech_ChangeSlaveID.ino
 This sends a change address command to a Yosemitech sensor.
 
 You MUST know the old address of this sensor or it will not work.  The (poor)
-implentation of modbus for the Yosemitech sensors does not support responses
+implementation of modbus for the Yosemitech sensors does not support responses
 to broadcasts at address 0x00.  (Official modbus specifications require that
 all slaves accept and comply with writing functions broadcast to address 0.)
 *****************************************************************************/
@@ -31,13 +31,13 @@ byte oldAddress = 0x09;  // The sensor's original modbus address, or SlaveID
 byte newAddress = 0x05;
 
 // Define pin number variables
-const int sensorPwrPin = 10;  // The pin sending power to the sensor
+const int sensorPwrPin  = 10;  // The pin sending power to the sensor
 const int adapterPwrPin = 22;  // The pin sending power to the RS485 adapter
-const int DEREPin = -1;   // The pin controlling Recieve Enable and Driver Enable
-                          // on the RS485 adapter, if applicable (else, -1)
-                          // Setting HIGH enables the driver (arduino) to send text
-                          // Setting LOW enables the receiver (sensor) to send text
-// const int SSRxPin = 10;  // Recieve pin for software serial (Rx on RS485 adapter)
+const int DEREPin       = -1;  // The pin controlling Receive Enable and Driver Enable
+                               // on the RS485 adapter, if applicable (else, -1)
+                               // Setting HIGH enables the driver (arduino) to send text
+                               // Setting LOW enables the receiver (sensor) to send text
+// const int SSRxPin = 10;  // Receive pin for software serial (Rx on RS485 adapter)
 // const int SSTxPin = 11;  // Send pin for software serial (Tx on RS485 adapter)
 
 // Construct software serial object for Modbus
@@ -46,14 +46,12 @@ AltSoftSerial modbusSerial;
 
 // Construct the Yosemitech modbus instance
 yosemitech sensor;
-bool success;
+bool       success;
 
 // ---------------------------------------------------------------------------
 // Main setup function
 // ---------------------------------------------------------------------------
-void setup()
-{
-
+void setup() {
     pinMode(sensorPwrPin, OUTPUT);
     digitalWrite(sensorPwrPin, HIGH);
 
@@ -63,7 +61,7 @@ void setup()
 
     if (DEREPin > 0) pinMode(DEREPin, OUTPUT);
 
-    Serial.begin(115200);  // Main serial port for debugging via USB Serial Monitor
+    Serial.begin(115200);      // Main serial port for debugging via USB Serial Monitor
     modbusSerial.begin(9600);  // The modbus serial stream - Baud rate MUST be 9600.
 
     Serial.println(F("ChangeSlaveID_AltSoftSerial.ino"));
@@ -87,30 +85,30 @@ void setup()
     // Turbidity and pH within 500ms
     // Conductivity doesn't respond until 1.15-1.2s
     Serial.println("Waiting for sensor and adapter to be ready.");
-    for (int i = 10; i > 0; i--)
-    {
+    for (int i = 10; i > 0; i--) {
         Serial.print(i);
-        delay (250);
+        delay(250);
         Serial.print(".");
-        delay (250);
+        delay(250);
         Serial.print(".");
-        delay (250);
+        delay(250);
         Serial.print(".");
-        delay (250);
+        delay(250);
     }
     Serial.println("\n");
 
     Serial.println("Changing Slave ID:");
     bool success = sensor.setSlaveID(newAddress);
 
-    if (success) Serial.println("Address change complete.");
+    if (success)
+        Serial.println("Address change complete.");
 
-    else  Serial.println("Address change failed!");
+    else
+        Serial.println("Address change failed!");
 }
 
 // ---------------------------------------------------------------------------
 // Main loop function
 // ---------------------------------------------------------------------------
 // Do nothing...
-void loop()
-{}
+void loop() {}
