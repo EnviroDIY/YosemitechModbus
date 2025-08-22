@@ -108,9 +108,9 @@ const int DEREPin       = -1;  // The pin controlling Receive Enable and Driver 
 // Hardware serial ports are preferred when available.
 // AltSoftSerial is the most stable alternative for modbus.
 //   Select over alternatives with the define below.
-#define BUILD_ALTSOFTSERIAL  // Comment-out if you prefer alternatives
+// #define BUILD_ALTSOFTSERIAL  // Comment-out if you prefer alternatives
 
-#if defined(BUILD_ALTSOFTSERIAL)
+#if defined(BUILD_ALTSOFTSERIAL) && defined(__AVR__)
 #include <AltSoftSerial.h>
 AltSoftSerial modbusSerial;
 
