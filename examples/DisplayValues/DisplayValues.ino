@@ -36,7 +36,7 @@
 #include <SoftwareSerial.h>
 #endif
 
-// Turn on debugging outputs (i.e. raw Modbus requests & responsds)
+// Turn on debugging outputs (i.e. raw Modbus requests & responses)
 // by uncommenting next line (i.e. `#define DEBUG`)
 // #define DEBUG
 
@@ -62,17 +62,17 @@ byte modbusAddress =
           // Turbidity and pH within 500ms
           // Conductivity doesn't respond until 1.15-1.2s
 
-#define BRUSH_TIME 10000  // milliseconds for readings to stablize.
+#define BRUSH_TIME 10000  // milliseconds for readings to stabilize.
            // On wipered (self-cleaning) models, the brush immediately activates after
            // getting power and takes approximately 10-15 seconds to finish.
            // Turbidity takes 10-11 s
            // Ammonium takes 15 s
 // No readings should be taken during this time.
 
-#define STABILIZATION_TIME 4000  // milliseconds for readings to stablize.
+#define STABILIZATION_TIME 4000  // milliseconds for readings to stabilize.
 // The modbus manuals recommend the following stabilization times between starting
 // measurements and requesting values (times include brushing time):
-//  2 s for whipered chlorophyll
+//  2 s for wipered chlorophyll
 // 20 s for turbidity, including 11 s to complete a brush cycle
 // 10 s for conductivity
 //  2 s for COD
@@ -108,7 +108,7 @@ const int32_t serialBaud = 115200;  // Baud rate for serial monitor
 // Define pin number variables
 const int sensorPwrPin  = 11;  // The pin sending power to the sensor
 const int adapterPwrPin = 22;  // The pin sending power to the RS485 adapter
-const int DEREPin       = -1;  // The pin controlling Recieve Enable and Driver Enable
+const int DEREPin       = -1;  // The pin controlling Receive Enable and Driver Enable
                                // on the RS485 adapter, if applicable (else, -1)
                                // Setting HIGH enables the driver (arduino) to send text
                                // Setting LOW enables the receiver (sensor) to send text
@@ -181,6 +181,7 @@ void setup() {
     sensor.begin(model, modbusAddress, &modbusSerial, DEREPin);
 
     // Start the OLED
+    // cspell:ignore SSD1306_SWITCHCAPVCC
     display.begin(SSD1306_SWITCHCAPVCC, 0x3C, false);
     display.clearDisplay();
     display.setTextSize(1);

@@ -20,13 +20,28 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ***
 
+## [0.5.1]
+
+### Changed
+
+- Updated doxygen formatting
+- Bumped SensorModbusMaster dependency
+
+### Added
+
+- Added code spell configurations
+
+### Fixed
+
+- Fixed spelling errors
+
 ## [0.5.0] 2024-09-17
 
 Add Y513 Blue Green Algae (BGA) and fix examples.
 
 ### Changed
 
-- updated Y504 to first try to get thridvalue for DOmgL before calculating it.
+- updated Y504 to first try to get third value for DOmgL before calculating it.
 - The `getValue.ino` example has better formatted outputs.
 - The `getSlaveID()` command now works better with broadcast address 0xFF.
   - NOTE that old YosemiTech sensors (before 2020??) don't have a functioning broadcast address
@@ -40,7 +55,7 @@ Add Y513 Blue Green Algae (BGA) and fix examples.
 
 ### Fixed
 
-- The `getValue.ino` example wouldn't work with AltSoftSerial (see d4204ebd1212608aaf05a7a65b763e432c59fe37 and https://github.com/EnviroDIY/SensorModbusMaster/commit/f1daa2fdd22c7ec991fc2ff50330aa41e4a7a53e)
+- The `getValue.ino` example wouldn't work with AltSoftSerial (see d4204ebd1212608aaf05a7a65b763e432c59fe37 and <https://github.com/EnviroDIY/SensorModbusMaster/commit/f1daa2fdd22c7ec991fc2ff50330aa41e4a7a53e>)
 - Fixed broken links to YosemiTech product pages
 
 ***
@@ -48,6 +63,7 @@ Add Y513 Blue Green Algae (BGA) and fix examples.
 ## [0.4.2]
 
 ### Changed
+
 - Modified example to apply to more processors.
 
 ### Added
@@ -89,14 +105,14 @@ Add Y700 Water Level; fix Y4000 Sonde; restore calibrators.
 
 ### Fixed
 
-- Fixed issue with Y4000 not outputing Chl & BGA readings #13
+- Fixed issue with Y4000 not outputting Chl & BGA readings #13
 - Specified python version for GitHub actions (used by PlatformIO)
 
 ***
 
 ## [0.3.2] 2022-03-01
 
-Version bump only for reindexing by PlatformIO and Arduino library managers.
+Version bump only for re-indexing by PlatformIO and Arduino library managers.
 
 ***
 
@@ -162,7 +178,7 @@ Better Y532 pH support, updated manuals & software
 - Fix to Y532 pH startMeasurement return, which is required to get Y532 pH to work as a stand-alone sensor in ModularSensors. Commit 574a31c.
 - Updates to Windows software utilities and documentation
   - ModbusRunner v2.5.1.5
-  - MulitSensor v1.9
+  - MultiSensor v1.9
 - Updates to YosemiTech manuals
 - Updates to calibration spreadsheets & protocols. Issues #14, #16.
 
@@ -202,7 +218,9 @@ Newest Modbus Manuals
 
 Initial release
 
-[Unreleased]: https://github.com/EnviroDIY/YosemitechModbus/compare/v0.4.2...HEAD
+[Unreleased]: https://github.com/EnviroDIY/YosemitechModbus/compare/v0.5.1...HEAD
+[0.5.1]: https://github.com/EnviroDIY/YosemitechModbus/releases/tag/v0.5.1
+[0.5.0]: https://github.com/EnviroDIY/YosemitechModbus/releases/tag/v0.5.0
 [0.4.2]: https://github.com/EnviroDIY/YosemitechModbus/releases/tag/v0.4.2
 [0.4.1]: https://github.com/EnviroDIY/YosemitechModbus/releases/tag/v0.4.1
 [0.4.0]: https://github.com/EnviroDIY/YosemitechModbus/releases/tag/v0.4.0
@@ -217,4 +235,4 @@ Initial release
 [0.1.9]: https://github.com/EnviroDIY/YosemitechModbus/releases/tag/v0.1.9
 [0.1.6]: https://github.com/EnviroDIY/YosemitechModbus/releases/tag/v0.1.6
 
-[//]: # ( @m_footernavigation )
+<!--! @m_footernavigation -->

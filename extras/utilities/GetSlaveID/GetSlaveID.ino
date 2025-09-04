@@ -2,7 +2,7 @@
 Yosemitech_GetSlaveID.ino
 
 This scans through all possible addresses and asks for the standard Yosemitech
-serial number response at each address to idenitfy the sensors.
+serial number response at each address to identify the sensors.
 
 The scan will take several minutes to complete.  (Sorry, please be patient!)
 
@@ -34,19 +34,21 @@ seems to be one of few all support identically.
 const int32_t serialBaud = 115200;  // Baud rate for serial monitor
 
 // Define pin number variables
-const int sensorPwrPin  = 10;  // The pin sending power to the sensor
-const int adapterPwrPin = 22;  // The pin sending power to the sensor *AND* RS485 adapter
-const int DEREPin = -1;   // The pin controlling Recieve Enable and Driver Enable
-                          // on the RS485 adapter, if applicable (else, -1)
-                          // Setting HIGH enables the driver (arduino) to send text
-                          // Setting LOW enables the receiver (sensor) to send text
-// const int SSRxPin = 10;  // Recieve pin for software serial (Rx on RS485 adapter)
+const int sensorPwrPin = 10;  // The pin sending power to the sensor
+const int adapterPwrPin =
+    22;                  // The pin sending power to the sensor *AND* RS485 adapter
+const int DEREPin = -1;  // The pin controlling Receive Enable and Driver Enable
+                         // on the RS485 adapter, if applicable (else, -1)
+                         // Setting HIGH enables the driver (arduino) to send text
+                         // Setting LOW enables the receiver (sensor) to send text
+// const int SSRxPin = 10;  // Receive pin for software serial (Rx on RS485 adapter)
 // const int SSTxPin = 11;  // Send pin for software serial (Tx on RS485 adapter)
 
 // Define the sensor's modbus parameters
 const int modbusTimeout = 500;  // The time to wait for response after a command (in ms)
-const int modbusBaud = 9600;  // The baudrate for the modbus connection
-const int modbusFrameTimeout = 4;  // the time to wait between characters within a frame (in ms)
+const int modbusBaud    = 9600;  // The baudrate for the modbus connection
+const int modbusFrameTimeout =
+    4;  // the time to wait between characters within a frame (in ms)
 // The modbus protocol defines that there can be no more than 1.5 characters
 // of silence between characters in a frame and any space over 3.5 characters
 // defines a new frame.
@@ -60,8 +62,8 @@ AltSoftSerial modbusSerial;
 
 // Define variables for the response;
 uint32_t start;  // Timestamp for time-outs
-int bytesRead;
-byte responseBuffer[20];  // This needs to be bigger than the largest response
+int      bytesRead;
+byte     responseBuffer[20];  // This needs to be bigger than the largest response
 
 // Define variables to hold the float values calculated from the response
 String SN;
@@ -78,8 +80,8 @@ void driverEnable(void) {
     }
 }
 
-// This flips the device/receive enable to RECIEVER so the sensor can send text
-void recieverEnable(void) {
+// This flips the device/receive enable to RECEIVER so the sensor can send text
+void receiverEnable(void) {
     if (DEREPin > 0) {
         digitalWrite(DEREPin, LOW);
         delay(8);
@@ -87,7 +89,7 @@ void recieverEnable(void) {
 }
 
 // This empties the serial buffer
-void emptyResponseBuffer(Stream *stream) {
+void emptyResponseBuffer(Stream* stream) {
     while (stream->available() > 0) {
         stream->read();
         delay(1);
@@ -101,18 +103,17 @@ void insertCRC(byte modbusFrame[], int frameLength) {
     for (int pos = 0; pos < frameLength - 2; pos++) {
         crc ^= (unsigned int)modbusFrame[pos];  // XOR byte into least sig. byte of crc
 
-        for (int i = 8; i != 0; i--) {    // Loop over each bit
-            if ((crc & 0x0001) != 0) {    // If the least significant bit (LSB) is set
-                crc >>= 1;                // Shift right and XOR 0xA001
+        for (int i = 8; i != 0; i--) {  // Loop over each bit
+            if ((crc & 0x0001) != 0) {  // If the least significant bit (LSB) is set
+                crc >>= 1;              // Shift right and XOR 0xA001
                 crc ^= 0xA001;
-            }
-            else                          // Else least significant bit (LSB) is not set
-            crc >>= 1;                    // Just shift right
+            } else          // Else least significant bit (LSB) is not set
+                crc >>= 1;  // Just shift right
         }
     }
 
     // Break into low and high bytes
-    byte crcLow = crc & 0xFF;
+    byte crcLow  = crc & 0xFF;
     byte crcHigh = crc >> 8;
 
     // Append the bytes to the end of the frame
@@ -121,7 +122,7 @@ void insertCRC(byte modbusFrame[], int frameLength) {
 }
 
 // Just a function to pretty-print the modbus hex frames
-void printFrameHex(byte modbusFrame[], int frameLength, Stream *stream) {
+void printFrameHex(byte modbusFrame[], int frameLength, Stream* stream) {
     stream->print("{");
     for (int i = 0; i < frameLength; i++) {
         stream->print("0x");
@@ -133,8 +134,10 @@ void printFrameHex(byte modbusFrame[], int frameLength, Stream *stream) {
 }
 
 String parseSN(byte modbusFrame[]) {
-    int sn_len = responseBuffer[2];
-    char sn_arr[sn_len] = {0,};
+    int  sn_len         = responseBuffer[2];
+    char sn_arr[sn_len] = {
+        0,
+    };
     int j = 0;
     for (int i = 4; i < 16; i++) {
         sn_arr[j] = responseBuffer[i];
@@ -151,17 +154,19 @@ void scanSNs(void) {
 
     int numFound = 0;
     for (uint8_t addrTest = 1; addrTest <= 247; addrTest++) {
-        byte getSN[] = {addrTest, 0x03, 0x09, 0x00, 0x00, 0x07, 0x00, 0x00}; // for all except Y4000 Sonde
-//        byte getSN[] = {addrTest, 0x03, 0x14, 0x00, 0x00, 0x07, 0x00, 0x00}; // for Y4000 Sonde
-        insertCRC(getSN, sizeof(getSN)/sizeof(getSN[0]));
+        byte getSN[] = {addrTest, 0x03, 0x09, 0x00,
+                        0x00,     0x07, 0x00, 0x00};  // for all except Y4000 Sonde
+        //        byte getSN[] = {addrTest, 0x03, 0x14, 0x00, 0x00, 0x07, 0x00, 0x00};
+        //        // for Y4000 Sonde
+        insertCRC(getSN, sizeof(getSN) / sizeof(getSN[0]));
 
         // Send the "get serial number" command
         driverEnable();
-        modbusSerial.write(getSN, sizeof(getSN)/sizeof(getSN[0]));
-        printFrameHex(getSN, sizeof(getSN)/sizeof(getSN[0]), &Serial);
+        modbusSerial.write(getSN, sizeof(getSN) / sizeof(getSN[0]));
+        printFrameHex(getSN, sizeof(getSN) / sizeof(getSN[0]), &Serial);
         modbusSerial.flush();
 
-        recieverEnable();
+        receiverEnable();
         start = millis();
         while (modbusSerial.available() == 0 && millis() - start < modbusTimeout) {
             delay(1);
@@ -181,8 +186,7 @@ void scanSNs(void) {
                 Serial.print(addrTest, HEX);
                 Serial.print(F("      ------    "));
                 Serial.println(SN);
-            }
-            else  {  // if recieved a response, but less than 18 bytes
+            } else {  // if received a response, but less than 18 bytes
                 Serial.print(F("     0x"));
                 if (addrTest < 16) Serial.print(F("0"));
                 Serial.print(addrTest, HEX);
@@ -226,13 +230,13 @@ void setup() {
     Serial.println(F("Allowing sensor and adapter to warm up"));
     for (int i = 10; i > 0; i--) {
         Serial.print(i);
-        delay (250);
+        delay(250);
         Serial.print(".");
-        delay (250);
+        delay(250);
         Serial.print(".");
-        delay (250);
+        delay(250);
         Serial.print(".");
-        delay (250);
+        delay(250);
     }
     Serial.println("\n");
 
