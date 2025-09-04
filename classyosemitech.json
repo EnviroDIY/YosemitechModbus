@@ -1,5 +1,5 @@
 {
-  "version": "1.11.0",
+  "version": "1.14.0",
   "compound": {
     "kind": "class",
     "id": "classyosemitech",
@@ -19,7 +19,7 @@
     "since": null,
     "example_navigation": null,
     "footer_navigation": null,
-    "modules": [],
+    "topics": [],
     "dirs": [],
     "files": [],
     "namespaces": [],
@@ -802,7 +802,7 @@
                   "type": "float&amp;",
                   "type_name": "float&amp; tempValue",
                   "default": null,
-                  "description": "A float to replace with the temparature parameter value from the sensor.",
+                  "description": "A float to replace with the temperature parameter value from the sensor.",
                   "direction": ""
                 }
               ]
@@ -858,7 +858,7 @@
                   "type": "float&amp;",
                   "type_name": "float&amp; tempValue",
                   "default": null,
-                  "description": "A float to replace with the temparature parameter value from the sensor.",
+                  "description": "A float to replace with the temperature parameter value from the sensor.",
                   "direction": ""
                 },
                 {
@@ -922,7 +922,7 @@
                   "type": "float&amp;",
                   "type_name": "float&amp; tempValue",
                   "default": null,
-                  "description": "A float to replace with the temparature parameter value from the sensor.",
+                  "description": "A float to replace with the temperature parameter value from the sensor.",
                   "direction": ""
                 },
                 {
@@ -986,7 +986,7 @@
                   "type": "float&amp;",
                   "type_name": "float&amp; tempValue",
                   "default": null,
-                  "description": "A float to replace with the temparature parameter value from the sensor.",
+                  "description": "A float to replace with the temperature parameter value from the sensor.",
                   "direction": ""
                 },
                 {
@@ -1017,7 +1017,7 @@
               "has_details": true,
               "type": "bool",
               "name": "getValues",
-              "brief": "Gets values back from a multiparamter sonde.",
+              "brief": "Gets values back from a multi-parameter sonde.",
               "description": "<aside class=\"m-note m-info\"><h4>Note</h4><p>This will return false for anything but a sonde</p></aside>",
               "return_value": "True if the measurements were successfully obtained, false if not.",
               "return_values": [],
@@ -1090,7 +1090,7 @@
                   "type": "float&amp;",
                   "type_name": "float&amp; sixthValue",
                   "default": null,
-                  "description": "A float to replace with the sixtth parameter value from the sensor.",
+                  "description": "A float to replace with the sixth parameter value from the sensor.",
                   "direction": ""
                 },
                 {
@@ -1121,7 +1121,7 @@
               "has_details": true,
               "type": "bool",
               "name": "getValues",
-              "brief": "Gets values back from a multiparamter sonde.",
+              "brief": "Gets values back from a multi-parameter sonde.",
               "description": "<aside class=\"m-note m-info\"><h4>Note</h4><p>This will return false for anything but a sonde</p></aside>",
               "return_value": "True if the measurements were successfully obtained, false if not.",
               "return_values": [],
@@ -1194,7 +1194,7 @@
                   "type": "float&amp;",
                   "type_name": "float&amp; sixthValue",
                   "default": null,
-                  "description": "A float to replace with the sixtth parameter value from the sensor.",
+                  "description": "A float to replace with the sixth parameter value from the sensor.",
                   "direction": ""
                 },
                 {
@@ -1433,7 +1433,7 @@
               "type": "float",
               "name": "getDOmgLValue",
               "brief": "Returns DO in mg/L (instead of % saturation) as a float.",
-              "description": "<p>This only applies to DO and is calculated in the <a href=\"classyosemitech.html#ae6ec9df15d2445a8ebbef71552b5d8d8\" class=\"m-doc\">getValues()</a> equation using the measured temperature and a salinity of 0 and pressure of 760 mmHg (sea level)</p>",
+              "description": "<p>This only applies to DO and is calculated in the <a href=\"#ae6ec9df15d2445a8ebbef71552b5d8d8\" class=\"m-doc\">getValues()</a> equation using the measured temperature and a salinity of 0 and pressure of 760 mmHg (sea level)</p>",
               "return_value": "The dissolved oxygen value as a float",
               "return_values": [],
               "exceptions": [],
@@ -1688,7 +1688,7 @@
               "type": "bool",
               "name": "setCalibration",
               "brief": "Sets the FULL calibration constants for a pH sensor, which requires 6 coefficients.",
-              "description": "<p>Factory calibration values for pH are: K1=6.86, K2=-6.72, K3=0.04, K4=6.86, K5=-6.56, K6=-1.04.</p><p>Use the functions <a href=\"classyosemitech.html#a44057fcacdb1015219c95df609ac494b\" class=\"m-doc\">yosemitech::<wbr />pHCalibrationPoint(float pH)</a> and <a href=\"classyosemitech.html#a93c3eec2ce56171d32d03e59f0db7122\" class=\"m-doc\">yosemitech::<wbr />pHCalibrationStatus()</a> to calibrate and verify calibrations of these meters</p>",
+              "description": "<p>Factory calibration values for pH are: K1=6.86, K2=-6.72, K3=0.04, K4=6.86, K5=-6.56, K6=-1.04.</p><p>Use the functions <a href=\"#a44057fcacdb1015219c95df609ac494b\" class=\"m-doc\">yosemitech::<wbr />pHCalibrationPoint(float pH)</a> and <a href=\"#a93c3eec2ce56171d32d03e59f0db7122\" class=\"m-doc\">yosemitech::<wbr />pHCalibrationStatus()</a> to calibrate and verify calibrations of these meters</p>",
               "return_value": "True if the calibration was successfully set; false if not.",
               "return_values": [],
               "exceptions": [],
@@ -1872,7 +1872,7 @@
               "type": "bool",
               "name": "setCapCoefficients",
               "brief": "Sets the cap coefficients constants for a sensor.",
-              "description": "<p>This only applies to dissolved oxygen sensors. The sensor caps should be replaced yearly or as the readings beome unstable. The values of these coefficients are supplied by the manufacturer.</p>",
+              "description": "<p>This only applies to dissolved oxygen sensors. The sensor caps should be replaced yearly or as the readings become unstable. The values of these coefficients are supplied by the manufacturer.</p>",
               "return_value": "True if the coefficients were accepted; false if not.",
               "return_values": [],
               "exceptions": [],

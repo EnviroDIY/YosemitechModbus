@@ -1,0 +1,20 @@
+{
+  "is_final": null,
+  "parent": "dir_1510bd745cd29c20d24c27171ebe5ba5",
+  "parentGroup": null,
+  "id": "dir_f221ec5b675671b95093bf3c38cb735e",
+  "kind": "dir",
+  "name": "extras/sensor_tests",
+  "url": "dir_f221ec5b675671b95093bf3c38cb735e.html",
+  "brief": "",
+  "has_details": false,
+  "children": [
+    "dir_ae0dba0b7831597cdc8e208716a6e93b"
+  ],
+  "childrenClasses": [],
+  "childrenNamespaces": [],
+  "childrenCompoundRefs": [],
+  "deprecated": null,
+  "since": null,
+  "leaf_name": "sensor_tests"
+}

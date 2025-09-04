@@ -1,0 +1,20 @@
+{
+  "is_final": null,
+  "parent": null,
+  "parentGroup": null,
+  "id": "dir_d28a4824dc47e487b107a5db32ef43c4",
+  "kind": "dir",
+  "name": "examples",
+  "url": "dir_d28a4824dc47e487b107a5db32ef43c4.html",
+  "brief": "Contains all of the example sketches.",
+  "has_details": true,
+  "children": [
+    "dir_091b1c8db0c9ec6448b0d52d03c1e7a2",
+    "dir_67ec081ba6b5a9137a8114a038b678e6"
+  ],
+  "childrenClasses": [],
+  "childrenNamespaces": [],
+  "childrenCompoundRefs": [],
+  "deprecated": null,
+  "since": null
+}

@@ -1,0 +1,18 @@
+{
+  "is_final": null,
+  "parent": "dir_68267d1309a1af8e8297ef4c3efbcdba",
+  "parentGroup": null,
+  "id": "_yosemitech_modbus_8cpp",
+  "kind": "file",
+  "name": "YosemitechModbus.cpp",
+  "url": "_yosemitech_modbus_8cpp.html",
+  "brief": "Contains the YosemitechModbus class definitions.",
+  "has_details": true,
+  "children": [],
+  "childrenClasses": [],
+  "childrenNamespaces": [],
+  "childrenCompoundRefs": [],
+  "deprecated": null,
+  "since": null,
+  "leaf_name": "YosemitechModbus.cpp"
+}

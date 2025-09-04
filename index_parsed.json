@@ -1,5 +1,5 @@
 {
-  "version": "1.11.0",
+  "version": "1.14.0",
   "index": {
     "symbols": [
       {
@@ -33,10 +33,33 @@
         "name": "examples",
         "url": "dir_d28a4824dc47e487b107a5db32ef43c4.html",
         "brief": "Contains all of the example sketches.",
-        "children": [],
+        "children": [
+          {
+            "id": "dir_091b1c8db0c9ec6448b0d52d03c1e7a2",
+            "kind": "dir",
+            "name": "DisplayValues",
+            "url": "dir_091b1c8db0c9ec6448b0d52d03c1e7a2.html",
+            "brief": "Contains the DisplayValues example.",
+            "children": [],
+            "deprecated": null,
+            "since": null,
+            "has_nestable_children": false
+          },
+          {
+            "id": "dir_67ec081ba6b5a9137a8114a038b678e6",
+            "kind": "dir",
+            "name": "GetValues",
+            "url": "dir_67ec081ba6b5a9137a8114a038b678e6.html",
+            "brief": "Contains the GetValues example.",
+            "children": [],
+            "deprecated": null,
+            "since": null,
+            "has_nestable_children": false
+          }
+        ],
         "deprecated": null,
         "since": null,
-        "has_nestable_children": false
+        "has_nestable_children": true
       },
       {
         "id": "dir_1510bd745cd29c20d24c27171ebe5ba5",
@@ -140,8 +163,19 @@
         "deprecated": null,
         "since": null,
         "has_nestable_children": false
+      },
+      {
+        "id": "read_me_sensor-tests",
+        "kind": "page",
+        "name": "Sensor Tests",
+        "url": "read_me_sensor-tests.html",
+        "brief": "",
+        "children": [],
+        "deprecated": null,
+        "since": null,
+        "has_nestable_children": false
       }
     ],
-    "modules": []
+    "topics": []
   }
 }

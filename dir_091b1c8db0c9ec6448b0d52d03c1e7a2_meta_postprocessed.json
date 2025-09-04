@@ -1,0 +1,18 @@
+{
+  "is_final": null,
+  "parent": "dir_d28a4824dc47e487b107a5db32ef43c4",
+  "parentGroup": null,
+  "id": "dir_091b1c8db0c9ec6448b0d52d03c1e7a2",
+  "kind": "dir",
+  "name": "examples/DisplayValues",
+  "url": "dir_091b1c8db0c9ec6448b0d52d03c1e7a2.html",
+  "brief": "Contains the DisplayValues example.",
+  "has_details": true,
+  "children": [],
+  "childrenClasses": [],
+  "childrenNamespaces": [],
+  "childrenCompoundRefs": [],
+  "deprecated": null,
+  "since": null,
+  "leaf_name": "DisplayValues"
+}

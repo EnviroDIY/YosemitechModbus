@@ -1,0 +1,18 @@
+{
+  "is_final": null,
+  "parent": "dir_68267d1309a1af8e8297ef4c3efbcdba",
+  "parentGroup": null,
+  "id": "_yosemitech_modbus_8h",
+  "kind": "file",
+  "name": "YosemitechModbus.h",
+  "url": "_yosemitech_modbus_8h.html",
+  "brief": "Contains the YosemitechModbus class declarations.",
+  "has_details": true,
+  "children": [],
+  "childrenClasses": [],
+  "childrenNamespaces": [],
+  "childrenCompoundRefs": [],
+  "deprecated": null,
+  "since": null,
+  "leaf_name": "YosemitechModbus.h"
+}

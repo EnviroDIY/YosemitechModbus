@@ -1,5 +1,5 @@
 {
-  "version": "1.11.0",
+  "version": "1.14.0",
   "compound": {
     "kind": "page",
     "id": "page_the_examples",
@@ -10,7 +10,7 @@
     "has_template_details": false,
     "templates": null,
     "brief": "",
-    "description": "<p><a name=\"md_examples_2_read_me\"></a> These example programs demonstrate how to use the Yosemitech Modbus library.</p><hr/><section id=\"examples_get_values\"><h2>Getting Sensor Values</h2><p>This polls the sensor for some of its setup information, and then polls the sensor every several seconds for values, which it displays on a serial port monitor.</p><ul><li><a href=\"https://envirodiy.github.io/YosemitechModbus/example_get_values.html\">Instructions for the get values example</a></li><li><a href=\"https://github.com/EnviroDIY/YosemitechModbus/tree/master/examples/GetValues\">The get values example on GitHub</a></li></ul></section><section id=\"examples_display_values\"><h2>Displaying Sensor Values</h2><p>Near identical to GetValues except the values are intended to display on an SSD1306 128x64 LCD board.</p><ul><li><a href=\"https://envirodiy.github.io/YosemitechModbus/example_display_values.html\">Instructions for the display values example</a></li><li><a href=\"https://github.com/EnviroDIY/YosemitechModbus/tree/master/examples/DisplayValues\">The display values example on GitHub</a></li></ul></section>",
+    "description": "<p><a name=\"md_examples_2_read_me\"></a></p><p>These example programs demonstrate how to use the Yosemitech Modbus library.</p><hr/><section id=\"examples_get_values\"><h2>Getting Sensor Values</h2><p>This polls the sensor for some of its setup information, and then polls the sensor every several seconds for values, which it displays on a serial port monitor.</p><ul><li><a href=\"example_get_values.html\" class=\"m-doc\">Instructions for the get values example</a></li><li><a href=\"https://github.com/EnviroDIY/YosemitechModbus/tree/master/examples/GetValues\">The get values example on GitHub</a></li></ul></section><section id=\"examples_display_values\"><h2>Displaying Sensor Values</h2><p>Near identical to GetValues except the values are intended to display on an SSD1306 128x64 LCD board.</p><ul><li><a href=\"example_display_values.html\" class=\"m-doc\">Instructions for the display values example</a></li><li><p><a href=\"https://github.com/EnviroDIY/YosemitechModbus/tree/master/examples/DisplayValues\">The display values example on GitHub</a></p></li></ul></section>",
     "sections": [
       [
         "examples_get_values",
@@ -27,7 +27,7 @@
     "since": null,
     "example_navigation": null,
     "footer_navigation": null,
-    "modules": [],
+    "topics": [],
     "dirs": [],
     "files": [],
     "namespaces": [],

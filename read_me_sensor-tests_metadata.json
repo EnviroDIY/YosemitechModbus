@@ -1,0 +1,17 @@
+{
+  "is_final": null,
+  "parent": null,
+  "parentGroup": null,
+  "id": "read_me_sensor-tests",
+  "kind": "page",
+  "name": "Sensor Tests",
+  "url": "read_me_sensor-tests.html",
+  "brief": "",
+  "has_details": 2,
+  "children": [],
+  "childrenClasses": [],
+  "childrenNamespaces": [],
+  "childrenCompoundRefs": [],
+  "deprecated": null,
+  "since": null
+}

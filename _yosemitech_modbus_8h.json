@@ -1,5 +1,5 @@
 {
-  "version": "1.11.0",
+  "version": "1.14.0",
   "compound": {
     "kind": "file",
     "id": "_yosemitech_modbus_8h",
@@ -16,7 +16,7 @@
     "since": null,
     "example_navigation": null,
     "footer_navigation": null,
-    "modules": [],
+    "topics": [],
     "dirs": [],
     "files": [],
     "namespaces": [],
@@ -52,7 +52,7 @@
             "id": "a517840e9a91335c992f33b700dc42ba2a15da8ce4327188c01ba28d169faa5a2f",
             "name": "Y502",
             "initializer": "= 0",
-            "brief": "<a href=\"http://en.yosemitech.com/aspcms/product/2020-5-8/72.html\">Online Optical Dissolved Oxygen Sensor</a>",
+            "brief": "<a href=\"http://en.yosemitech.com/aspcms/product/2020-5-8/72.html\">Optical Dissolved Oxygen (discontinued) Sensor</a>",
             "description": "",
             "deprecated": null,
             "since": null
@@ -61,7 +61,7 @@
             "id": "a517840e9a91335c992f33b700dc42ba2afe0d01ad5648d95c2de78c91db39999c",
             "name": "Y504",
             "initializer": "",
-            "brief": "<a href=\"http://en.yosemitech.com/aspcms/product/2021-3-1/161.html\">Optical Dissolved Oxygen Sensor</a>",
+            "brief": "<a href=\"https://e.yosemitech.com/DO/Y504-A.html\">Optical Dissolved Oxygen (ODO) Sensor</a>",
             "description": "",
             "deprecated": null,
             "since": null
@@ -70,7 +70,7 @@
             "id": "a517840e9a91335c992f33b700dc42ba2a649ace532e43839bc830afba9a4f5964",
             "name": "Y510",
             "initializer": "",
-            "brief": "<a href=\"http://en.yosemitech.com/aspcms/product/2020-5-8/76.html\">Turbidity Sensor</a>",
+            "brief": "<a href=\"https://e.yosemitech.com/TUR/Y510-B.html\">Turbidity Sensor</a>",
             "description": "",
             "deprecated": null,
             "since": null
@@ -79,7 +79,7 @@
             "id": "a517840e9a91335c992f33b700dc42ba2acaa99680626d8bc104fbfd851adca166",
             "name": "Y511",
             "initializer": "",
-            "brief": "<a href=\"http://en.yosemitech.com/aspcms/product/2020-5-8/76.html\">Turbidity Sensor with wiper</a>",
+            "brief": "<a href=\"https://e.yosemitech.com/TUR/Y511-A.html\">Turbidity Sensor with wiper</a>",
             "description": "",
             "deprecated": null,
             "since": null
@@ -88,7 +88,7 @@
             "id": "a517840e9a91335c992f33b700dc42ba2ac2e0af5dd575bb3eaa9bb9a4ff03b6f5",
             "name": "Y513",
             "initializer": "",
-            "brief": "<a href=\"http://en.yosemitech.com/aspcms/product/2020-5-8/82.html\">Blue Green Algae sensor with Wiper</a>",
+            "brief": "<a href=\"https://e.yosemitech.com/CHL/Y513-A.html\">Blue Green Algae (BGA) sensor with Wiper</a>",
             "description": "",
             "deprecated": null,
             "since": null
@@ -97,7 +97,7 @@
             "id": "a517840e9a91335c992f33b700dc42ba2af2dc7239efbeeaa314a99b38bf2ac637",
             "name": "Y514",
             "initializer": "",
-            "brief": "<a href=\"http://en.yosemitech.com/aspcms/product/2020-4-23/39.html\">Chlorophyll Sensor with Wiper</a>",
+            "brief": "<a href=\"https://e.yosemitech.com/CHL/Y514-A.html\">Chlorophyll Sensor with Wiper</a>",
             "description": "",
             "deprecated": null,
             "since": null
@@ -115,7 +115,16 @@
             "id": "a517840e9a91335c992f33b700dc42ba2a97b11067b34dbdf9c1ee9aacdaa47e0d",
             "name": "Y520",
             "initializer": "",
-            "brief": "<a href=\"http://en.yosemitech.com/aspcms/product/2020-4-23/58.html\">4-Electrode Conductivity Sensor</a>",
+            "brief": "<a href=\"http://en.yosemitech.com/aspcms/product/2020-4-23/58.html\">4-Electrode Conductivity (discontinued) Sensor</a>",
+            "description": "",
+            "deprecated": null,
+            "since": null
+          },
+          {
+            "id": "a517840e9a91335c992f33b700dc42ba2a024db84229c553692a48bc20780fdd57",
+            "name": "Y521",
+            "initializer": "",
+            "brief": "<a href=\"https://e.yosemitech.com/CT/Y521-A.html\">4-Electrode Conductivity Sensor (metal housing)</a>",
             "description": "",
             "deprecated": null,
             "since": null
@@ -124,7 +133,7 @@
             "id": "a517840e9a91335c992f33b700dc42ba2a9d493f3eb6d9c2834f1d3b1dc29e8e75",
             "name": "Y532",
             "initializer": "",
-            "brief": "<a href=\"http://en.yosemitech.com/aspcms/product/2020-6-15/154.html\">pH</a>",
+            "brief": "<a href=\"https://e.yosemitech.com/pH/Y532-A.html\">pH Sensor</a>",
             "description": "",
             "deprecated": null,
             "since": null
@@ -133,7 +142,7 @@
             "id": "a517840e9a91335c992f33b700dc42ba2a9d82f2c2636a953e78fbaa72e239264d",
             "name": "Y533",
             "initializer": "",
-            "brief": "<a href=\"http://en.yosemitech.com/aspcms/product/2020-5-8/91.html\">ORP</a>",
+            "brief": "<a href=\"https://e.yosemitech.com/pH/Y533-A.html\">ORP Sensor</a>",
             "description": "",
             "deprecated": null,
             "since": null
@@ -142,7 +151,7 @@
             "id": "a517840e9a91335c992f33b700dc42ba2ace69642cbcafba913e5e278bce124882",
             "name": "Y550",
             "initializer": "",
-            "brief": "<a href=\"http://en.yosemitech.com/aspcms/product/2020-5-8/94.html\">UV254/COD Sensor, old version no longer sold</a>",
+            "brief": "<a href=\"http://en.yosemitech.com/aspcms/product/2020-5-8/94.html\">UV254/COD Sensor ( discontinued)</a>",
             "description": "",
             "deprecated": null,
             "since": null
@@ -151,7 +160,7 @@
             "id": "a517840e9a91335c992f33b700dc42ba2a036682e15622ff1c8e655fdf13eab84d",
             "name": "Y551",
             "initializer": "",
-            "brief": "<a href=\"http://en.yosemitech.com/aspcms/product/2020-5-8/94.html\">UV254/COD Sensor</a>",
+            "brief": "<a href=\"https://e.yosemitech.com/COD-16/Y551-B.html\">UV254/COD Sensor</a>",
             "description": "",
             "deprecated": null,
             "since": null
@@ -160,7 +169,7 @@
             "id": "a517840e9a91335c992f33b700dc42ba2af5b1fd2222d12aa81df84c3628f8637c",
             "name": "Y560",
             "initializer": "",
-            "brief": "<a href=\"http://en.yosemitech.com/aspcms/product/2020-4-23/61.html\">NH4 Probe</a>",
+            "brief": "<a href=\"https://e.yosemitech.com/NH4-N-19/Y560-A.html\">Ammonium ISE Sensor</a>",
             "description": "",
             "deprecated": null,
             "since": null
@@ -169,7 +178,7 @@
             "id": "a517840e9a91335c992f33b700dc42ba2a912d6fb37fd53aff82e39b5d7d4feb5b",
             "name": "Y700",
             "initializer": "",
-            "brief": "Water Pressure/Depth Sensor Prototype developed for Clean Water Services.",
+            "brief": "<a href=\"https://e.yosemitech.com/WLT/68.html\">Depth Sensor</a>",
             "description": "",
             "deprecated": null,
             "since": null
@@ -178,7 +187,7 @@
             "id": "a517840e9a91335c992f33b700dc42ba2a2ca6fa4fb6ad62ddfb6bc2ee2b1103af",
             "name": "Y4000",
             "initializer": "",
-            "brief": "<a href=\"http://en.yosemitech.com/aspcms/product/2020-5-8/95.html\">Multiparameter Sonde</a>",
+            "brief": "<a href=\"https://e.yosemitech.com/MULTI/Y4000.html\">Multiparameter Sonde</a>",
             "description": "",
             "deprecated": null,
             "since": null
@@ -203,7 +212,7 @@
         "include": null,
         "has_details": false,
         "is_using": false,
-        "type": "enum <a href=\"_yosemitech_modbus_8h.html#a517840e9a91335c992f33b700dc42ba2\" class=\"m-doc\">yosemitechModel</a>",
+        "type": "enum <a href=\"#a517840e9a91335c992f33b700dc42ba2\" class=\"m-doc\">yosemitechModel</a>",
         "args": "",
         "name": "yosemitechModel",
         "brief": "The various Yosemitech sensors.",

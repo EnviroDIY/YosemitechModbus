@@ -1,0 +1,18 @@
+{
+  "is_final": null,
+  "parent": "dir_f221ec5b675671b95093bf3c38cb735e",
+  "parentGroup": null,
+  "id": "dir_ae0dba0b7831597cdc8e208716a6e93b",
+  "kind": "dir",
+  "name": "extras/sensor_tests/Yosemitech_Y520-A-Cond",
+  "url": "dir_ae0dba0b7831597cdc8e208716a6e93b.html",
+  "brief": "",
+  "has_details": false,
+  "children": [],
+  "childrenClasses": [],
+  "childrenNamespaces": [],
+  "childrenCompoundRefs": [],
+  "deprecated": null,
+  "since": null,
+  "leaf_name": "Yosemitech_Y520-A-Cond"
+}

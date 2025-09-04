@@ -1,5 +1,5 @@
 {
-  "version": "1.11.0",
+  "version": "1.14.0",
   "compound": {
     "kind": "dir",
     "id": "dir_1510bd745cd29c20d24c27171ebe5ba5",
@@ -16,7 +16,7 @@
     "since": null,
     "example_navigation": null,
     "footer_navigation": null,
-    "modules": [],
+    "topics": [],
     "dirs": [],
     "files": [],
     "namespaces": [],

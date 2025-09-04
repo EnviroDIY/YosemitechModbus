@@ -1,0 +1,21 @@
+{
+  "is_final": null,
+  "parent": null,
+  "parentGroup": null,
+  "id": "dir_1510bd745cd29c20d24c27171ebe5ba5",
+  "kind": "dir",
+  "name": "extras",
+  "url": "dir_1510bd745cd29c20d24c27171ebe5ba5.html",
+  "brief": "Has extra calibration, sensor testing, and debugging sketches.",
+  "has_details": true,
+  "children": [
+    "dir_1ba321648fabd330263776fb04977443",
+    "dir_f221ec5b675671b95093bf3c38cb735e"
+  ],
+  "childrenClasses": [],
+  "childrenNamespaces": [],
+  "childrenCompoundRefs": [],
+  "deprecated": null,
+  "since": null,
+  "leaf_name": "extras"
+}

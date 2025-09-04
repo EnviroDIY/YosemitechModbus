@@ -1,0 +1,68 @@
+{
+  "version": "1.14.0",
+  "compound": {
+    "kind": "page",
+    "id": "read_me_sensor-tests",
+    "name": "Sensor Tests",
+    "url_base": "read_me_sensor-tests",
+    "url": "read_me_sensor-tests.html",
+    "include": null,
+    "has_template_details": false,
+    "templates": null,
+    "brief": "",
+    "description": "<p><a name=\"md_extras_2sensor__tests_2_read_me\"></a></p><p>These are not tests of the library itself, but short scripts to test the sensor connections with the Mayfly. These were mostly used developing and improving the functions in the library.</p>",
+    "sections": [],
+    "deprecated": null,
+    "since": null,
+    "example_navigation": null,
+    "footer_navigation": null,
+    "topics": [],
+    "dirs": [],
+    "files": [],
+    "namespaces": [],
+    "classes": [],
+    "base_classes": [],
+    "derived_classes": [],
+    "enums": [],
+    "typedefs": [],
+    "funcs": [],
+    "vars": [],
+    "defines": [],
+    "public_types": [],
+    "public_static_funcs": [],
+    "typeless_funcs": [],
+    "public_funcs": [],
+    "signals": [],
+    "public_slots": [],
+    "public_static_vars": [],
+    "public_vars": [],
+    "protected_types": [],
+    "protected_static_funcs": [],
+    "protected_funcs": [],
+    "protected_slots": [],
+    "protected_static_vars": [],
+    "protected_vars": [],
+    "private_funcs": [],
+    "private_slots": [],
+    "related": [],
+    "friend_funcs": [],
+    "groups": [],
+    "has_enum_details": false,
+    "has_typedef_details": false,
+    "has_func_details": false,
+    "has_var_details": false,
+    "has_define_details": false,
+    "breadcrumb": [
+      [
+        "Sensor Tests",
+        "read_me_sensor-tests.html"
+      ]
+    ],
+    "breadcrumbGroup": [
+      [
+        "Sensor Tests",
+        "read_me_sensor-tests.html"
+      ]
+    ]
+  }
+}
