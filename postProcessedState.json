@@ -237,7 +237,7 @@
       "name": "ChangeLog",
       "url": "change_log.html",
       "brief": "",
-      "has_details": 21,
+      "has_details": 22,
       "children": [],
       "childrenClasses": [],
       "childrenNamespaces": [],
@@ -492,7 +492,7 @@
   ],
   "doxyfile": {
     "PROJECT_NAME": "YosemitechModbus",
-    "PROJECT_NUMBER": "0.5.1",
+    "PROJECT_NUMBER": "0.5.2",
     "PROJECT_BRIEF": "An Arduino library for communication with Yosemitech sensors via Modbus.",
     "PROJECT_LOGO": "gp-desktop-logo.png",
     "OUTPUT_DIRECTORY": "../../YosemitechModbus_Doxygen",
