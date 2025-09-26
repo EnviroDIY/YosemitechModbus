@@ -20,6 +20,14 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ***
 
+## [0.5.3]
+
+### Changed
+
+- Bumped SensorModbusMaster dependency
+
+***
+
 ## [0.5.2]
 
 ### Changed
@@ -226,7 +234,8 @@ Newest Modbus Manuals
 
 Initial release
 
-[Unreleased]: https://github.com/EnviroDIY/YosemitechModbus/compare/v0.5.2...HEAD
+[Unreleased]: https://github.com/EnviroDIY/YosemitechModbus/compare/v0.5.3...HEAD
+[0.5.3]: https://github.com/EnviroDIY/YosemitechModbus/releases/tag/v0.5.2
 [0.5.2]: https://github.com/EnviroDIY/YosemitechModbus/releases/tag/v0.5.2
 [0.5.1]: https://github.com/EnviroDIY/YosemitechModbus/releases/tag/v0.5.1
 [0.5.0]: https://github.com/EnviroDIY/YosemitechModbus/releases/tag/v0.5.0
